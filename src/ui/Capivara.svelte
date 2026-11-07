@@ -41,7 +41,7 @@
     position: absolute;
     /* on the brow: just above the hinge of the sunglasses, overlapping the head */
     left: 52%;
-    top: 11%;
+    top: 15%;
     height: auto;
     transform: rotate(14deg);
     animation: drip 1.6s ease-in-out infinite;
