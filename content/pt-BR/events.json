@@ -1,0 +1,295 @@
+{
+  "presente_vovo": {
+    "title": "Vovó mandou um presente",
+    "body": "Sua avó te deu {valor} de aniversário. A Capivara olha pra você sem dizer nada.",
+    "capi": "Dinheiro guardado não some. Dinheiro gasto, sim. Só isso.",
+    "choices": {
+      "guardar": { "label": "Guardar no cofrinho", "detail": "E separar 20% da mesada todo mês" },
+      "gastar": { "label": "Gastar tudo hoje", "detail": "Você fica feliz. Por um mês." }
+    }
+  },
+  "lanche": {
+    "title": "O lanche da escola",
+    "body": "Sua mesada é {mesada} por mês. Comprar na cantina todo dia custa {cantina}. Levar de casa custa zero e um pouco de orgulho.",
+    "capi": "A cantina não é vilã. Mas ela cobra todo dia, e todo dia é 20 vezes por mês.",
+    "choices": {
+      "cantina": { "label": "Comprar na cantina", "detail": "{cantina} por mês" },
+      "casa": { "label": "Levar de casa", "detail": "Sobra quase toda a mesada" }
+    }
+  },
+  "conta_jovem": {
+    "title": "Conta no celular",
+    "body": "Sua mãe pode abrir uma conta digital pra você. O dinheiro rende 100% do CDI e dá pra fazer Pix. O cofrinho continua rendendo zero.",
+    "capi": "Cofrinho é gaveta. Conta é uma gaveta que paga aluguel pra você.",
+    "choices": {
+      "abrir": { "label": "Abrir a conta", "detail": "O cofrinho vai pra conta e passa a render" },
+      "nao": { "label": "Ficar no cofrinho", "detail": "Dinheiro parado, mas é seu" }
+    }
+  },
+  "aniversario": {
+    "title": "Aniversário de {idade} anos",
+    "body": "Entre tios e padrinhos, você juntou {valor} de presente.",
+    "capi": "Feliz aniversário. Olha o cofrinho.",
+    "choices": {
+      "guardar": { "label": "Guardar", "detail": "Vai pra onde você já guarda" },
+      "gastar": { "label": "Comemorar", "detail": "Você merece. Diz o bolo." }
+    }
+  },
+  "diamantes": {
+    "title": "Promoção de diamantes",
+    "body": "O jogo tá oferecendo um pacote de diamantes por {preco}. Seus amigos já compraram.",
+    "capi": "Diamante de jogo não vende depois. Nem rende. Mas eu não sou seu pai.",
+    "choices": {
+      "comprar": { "label": "Comprar", "detail": "{preco} agora" },
+      "nao": { "label": "Deixar pra lá", "detail": "Você joga igual, sem a skin" }
+    }
+  },
+  "aprendiz": {
+    "title": "Vaga de Jovem Aprendiz",
+    "body": "Uma empresa oferece vaga de aprendiz: 4 horas por dia, {salario} por mês, carteira assinada, e você continua na escola.",
+    "capi": "Primeiro salário é o dia em que o dinheiro deixa de ser presente e vira trabalho. Muda tudo.",
+    "choices": {
+      "aceitar": { "label": "Aceitar a vaga", "detail": "{salario} por mês, menos tempo livre" },
+      "recusar": { "label": "Ficar só na escola", "detail": "A mesada continua" }
+    }
+  },
+  "pe_de_meia": {
+    "title": "Pé-de-Meia",
+    "body": "Você está matriculado no ensino médio público. O governo deposita {mensal} por mês se você mantiver a frequência, e mais {anual} por ano aprovado, travados até você se formar.",
+    "capi": "Dinheiro travado é o único que ninguém gasta. Nem você.",
+    "choices": {
+      "ok": { "label": "Entendi", "detail": "Faltar aula custa o mês" }
+    }
+  },
+  "primeiro_celular": {
+    "title": "Seu primeiro celular",
+    "body": "Um celular intermediário custa {preco}. No Pix sai por {pix}. Em 12x sem juros no cartão da sua mãe sai {parcela} por mês. Um usado custa {usado}.",
+    "capi": "12x sem juros só é de graça se o preço à vista for igual. Se tem desconto no Pix, o juro tá escondido no preço.",
+    "choices": {
+      "pix": { "label": "Pagar no Pix", "detail": "{pix} à vista, com desconto" },
+      "parcelado": { "label": "12x sem juros", "detail": "{parcela} por mês durante um ano" },
+      "usado": { "label": "Comprar usado", "detail": "{usado} à vista" },
+      "esperar": { "label": "Esperar mais um pouco", "detail": "Seus amigos vão perguntar" }
+    }
+  },
+  "celular_de_novo": {
+    "title": "Ainda sem celular",
+    "body": "Seis meses depois. O intermediário custa {preco}, {pix} no Pix, {parcela} em 12x. Um usado, {usado}.",
+    "capi": "Esperar foi barato. Agora é decidir.",
+    "choices": {
+      "pix": { "label": "Pagar no Pix", "detail": "{pix} à vista" },
+      "parcelado": { "label": "12x sem juros", "detail": "{parcela} por mês" },
+      "usado": { "label": "Comprar usado", "detail": "{usado} à vista" },
+      "esperar": { "label": "Esperar de novo", "detail": "Mais seis meses" }
+    }
+  },
+  "bico_ou_aula": {
+    "title": "Bico ou aula?",
+    "body": "Um bico de uma semana paga {bico}. Mas são faltas demais: você perde o Pé-de-Meia do mês, {pedemeia}.",
+    "capi": "Faz a conta. Não a vontade, a conta.",
+    "choices": {
+      "bico": { "label": "Fazer o bico", "detail": "Ganha {bico}, perde {pedemeia}" },
+      "aula": { "label": "Ir pra aula", "detail": "O depósito cai normal" }
+    }
+  },
+  "cartao_garantido": {
+    "title": "Cartão aos 16",
+    "body": "O banco oferece um cartão de crédito com limite igual ao que você tem guardado: {limite}. Se não pagar a fatura, ele usa o que você guardou.",
+    "capi": "Cartão com limite igual ao seu dinheiro é o único cartão que não mente pra você.",
+    "choices": {
+      "aceitar": { "label": "Aceitar", "detail": "Limite de {limite}, fatura paga integral" },
+      "recusar": { "label": "Ainda não", "detail": "Sem cartão até os 18" }
+    }
+  },
+  "tigrinho": {
+    "title": "O tigrinho",
+    "body": "Seu amigo ganhou R$ 300 no jogo do tigrinho e não para de falar. Uma aposta de {aposta} por mês parece pouco.",
+    "capi": "Na média, de cada {aposta} apostados, {perda} não voltam. Seu amigo não te conta o mês em que perdeu.",
+    "choices": {
+      "mensal": { "label": "Apostar {aposta} por mês", "detail": "Todo mês, até você parar" },
+      "uma_vez": { "label": "Só uma vez", "detail": "Na média você perde {perda}" },
+      "ignorar": { "label": "Ignorar", "detail": "O tigre fica com fome" }
+    }
+  },
+  "parar_apostas": {
+    "title": "Olha o extrato",
+    "body": "Você já deixou {perdido} no tigrinho. Ele continua sorrindo.",
+    "capi": "Não existe estratégia. Existe a casa.",
+    "choices": {
+      "parar": { "label": "Parar agora", "detail": "A aposta mensal acaba" },
+      "continuar": { "label": "Continuar", "detail": "Uma hora vira" }
+    }
+  },
+  "celular_roubado": {
+    "title": "Roubaram seu celular",
+    "body": "Na saída do ônibus. Um novo custa {preco}, {pix} no Pix, {parcela} em 12x. Um usado, {usado}.",
+    "capi": "Isso não foi culpa sua. O que você faz agora, é.",
+    "choices": {
+      "pix": { "label": "Novo, no Pix", "detail": "{pix} à vista" },
+      "parcelado": { "label": "Novo, em 12x", "detail": "{parcela} por mês" },
+      "usado": { "label": "Usado", "detail": "{usado} à vista" },
+      "ficar_sem": { "label": "Ficar sem por enquanto", "detail": "Difícil, hoje em dia" }
+    }
+  },
+  "primeiro_emprego": {
+    "title": "Primeiro emprego de verdade",
+    "body": "Duas opções na mesa: atendente com carteira assinada, {clt} bruto por mês, ou entregador de aplicativo, uns {ifood} bruto, sem direitos e com o custo por sua conta.",
+    "capi": "CLT desconta antes de você ver. Aplicativo desconta depois, e você não vê.",
+    "choices": {
+      "clt": { "label": "Atendente, CLT", "detail": "{clt} bruto, FGTS, férias, 13º" },
+      "ifood": { "label": "Entregador de app", "detail": "{ifood} bruto, sem benefícios" },
+      "so_estudar": { "label": "Só estudar por enquanto", "detail": "Sem renda, morando com os pais" }
+    }
+  },
+  "vaga": {
+    "title": "Apareceu uma vaga",
+    "body": "Um conhecido indicou você: atendente com carteira assinada a {clt} bruto, ou entregador de app, uns {ifood} bruto sem direitos.",
+    "capi": "Sem renda não tem juro composto. Tem só juro.",
+    "choices": {
+      "clt": { "label": "Atendente, CLT", "detail": "{clt} bruto por mês" },
+      "ifood": { "label": "Entregador de app", "detail": "{ifood} bruto, custos por sua conta" },
+      "nao": { "label": "Agora não", "detail": "Continua sem renda" }
+    }
+  },
+  "primeiro_cartao": {
+    "title": "Seu primeiro cartão",
+    "body": "O banco aprovou um cartão de crédito com limite de {limite}. Ele chega em 5 dias úteis, com um sorriso.",
+    "capi": "Cartão é um empréstimo de 30 dias a 0%. Depois disso, é o empréstimo mais caro do país.",
+    "choices": {
+      "aceitar": { "label": "Aceitar", "detail": "Limite de {limite}" },
+      "recusar": { "label": "Recusar", "detail": "Só débito e Pix" }
+    }
+  },
+  "politica_fatura": {
+    "title": "Como você paga a fatura?",
+    "body": "Pagar tudo custa 0%. Pagar o mínimo ({minimo}%) joga o resto no rotativo a {rotativo}% ao mês. Parcelar a fatura custa {parcelado}% ao mês. Por lei, os juros param quando chegam a 100% da dívida original.",
+    "capi": "A lei limita os juros a dobrar a dívida. Dobrar. Isso é a parte boa da notícia.",
+    "choices": {
+      "integral": { "label": "Pagar tudo, sempre", "detail": "Se não der, o resto vira rotativo" },
+      "minimo": { "label": "Pagar o mínimo", "detail": "{rotativo}% ao mês no resto" },
+      "parcelar": { "label": "Parcelar o que sobrar", "detail": "{parcelado}% ao mês em 12x" }
+    }
+  },
+  "sair_de_casa": {
+    "title": "Sair de casa?",
+    "body": "Uma kitnet custa {aluguel} e a comida mais {comida} por mês. Em casa você ajuda com {ajuda}. Sua renda é {renda}.",
+    "capi": "Morar sozinho é liberdade. Também é aluguel todo dia 5.",
+    "choices": {
+      "sozinho": { "label": "Alugar a kitnet", "detail": "{aluguel} + {comida} por mês" },
+      "ficar": { "label": "Ficar mais um tempo", "detail": "Ajuda em casa de {ajuda}" }
+    }
+  },
+  "estudar": {
+    "title": "E os estudos?",
+    "body": "Faculdade pública pelo ENEM/SISU: de graça, 4 anos, {chance}% de chance de passar este ano. EAD particular: {ead} por mês, 4 anos. Curso técnico: {tecnico} por mês, 18 meses. Cursinho: {cursinho} por mês, 1 ano. Quem se forma ganha em média {superior}; técnico, {tecnicoSalario}.",
+    "capi": "Estudar é a única parcela que paga você de volta. Mas também é parcela: todo mês, por anos.",
+    "choices": {
+      "sisu": { "label": "Tentar o SISU", "detail": "{chance}% de passar" },
+      "ead": { "label": "Faculdade EAD", "detail": "{ead} por mês por 48 meses" },
+      "tecnico": { "label": "Curso técnico", "detail": "{tecnico} por mês por 18 meses" },
+      "cursinho": { "label": "Fazer cursinho", "detail": "{cursinho} por mês, sobe a chance pra 60%" },
+      "nada": { "label": "Agora não", "detail": "A oferta volta em dois anos" }
+    }
+  },
+  "cansaco": {
+    "title": "Trabalhar e estudar",
+    "body": "Você dorme cinco horas. A matrícula do semestre venceu e a vontade de trancar é grande.",
+    "capi": "Trancar é desistir no meio da parcela. Você já pagou a parte cara.",
+    "choices": {
+      "continuar": { "label": "Continuar", "detail": "Mais um semestre de olheira" },
+      "trancar": { "label": "Trancar", "detail": "O dinheiro pago fica no passado" }
+    }
+  },
+  "nova_vaga": {
+    "title": "Diploma na mão",
+    "body": "Você se formou. Apareceu uma vaga pagando {salario} por mês. Hoje você ganha {atual}.",
+    "capi": "Isso aqui é o retorno do investimento. Chegou atrasado, mas veio inteiro.",
+    "choices": {
+      "aceitar": { "label": "Aceitar a vaga", "detail": "{salario} por mês" },
+      "ficar": { "label": "Ficar onde está", "detail": "{atual} por mês" }
+    }
+  },
+  "promocao": {
+    "title": "Promoção",
+    "body": "Seu salário sobe para {novo}. O pessoal quer comemorar e a conta dá {bonus}.",
+    "capi": "Aumento é o momento em que a maioria aumenta os gastos. Os outros aumentam a poupança.",
+    "choices": {
+      "comemorar": { "label": "Comemorar", "detail": "{bonus} hoje" },
+      "guardar": { "label": "Guardar o primeiro aumento", "detail": "{bonus} vai pra reserva" }
+    }
+  },
+  "emergencia": {
+    "title": "Emergência",
+    "body": "Dor forte, pronto-socorro particular, exames: {valor}. O SUS atende, mas a fila é longa.",
+    "capi": "Reserva de emergência é isso. Ela não rende muito. Ela te poupa do juro.",
+    "choices": {
+      "pagar": { "label": "Pagar com a reserva", "detail": "{valor} agora" },
+      "cartao": { "label": "Colocar no cartão", "detail": "Entra na próxima fatura" },
+      "emprestimo": { "label": "Empréstimo pessoal", "detail": "12x de {parcela}" },
+      "sus": { "label": "Esperar no SUS", "detail": "De graça, mas custa saúde" }
+    }
+  },
+  "black_friday": {
+    "title": "Black Friday",
+    "body": "A TV que você queria está por {preco}, {pix} no Pix ou {parcela} em 12x no cartão.",
+    "capi": "Promoção boa é a que você já ia comprar. As outras são preço.",
+    "choices": {
+      "parcelar": { "label": "12x no cartão", "detail": "{parcela} por mês durante um ano" },
+      "avista": { "label": "Pagar no Pix", "detail": "{pix} à vista" },
+      "passar": { "label": "Deixar passar", "detail": "A TV de agora funciona" }
+    }
+  },
+  "moto": {
+    "title": "A moto",
+    "body": "Uma CG 160 custa {preco}. Financiada em {meses}x sai {parcela} por mês, {total} no total. Manter custa uns {custo} por mês.",
+    "capi": "Uma moto financiada custa duas motos. Uma vai pra você, a outra pro banco.",
+    "choices": {
+      "financiar": { "label": "Financiar em {meses}x", "detail": "{parcela} por mês" },
+      "avista": { "label": "Comprar à vista", "detail": "{preco} agora" },
+      "onibus": { "label": "Continuar de ônibus", "detail": "Mais lento, mais barato" }
+    }
+  },
+  "familia_pix": {
+    "title": "Pix da família",
+    "body": "Sua tia pediu um Pix de {valor} emprestado. Ela diz que devolve mês que vem.",
+    "capi": "Família não é investimento. Mas também não é despesa. É família.",
+    "choices": {
+      "ajudar": { "label": "Mandar o Pix", "detail": "{valor}" },
+      "nao": { "label": "Dizer que não dá", "detail": "Ela vai entender. Talvez." }
+    }
+  },
+  "consignado": {
+    "title": "Crédito consignado",
+    "body": "O banco oferece {valor} descontados direto do salário: 24x de {parcela}, total {total}.",
+    "capi": "Consignado é o juro mais baixo que vão te oferecer. Ainda é juro.",
+    "choices": {
+      "aceitar": { "label": "Pegar", "detail": "{valor} na conta, 24x de {parcela}" },
+      "recusar": { "label": "Recusar", "detail": "Sem desconto em folha" }
+    }
+  },
+  "negativado": {
+    "title": "Nome sujo",
+    "body": "Três faturas sem pagar nem o mínimo. Sua dívida está em {divida} e seu nome foi para o Serasa. O banco oferece quitar com {entrada} à vista.",
+    "capi": "Negativado fica {anos} anos. Renegociar dói uma vez. Ignorar dói todo mês.",
+    "choices": {
+      "renegociar": { "label": "Renegociar e pagar", "detail": "{entrada} à vista, cartão bloqueado por 1 ano" },
+      "ignorar": { "label": "Deixar pra depois", "detail": "{anos} anos sem crédito" }
+    }
+  },
+  "primeira_aplicacao": {
+    "title": "Primeira aplicação",
+    "body": "Você começou a guardar {mensal} por mês em {onde}. Antes de ver o número: quanto você acha que isso vira em 10 anos?",
+    "capi": "Em 10 anos você vai ter depositado {depositado}. O resto é juro trabalhando enquanto você dorme.",
+    "choices": {
+      "ver": { "label": "Ver o resultado", "detail": "{dezAnos} em 10 anos" }
+    }
+  },
+  "revisao_anual": {
+    "title": "{idade} anos: revisão",
+    "body": "Renda de {renda} por mês, {comprometido}% já comprometidos com parcelas, guardando {guardando}% do que sobra.",
+    "capi": "Uma vez por ano, olha os números. É o mínimo que o banco faz com você.",
+    "choices": {
+      "ok": { "label": "Continuar", "detail": "Ajuste as ordens mensais quando quiser" }
+    }
+  }
+}

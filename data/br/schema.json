@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Capivara Rica economic parameters",
+  "type": "object",
+  "required": ["country", "asOf", "currency", "params"],
+  "properties": {
+    "country": { "type": "string" },
+    "asOf": { "type": "string" },
+    "currency": { "type": "string" },
+    "notes": { "type": "string" },
+    "params": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["value", "unit", "asOf", "source", "status"],
+        "properties": {
+          "value": { "type": "number" },
+          "unit": { "type": "string" },
+          "asOf": { "type": "string" },
+          "source": { "type": "string" },
+          "status": { "enum": ["verified", "secondary", "memory", "placeholder"] },
+          "note": { "type": "string" }
+        }
+      }
+    }
+  }
+}

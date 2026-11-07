@@ -1,0 +1,624 @@
+{
+  "$schema": "./schema.json",
+  "country": "BR",
+  "asOf": "2026-11",
+  "currency": "BRL",
+  "notes": "Every value is an integer number of centavos or a decimal rate. `status` is one of verified | secondary | memory | placeholder. `source` points at a URL or at the research note that carries the citation. scripts/check-data.ts refuses a release build while any parameter is memory or placeholder.",
+  "params": {
+    "minimumWage": {
+      "value": 162100,
+      "unit": "centavos/month",
+      "asOf": "2026-01",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "secondary",
+      "note": "R$ 1.621 for 2026 (press coverage of the decree; confirm on planalto.gov.br)"
+    },
+    "inssRateBand1": {
+      "value": 0.075,
+      "unit": "rate",
+      "asOf": "2026-01",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "secondary",
+      "note": "First INSS band, up to one minimum wage"
+    },
+    "valeTransporteRate": {
+      "value": 0.06,
+      "unit": "rate of gross salary",
+      "asOf": "2026-01",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "memory",
+      "note": "Employee share capped at 6% of base salary (CLT rule not re-checked)"
+    },
+    "cardRotativoMonthly": {
+      "value": 0.153,
+      "unit": "rate/month",
+      "asOf": "2026-09",
+      "source": "docs/research/notes/consumer_credit.md",
+      "status": "secondary",
+      "note": "BCB average 451.7% a.a. for individuals, Sep 2026, converted to monthly"
+    },
+    "cardParceladoMonthly": {
+      "value": 0.094,
+      "unit": "rate/month",
+      "asOf": "2026-09",
+      "source": "docs/research/notes/consumer_credit.md",
+      "status": "secondary",
+      "note": "BCB average 193.0% a.a. for fatura parcelada, converted to monthly"
+    },
+    "cardCapMultiple": {
+      "value": 1.0,
+      "unit": "multiple of original debt",
+      "asOf": "2024-01-03",
+      "source": "docs/research/notes/credit_rule_details.md",
+      "status": "verified",
+      "note": "Lei 14.690/2023 + CMN Res. 5.112/2023: interest and charges cannot exceed 100% of the original debt; IOF excluded"
+    },
+    "cardMinimumPaymentPct": {
+      "value": 0.15,
+      "unit": "rate of statement",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/credit_rule_details.md",
+      "status": "placeholder",
+      "note": "The mandatory 15% minimum was revoked (2017-18); issuers set their own. Confirm current practice."
+    },
+    "cardFirstLimit": {
+      "value": 50000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/credit_rule_details.md",
+      "status": "placeholder",
+      "note": "Typical first limit for a young adult with no history; not found in research"
+    },
+    "chequeEspecialMonthly": {
+      "value": 0.08,
+      "unit": "rate/month",
+      "asOf": "2020-01-06",
+      "source": "docs/research/notes/credit_rule_details.md",
+      "status": "verified",
+      "note": "Legal cap, CMN Res. 4.765/2019"
+    },
+    "personalLoanMonthly": {
+      "value": 0.064,
+      "unit": "rate/month",
+      "asOf": "2026-09",
+      "source": "docs/research/notes/consumer_credit.md",
+      "status": "secondary",
+      "note": "BCB average 110.9% a.a.; Procon-SP found 8.66% a.m. at big banks (conflict noted)"
+    },
+    "consignadoMonthly": {
+      "value": 0.034,
+      "unit": "rate/month",
+      "asOf": "2025-06",
+      "source": "docs/research/notes/consumer_credit.md",
+      "status": "secondary",
+      "note": "CLT consignado 3.3-3.6% a.m."
+    },
+    "motoFinanceMonthly": {
+      "value": 0.0157,
+      "unit": "rate/month",
+      "asOf": "2026",
+      "source": "docs/research/notes/credit_rule_details.md",
+      "status": "secondary",
+      "note": "Blogs quoting Banco Honda 1.49% / Santander 1.57% a.m.; CET not confirmed"
+    },
+    "motoFinanceMonths": {
+      "value": 60,
+      "unit": "months",
+      "asOf": "2026",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "secondary"
+    },
+    "selicAnnual": {
+      "value": 0.1375,
+      "unit": "rate/year",
+      "asOf": "2026-11-04",
+      "source": "docs/research/notes/saving_investing.md",
+      "status": "secondary",
+      "note": "Copom held 13.75% on 4 Nov 2026 (press; confirm on bcb.gov.br)"
+    },
+    "cdiAnnual": {
+      "value": 0.1365,
+      "unit": "rate/year",
+      "asOf": "2026-09",
+      "source": "docs/research/notes/saving_investing.md",
+      "status": "secondary"
+    },
+    "poupancaMonthly": {
+      "value": 0.0067,
+      "unit": "rate/month",
+      "asOf": "2026-05",
+      "source": "docs/research/notes/credit_rule_details.md",
+      "status": "secondary",
+      "note": "0.5% + TR; May 2026 monthly 0.6695%"
+    },
+    "tesouroCustodyAnnual": {
+      "value": 0.002,
+      "unit": "rate/year",
+      "asOf": "2026",
+      "source": "docs/research/notes/credit_rule_details.md",
+      "status": "verified",
+      "note": "B3 custody fee 0.20% a.a."
+    },
+    "tesouroCustodyExemptUpTo": {
+      "value": 1000000,
+      "unit": "centavos",
+      "asOf": "2026",
+      "source": "docs/research/notes/credit_rule_details.md",
+      "status": "verified",
+      "note": "Tesouro Selic exempt on the first R$ 10.000 per CPF"
+    },
+    "cdbPctCdi": {
+      "value": 1.0,
+      "unit": "share of CDI",
+      "asOf": "2026",
+      "source": "docs/research/notes/saving_investing.md",
+      "status": "secondary",
+      "note": "Fintech caixinhas pay 100% CDI (some promos up to 120%)"
+    },
+    "irFixedIncome0to6": {
+      "value": 0.225,
+      "unit": "rate on gains",
+      "asOf": "2026",
+      "source": "docs/research/notes/saving_investing.md",
+      "status": "verified",
+      "note": "Regressive IR table, up to 180 days"
+    },
+    "irFixedIncome6to12": {
+      "value": 0.2,
+      "unit": "rate on gains",
+      "asOf": "2026",
+      "source": "docs/research/notes/saving_investing.md",
+      "status": "verified"
+    },
+    "irFixedIncome12to24": {
+      "value": 0.175,
+      "unit": "rate on gains",
+      "asOf": "2026",
+      "source": "docs/research/notes/saving_investing.md",
+      "status": "verified"
+    },
+    "irFixedIncome24plus": {
+      "value": 0.15,
+      "unit": "rate on gains",
+      "asOf": "2026",
+      "source": "docs/research/notes/saving_investing.md",
+      "status": "verified"
+    },
+    "ipcaAnnualLast": {
+      "value": 0.0426,
+      "unit": "rate/year",
+      "asOf": "2025-12",
+      "source": "docs/research/notes/saving_investing.md",
+      "status": "secondary",
+      "note": "IPCA 2025"
+    },
+    "ipcaExpected": {
+      "value": 0.0522,
+      "unit": "rate/year",
+      "asOf": "2026",
+      "source": "docs/research/notes/saving_investing.md",
+      "status": "secondary",
+      "note": "Focus expectation for 2026"
+    },
+    "inflationTarget": {
+      "value": 0.03,
+      "unit": "rate/year",
+      "asOf": "2025-01",
+      "source": "docs/research/notes/saving_investing.md",
+      "status": "verified",
+      "note": "Continuous 3% target, +/-1.5 pt"
+    },
+    "mesadaMonthly": {
+      "value": 10000,
+      "unit": "centavos/month",
+      "asOf": "2024-10",
+      "source": "docs/research/notes/tween_teen_money_life.md",
+      "status": "secondary",
+      "note": "Serasa/Opinion Box 2023-24: most mesadas up to R$ 100 and mainly for the school lanche; the game raises it R$ 20 per year of age (inference)"
+    },
+    "lanchePrice": {
+      "value": 400,
+      "unit": "centavos/school day",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/tween_teen_money_life.md",
+      "status": "placeholder",
+      "note": "School cantina lanche per day; no source found. R$ 4 keeps 20 days inside a R$ 100 mesada"
+    },
+    "schoolDaysPerMonth": {
+      "value": 20,
+      "unit": "days",
+      "asOf": "2026",
+      "source": "docs/research/notes/tween_teen_money_life.md",
+      "status": "memory"
+    },
+    "jovemAprendizPay4h": {
+      "value": 73700,
+      "unit": "centavos/month",
+      "asOf": "2026-01",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "secondary",
+      "note": "4h/day apprentice at the hourly minimum"
+    },
+    "peDeMeiaMonthly": {
+      "value": 20000,
+      "unit": "centavos/month",
+      "asOf": "2026",
+      "source": "docs/research/notes/saving_investing.md",
+      "status": "secondary",
+      "note": "Attendance incentive; up to R$ 9.200 over three years"
+    },
+    "peDeMeiaAnnualLocked": {
+      "value": 100000,
+      "unit": "centavos/year",
+      "asOf": "2026",
+      "source": "docs/research/notes/saving_investing.md",
+      "status": "secondary",
+      "note": "Locked until graduation"
+    },
+    "cestaBasicaSP": {
+      "value": 92251,
+      "unit": "centavos/month",
+      "asOf": "2026-09",
+      "source": "https://www.dieese.org.br/analisecestabasica/",
+      "status": "verified",
+      "note": "DIEESE cesta básica São Paulo, Sep 2026 bulletin read in full"
+    },
+    "busFareSP": {
+      "value": 530,
+      "unit": "centavos/ride",
+      "asOf": "2026",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "secondary"
+    },
+    "rentKitnetSP": {
+      "value": 120000,
+      "unit": "centavos/month",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "placeholder",
+      "note": "Inference from R$ 65,78/m2 average; no kitnet-specific source"
+    },
+    "phonePlan": {
+      "value": 5000,
+      "unit": "centavos/month",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/tech_legal_domains.md",
+      "status": "placeholder",
+      "note": "Prepaid data plan; not researched"
+    },
+    "entryPhonePrice": {
+      "value": 136600,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/tween_teen_money_life.md",
+      "status": "secondary",
+      "note": "Redmi Note 15 about R$ 1.366; Galaxy A17 from R$ 849"
+    },
+    "pixDiscountTypical": {
+      "value": 0.05,
+      "unit": "rate",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/consumer_credit.md",
+      "status": "placeholder",
+      "note": "Real Pix-vs-12x price gaps not measured; 5% is the à-vista break-even for 12x"
+    },
+    "motoPrice": {
+      "value": 1735000,
+      "unit": "centavos",
+      "asOf": "2026",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "secondary",
+      "note": "Honda CG 160 Start 2026 list price"
+    },
+    "privateTuitionMonthly": {
+      "value": 83500,
+      "unit": "centavos/month",
+      "asOf": "2026",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "secondary",
+      "note": "Average in-person private tuition"
+    },
+    "eadTuitionMonthly": {
+      "value": 21400,
+      "unit": "centavos/month",
+      "asOf": "2026",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "secondary",
+      "note": "Average distance-learning tuition"
+    },
+    "tecnicoTuitionMonthly": {
+      "value": 30000,
+      "unit": "centavos/month",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "placeholder",
+      "note": "SENAI/SENAC course costs were not found; many public tracks are free"
+    },
+    "cursinhoMonthly": {
+      "value": 40000,
+      "unit": "centavos/month",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "placeholder"
+    },
+    "salaryAuxAdmin": {
+      "value": 220000,
+      "unit": "centavos/month",
+      "asOf": "2026",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "secondary"
+    },
+    "salaryTecnicoEnfermagem": {
+      "value": 332500,
+      "unit": "centavos/month",
+      "asOf": "2026",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "secondary",
+      "note": "Legal floor"
+    },
+    "salaryDevJunior": {
+      "value": 346300,
+      "unit": "centavos/month",
+      "asOf": "2026",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "secondary",
+      "note": "Glassdoor average; Robert Half median R$ 6.850"
+    },
+    "salaryEnfermeiro": {
+      "value": 475000,
+      "unit": "centavos/month",
+      "asOf": "2026",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "secondary",
+      "note": "Legal floor"
+    },
+    "salaryProfessor": {
+      "value": 513063,
+      "unit": "centavos/month",
+      "asOf": "2026",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "secondary",
+      "note": "40h national floor"
+    },
+    "salaryIfood": {
+      "value": 240000,
+      "unit": "centavos/month",
+      "asOf": "2026",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "secondary",
+      "note": "Gross, before fuel and maintenance; R$ 1,9-3 mil range"
+    },
+    "medioPremium": {
+      "value": 0.15,
+      "unit": "rate",
+      "asOf": "2025",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "secondary",
+      "note": "Controlled estimate 11-20% for completing ensino médio"
+    },
+    "tecnicoPremium": {
+      "value": 0.23,
+      "unit": "rate",
+      "asOf": "2025",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "secondary",
+      "note": "Controlled estimate 21-25% for technical courses"
+    },
+    "degreePremium": {
+      "value": 0.25,
+      "unit": "rate",
+      "asOf": "2025",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "secondary",
+      "note": "Controlled estimate 25%+; raw averages 126-156%"
+    },
+    "comprometimentoYellow": {
+      "value": 0.3,
+      "unit": "share of net income",
+      "asOf": "2026-08",
+      "source": "docs/research/notes/consumer_credit.md",
+      "status": "secondary",
+      "note": "Record 29.0% of income to debt service, Aug 2026"
+    },
+    "comprometimentoRed": {
+      "value": 0.4,
+      "unit": "share of net income",
+      "asOf": "2026-10",
+      "source": "docs/research/notes/consumer_credit.md",
+      "status": "verified",
+      "note": "BCB alert threshold for Pix credit (Res. 601-603/2026)"
+    },
+    "phoneTheftAnnualProb": {
+      "value": 0.03,
+      "unit": "probability/year",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "placeholder",
+      "note": "Inference from 161.666 phones lost in São Paulo city in 2025"
+    },
+    "betsExpectedLoss": {
+      "value": 0.6,
+      "unit": "share of stake lost per month",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/tween_teen_money_life.md",
+      "status": "placeholder",
+      "note": "Share of a month's stake lost on average with repeated play; narrated, never animated. Not sourced."
+    },
+    "healthPlanYoung": {
+      "value": 14500,
+      "unit": "centavos/month",
+      "asOf": "2026",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "secondary",
+      "note": "Cheapest quotes for ages 19-23"
+    },
+    "negativacaoYears": {
+      "value": 5,
+      "unit": "years",
+      "asOf": "2026",
+      "source": "docs/research/notes/consumer_credit.md",
+      "status": "verified",
+      "note": "Negative listing removed 5 years after due date"
+    },
+    "familyContribution": {
+      "value": 40000,
+      "unit": "centavos/month",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/tween_teen_money_life.md",
+      "status": "placeholder",
+      "note": "Typical 'ajuda em casa' from a young adult living with parents; not sourced"
+    },
+    "motoRunningCost": {
+      "value": 25000,
+      "unit": "centavos/month",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "placeholder",
+      "note": "Fuel, maintenance, IPVA and insurance for a 160cc motorcycle; not sourced"
+    },
+    "overdraftFloor": {
+      "value": 50000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/credit_rule_details.md",
+      "status": "placeholder",
+      "note": "Minimum cheque especial limit the game grants; the R$ 500 free-of-fee tranche is the only anchor found"
+    },
+    "usedPhonePrice": {
+      "value": 50000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/tween_teen_money_life.md",
+      "status": "placeholder",
+      "note": "Second-hand entry Android; not sourced"
+    },
+    "giftGrandma": {
+      "value": 10000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/tween_teen_money_life.md",
+      "status": "placeholder",
+      "note": "Opening birthday gift at age 10"
+    },
+    "giftBirthdayUnit": {
+      "value": 10000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/tween_teen_money_life.md",
+      "status": "placeholder",
+      "note": "Birthday gifts are 1-2 units of this"
+    },
+    "mesadaYearlyStep": {
+      "value": 2000,
+      "unit": "centavos/year of age",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/tween_teen_money_life.md",
+      "status": "placeholder",
+      "note": "Inference: mesada grows with age; no survey breaks amounts down by age"
+    },
+    "gameDiamondsPrice": {
+      "value": 3000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/tween_teen_money_life.md",
+      "status": "secondary",
+      "note": "Free Fire diamond packs run R$ 3 to R$ 50+; R$ 30 is a mid pack (official Pix price list, Nov 2026)"
+    },
+    "bicoWeekPay": {
+      "value": 15000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/tween_teen_money_life.md",
+      "status": "placeholder",
+      "note": "One week of informal teen work; not sourced"
+    },
+    "securedCardMinSavings": {
+      "value": 10000,
+      "unit": "centavos",
+      "asOf": "2025-09",
+      "source": "docs/research/notes/credit_rule_details.md",
+      "status": "secondary",
+      "note": "Nubank 16-17 secured card: limit equals the Caixinha balance; minimum not published"
+    },
+    "securedCardMaxLimit": {
+      "value": 50000,
+      "unit": "centavos",
+      "asOf": "2025-09",
+      "source": "docs/research/notes/credit_rule_details.md",
+      "status": "placeholder",
+      "note": "Cap the game applies to the secured card"
+    },
+    "betsStake": {
+      "value": 5000,
+      "unit": "centavos/month",
+      "asOf": "2024",
+      "source": "docs/research/notes/saving_investing.md",
+      "status": "secondary",
+      "note": "BCB 2024: youngest bettors spend about R$ 100 a month; R$ 50 is the game's entry stake"
+    },
+    "promotionBonus": {
+      "value": 20000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "placeholder",
+      "note": "Cost of celebrating a promotion; not sourced"
+    },
+    "emergencyMinCost": {
+      "value": 60000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "placeholder",
+      "note": "Private emergency visit plus exams, low end; not sourced"
+    },
+    "emergencyMaxCost": {
+      "value": 150000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "placeholder",
+      "note": "High end; not sourced"
+    },
+    "blackFridayPrice": {
+      "value": 250000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/consumer_credit.md",
+      "status": "placeholder",
+      "note": "A mid-range TV; not sourced"
+    },
+    "blackFridayPixDiscount": {
+      "value": 0.1,
+      "unit": "rate",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/consumer_credit.md",
+      "status": "placeholder",
+      "note": "Pix discount on the Black Friday item; real gaps not measured"
+    },
+    "blackFridayMinCash": {
+      "value": 100000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/consumer_credit.md",
+      "status": "placeholder",
+      "note": "Liquid money needed for the offer to appear without a card"
+    },
+    "familyPixAmount": {
+      "value": 20000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/tween_teen_money_life.md",
+      "status": "placeholder",
+      "note": "Typical family loan request; not sourced"
+    },
+    "consignadoAmount": {
+      "value": 500000,
+      "unit": "centavos",
+      "asOf": "2025-06",
+      "source": "docs/research/notes/consumer_credit.md",
+      "status": "placeholder",
+      "note": "Typical CLT consignado ticket; not sourced"
+    }
+  }
+}
