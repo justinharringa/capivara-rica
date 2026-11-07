@@ -2,6 +2,8 @@ import { get, set, del } from 'idb-keyval';
 import type { GameState } from '$engine/state';
 
 const KEY = 'capivara-rica:save:v1';
+/** Persistent-storage is requested once per page load; browsers treat repeat requests as noise. */
+let persistRequested = false;
 
 export async function loadSave(): Promise<GameState | null> {
   try {
@@ -29,10 +31,13 @@ export async function writeSave(s: GameState): Promise<void> {
   } catch {
     /* quota or private mode; the game still plays */
   }
-  try {
-    await navigator.storage?.persist?.();
-  } catch {
-    /* optional */
+  if (!persistRequested) {
+    persistRequested = true;
+    try {
+      await navigator.storage?.persist?.();
+    } catch {
+      /* optional */
+    }
   }
 }
 

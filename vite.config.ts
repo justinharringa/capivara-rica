@@ -5,7 +5,7 @@ import { fileURLToPath, URL } from 'node:url';
 
 // BASE_PATH lets the same build serve from a sub-path (GitHub Pages:
 // /capivara-rica/) or from the root of a custom domain (Cloudflare Pages: /).
-const base = process.env.BASE_PATH ?? '/';
+const base = `/${(process.env.BASE_PATH ?? '/').replace(/^\/+|\/+$/g, '')}/`.replace('//', '/');
 
 export default defineConfig({
   base,

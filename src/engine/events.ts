@@ -4,7 +4,7 @@ import type { Params } from './params';
 import type { GameState } from './state';
 import { isAdult, isTeen, isChild, ageYears, isNegativado } from './state';
 import { random, randomInt } from './rng';
-import { liquid, deposit } from './investments';
+import { spendable, deposit } from './investments';
 import { chargeCard } from './card';
 import { jobSalary, trackInfo, LEVEL_RANK } from './career';
 import {
@@ -50,14 +50,14 @@ export interface EventDef {
 
 const at = (s: GameState, years: number, months = 0): boolean => s.ageMonths >= years * 12 + months;
 const phonePrice = (c: EventContext): Centavos => priced(c.s, c.p.entryPhonePrice);
-const usedPhonePrice = (c: EventContext): Centavos => priced(c.s, 50000);
+const usedPhonePrice = (c: EventContext): Centavos => priced(c.s, c.p.usedPhonePrice);
 
 function buyPhoneChoices(prefix: string): ChoiceDef[] {
   return [
     {
       id: 'pix',
       tags: ['avista', 'capivara2'],
-      available: (c, v) => liquid(c.s) >= Number(v.pix),
+      available: (c, v) => spendable(c.s, c.p) >= Number(v.pix),
       apply: (c, v) => {
         trySpend(c.s, c.p, Number(v.pix));
         c.s.hasPhone = true;
@@ -78,7 +78,7 @@ function buyPhoneChoices(prefix: string): ChoiceDef[] {
     {
       id: 'usado',
       tags: ['capivara'],
-      available: (c, v) => liquid(c.s) >= Number(v.usado),
+      available: (c, v) => spendable(c.s, c.p) >= Number(v.usado),
       apply: (c, v) => {
         trySpend(c.s, c.p, Number(v.usado));
         c.s.hasPhone = true;
@@ -106,7 +106,7 @@ export const EVENTS: EventDef[] = [
     kind: 'scheduled',
     once: true,
     eligible: ({ s }) => s.startAge === 10 && s.month === 0,
-    vars: ({ s }) => ({ valor: priced(s, 10000) }),
+    vars: ({ s, p }) => ({ valor: priced(s, p.giftGrandma) }),
     choices: [
       {
         id: 'guardar',
@@ -165,7 +165,7 @@ export const EVENTS: EventDef[] = [
     kind: 'scheduled',
     yearly: true,
     eligible: ({ s }) => !isAdult(s) && s.month > 0 && s.ageMonths % 12 === 0,
-    vars: ({ s }) => ({ valor: priced(s, 10000 * randomInt(s.rng, 'misc', 1, 2)), idade: ageYears(s) }),
+    vars: ({ s, p }) => ({ valor: priced(s, p.giftBirthdayUnit * randomInt(s.rng, 'misc', 1, 2)), idade: ageYears(s) }),
     choices: [
       { id: 'guardar', tags: ['capivara'], apply: ({ s }, v) => saveInto(s, Number(v.valor)) },
       {
@@ -181,11 +181,11 @@ export const EVENTS: EventDef[] = [
     kind: 'random',
     eligible: ({ s }) => !isAdult(s),
     monthlyProb: () => 0.05,
-    vars: ({ s }) => ({ preco: priced(s, 3000) }),
+    vars: ({ s, p }) => ({ preco: priced(s, p.gameDiamondsPrice) }),
     choices: [
       {
         id: 'comprar',
-        available: (c, v) => liquid(c.s) >= Number(v.preco),
+        available: (c, v) => spendable(c.s, c.p) >= Number(v.preco),
         apply: ({ s, p }, v) => {
           trySpend(s, p, Number(v.preco));
           bumpWellbeing(s, 3);
@@ -269,7 +269,7 @@ export const EVENTS: EventDef[] = [
     kind: 'random',
     eligible: ({ s }) => isTeen(s) && !!s.flags.peDeMeia,
     monthlyProb: () => 0.03,
-    vars: ({ s, p }) => ({ bico: priced(s, 15000), pedemeia: priced(s, p.peDeMeiaMonthly) }),
+    vars: ({ s, p }) => ({ bico: priced(s, p.bicoWeekPay), pedemeia: priced(s, p.peDeMeiaMonthly) }),
     choices: [
       {
         id: 'bico',
@@ -285,8 +285,8 @@ export const EVENTS: EventDef[] = [
     id: 'cartao_garantido',
     kind: 'scheduled',
     once: true,
-    eligible: ({ s }) => at(s, 16) && !isAdult(s) && s.hasBankAccount && !s.card.has && s.inv.cdb.balance >= 10000,
-    vars: ({ s }) => ({ limite: Math.min(s.inv.cdb.balance, 50000) }),
+    eligible: ({ s, p }) => at(s, 16) && !isAdult(s) && s.hasBankAccount && !s.card.has && s.inv.cdb.balance >= p.securedCardMinSavings,
+    vars: ({ s, p }) => ({ limite: Math.min(s.inv.cdb.balance, priced(s, p.securedCardMaxLimit)) }),
     choices: [
       {
         id: 'aceitar',
@@ -305,7 +305,7 @@ export const EVENTS: EventDef[] = [
     kind: 'random',
     eligible: ({ s }) => at(s, 15) && s.standing.bets === 0 && (!s.flags.tigrinhoMonth || s.month - s.flags.tigrinhoMonth >= 24),
     monthlyProb: () => 0.03,
-    vars: ({ s, p }) => ({ aposta: priced(s, 5000), perda: Math.round(priced(s, 5000) * p.betsExpectedLoss) }),
+    vars: ({ s, p }) => ({ aposta: priced(s, p.betsStake), perda: Math.round(priced(s, p.betsStake) * p.betsExpectedLoss) }),
     choices: [
       {
         id: 'mensal',
@@ -316,7 +316,7 @@ export const EVENTS: EventDef[] = [
       },
       {
         id: 'uma_vez',
-        available: (c, v) => liquid(c.s) >= Number(v.aposta),
+        available: (c, v) => spendable(c.s, c.p) >= Number(v.aposta),
         apply: ({ s, p }, v) => {
           trySpend(s, p, Number(v.perda));
           s.flags.tigrinhoMonth = s.month;
@@ -603,7 +603,7 @@ export const EVENTS: EventDef[] = [
     kind: 'random',
     eligible: ({ s }) => isAdult(s) && s.career.job !== 'nenhum' && s.career.job !== 'ifood' && s.career.monthsInJob >= 12,
     monthlyProb: () => 0.012,
-    vars: ({ s }) => ({ novo: Math.round(s.career.salary * 1.08), bonus: priced(s, 20000) }),
+    vars: ({ s, p }) => ({ novo: Math.round(s.career.salary * 1.08), bonus: priced(s, p.promotionBonus) }),
     choices: [
       {
         id: 'comemorar',
@@ -630,11 +630,11 @@ export const EVENTS: EventDef[] = [
     eligible: ({ s }) => isAdult(s),
     monthlyProb: () => 0.012,
     vars: ({ s, p }) => {
-      const valor = priced(s, randomInt(s.rng, 'shocks', 6, 15) * 10000);
+      const valor = priced(s, randomInt(s.rng, 'shocks', p.emergencyMinCost, p.emergencyMaxCost));
       return { valor, parcela: instalment(valor, p.personalLoanMonthly, 12) };
     },
     choices: [
-      { id: 'pagar', tags: ['capivara'], available: (c, v) => liquid(c.s) >= Number(v.valor), apply: ({ s, p }, v) => void trySpend(s, p, Number(v.valor)) },
+      { id: 'pagar', tags: ['capivara'], available: (c, v) => spendable(c.s, c.p) >= Number(v.valor), apply: ({ s, p }, v) => void trySpend(s, p, Number(v.valor)) },
       {
         id: 'cartao',
         tags: ['capivara2'],
@@ -653,10 +653,10 @@ export const EVENTS: EventDef[] = [
     id: 'black_friday',
     kind: 'scheduled',
     yearly: true,
-    eligible: ({ s }) => s.calendarMonth === 10 && at(s, 16) && (s.card.has || liquid(s) >= priced(s, 100000)),
-    vars: ({ s }) => {
-      const preco = priced(s, 250000);
-      return { preco, pix: Math.round(preco * 0.9), parcela: Math.ceil(preco / 12) };
+    eligible: ({ s, p }) => s.calendarMonth === 10 && at(s, 16) && (s.card.has || spendable(s, p) >= priced(s, p.blackFridayMinCash)),
+    vars: ({ s, p }) => {
+      const preco = priced(s, p.blackFridayPrice);
+      return { preco, pix: Math.round(preco * (1 - p.blackFridayPixDiscount)), parcela: Math.ceil(preco / 12) };
     },
     choices: [
       {
@@ -669,7 +669,7 @@ export const EVENTS: EventDef[] = [
       },
       {
         id: 'avista',
-        available: (c, v) => liquid(c.s) >= Number(v.pix) * 2,
+        available: (c, v) => spendable(c.s, c.p) >= Number(v.pix) * 2,
         apply: ({ s, p }, v) => {
           trySpend(s, p, Number(v.pix));
           bumpWellbeing(s, 6);
@@ -701,7 +701,7 @@ export const EVENTS: EventDef[] = [
       {
         id: 'avista',
         tags: ['capivara2'],
-        available: (c, v) => liquid(c.s) >= Number(v.preco) * 1.5,
+        available: (c, v) => spendable(c.s, c.p) >= Number(v.preco) * 1.5,
         apply: ({ s, p }, v) => {
           trySpend(s, p, Number(v.preco));
           s.hasMoto = true;
@@ -716,12 +716,12 @@ export const EVENTS: EventDef[] = [
     kind: 'random',
     eligible: ({ s }) => at(s, 14),
     monthlyProb: () => 0.015,
-    vars: ({ s }) => ({ valor: priced(s, 20000) }),
+    vars: ({ s, p }) => ({ valor: priced(s, p.familyPixAmount) }),
     choices: [
       {
         id: 'ajudar',
         tags: ['capivara'],
-        available: (c, v) => liquid(c.s) >= Number(v.valor) * 3,
+        available: (c, v) => spendable(c.s, c.p) >= Number(v.valor) * 3,
         apply: ({ s, p }, v) => {
           trySpend(s, p, Number(v.valor));
           bumpWellbeing(s, 2);
@@ -741,7 +741,7 @@ export const EVENTS: EventDef[] = [
       (!s.flags.consignadoMonth || s.month - s.flags.consignadoMonth >= 36),
     monthlyProb: () => 0.012,
     vars: ({ s, p }) => {
-      const valor = priced(s, 500000);
+      const valor = priced(s, p.consignadoAmount);
       const parcela = instalment(valor, p.consignadoMonthly, 24);
       return { valor, parcela, total: parcela * 24 };
     },
@@ -776,7 +776,7 @@ export const EVENTS: EventDef[] = [
       {
         id: 'renegociar',
         tags: ['capivara'],
-        available: (c, v) => liquid(c.s) >= Number(v.entrada),
+        available: (c, v) => spendable(c.s, c.p) >= Number(v.entrada),
         apply: ({ s, p }, v) => {
           trySpend(s, p, Number(v.entrada));
           s.card.revolving = 0;

@@ -17,7 +17,7 @@ import {
   ageYears,
   isNegativado,
 } from './state';
-import { accrueInvestments, deposit, drawDown, investedTotal, liquid, monthlyRate } from './investments';
+import { accrueInvestments, deposit, drawDown, investedTotal, liquid, spendable, monthlyRate } from './investments';
 import { settleCard, chargeCard, accrueRotativo } from './card';
 import { annualRaise, jobSalary, netPay, LEVEL_RANK } from './career';
 import { EVENTS, type EventDef, type EventContext } from './events';
@@ -111,9 +111,12 @@ export function bumpWellbeing(s: GameState, delta: number): void {
   s.wellbeing = clamp(s.wellbeing + delta, 0, 100);
 }
 
-/** Spend from cash, then savings. Returns false (and spends nothing) if the money is not there. */
+/**
+ * Spend from cash, then savings. Returns false and changes nothing when the money is not
+ * there after income tax on redemptions. Any centavo-level rounding residue lands on cash.
+ */
 export function trySpend(s: GameState, p: Params, amount: Centavos): boolean {
-  if (liquid(s) < amount) return false;
+  if (spendable(s, p) < amount) return false;
   const short = drawDown(s, p, amount);
   if (short > 0) s.cash -= short;
   return true;
@@ -176,7 +179,7 @@ export function monthlyIncome(s: GameState, p: Params): Centavos {
   let total = 0;
   if (s.career.job !== 'nenhum') total += netPay(s, p);
   if (!isAdult(s) && s.living === 'pais' && s.career.job === 'nenhum') {
-    total += Math.round((p.mesadaMonthly + 2000 * Math.max(0, ageYears(s) - 10)) * s.macro.wageIndex);
+    total += Math.round((p.mesadaMonthly + p.mesadaYearlyStep * Math.max(0, ageYears(s) - 10)) * s.macro.wageIndex);
   }
   if (s.flags.peDeMeia && isTeen(s)) total += priced(s, p.peDeMeiaMonthly);
   return total;
@@ -350,7 +353,7 @@ export function stepMonth(s: GameState, p: Params): void {
       // Pull from savings first before letting the overdraft roll.
       const short = drawDown(s, p, -s.cash + 0);
       s.cash = short === 0 ? 0 : -short;
-      const limit = Math.max(income, 50000);
+      const limit = Math.max(income, priced(s, p.overdraftFloor));
       if (s.cash < -limit) {
         s.cash = -limit;
         bumpWellbeing(s, -5);
@@ -520,4 +523,4 @@ export function runWithPolicy(opts: NewGameOptions, p: Params, policy: Policy, m
 }
 
 export const END_MONTHS = END_AGE * 12;
-export { chargeCard, accrueRotativo, isChild, isTeen, isAdult, ageYears, liquid };
+export { chargeCard, accrueRotativo, isChild, isTeen, isAdult, ageYears, liquid, spendable };

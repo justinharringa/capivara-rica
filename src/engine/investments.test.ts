@@ -51,3 +51,23 @@ describe('instruments', () => {
     expect(s.inv.tesouroSelic.balance).toBeGreaterThanOrEqual(s.inv.cdb.balance);
   });
 });
+
+describe('spendable vs liquid', () => {
+  it('refuses a purchase the gross balance covers but the after-tax balance does not, without touching state', async () => {
+    const { trySpend, liquid, spendable } = await import('./sim');
+    const s = newGame({ seed: 1, startAge: 18 }, p);
+    s.cash = 0;
+    // A CDB lot whose balance is mostly gain, held under 6 months: 22.5% IR on the gain.
+    s.inv.cdb.balance = reais(1000);
+    s.inv.cdb.principal = reais(200);
+    s.inv.cdb.holdingMonths = 3;
+    expect(liquid(s)).toBe(reais(1000));
+    expect(spendable(s, p)).toBe(reais(820)); // 1000 - 22.5% of 800
+    const before = JSON.stringify(s);
+    expect(trySpend(s, p, reais(900))).toBe(false);
+    expect(JSON.stringify(s)).toBe(before);
+    expect(trySpend(s, p, reais(820))).toBe(true);
+    expect(s.cash).toBeGreaterThanOrEqual(0);
+    expect(s.cash).toBeLessThan(reais(2));
+  });
+});

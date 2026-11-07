@@ -71,6 +71,29 @@ export function liquid(s: GameState): Centavos {
   return Math.max(0, s.cash) + s.cofrinho + investedTotal(s);
 }
 
+/** Net cash a lot would yield if fully redeemed now, after IR on its gain. */
+export function netRedeemable(lot: Lot, p: Params, taxable: boolean): Centavos {
+  if (lot.balance <= 0) return 0;
+  const gain = Math.max(0, lot.balance - lot.principal);
+  const tax = taxable ? Math.round(gain * irRate(p, lot.holdingMonths)) : 0;
+  return lot.balance - tax;
+}
+
+/**
+ * What the player can actually spend this month: cash, cofrinho and investments net of the
+ * income tax a redemption would trigger. `liquid()` is the gross figure for display; this is
+ * the one every affordability check must use, or a purchase can push cash negative.
+ */
+export function spendable(s: GameState, p: Params): Centavos {
+  return (
+    Math.max(0, s.cash) +
+    s.cofrinho +
+    netRedeemable(s.inv.cdb, p, true) +
+    netRedeemable(s.inv.tesouroSelic, p, true) +
+    netRedeemable(s.inv.poupanca, p, false)
+  );
+}
+
 /** Pull `amount` out of cash, cofrinho and investments in that order. Returns the shortfall. */
 export function drawDown(s: GameState, p: Params, amount: Centavos): Centavos {
   let need = amount;
@@ -89,8 +112,10 @@ export function drawDown(s: GameState, p: Params, amount: Centavos): Centavos {
   ];
   for (const [lot, taxable] of order) {
     if (need <= 0) break;
-    // Redeem a little more than needed so the tax does not leave a gap.
-    const gross = Math.min(lot.balance, Math.ceil(need * 1.3));
+    // Redeem enough gross to cover the net need: gross * (net/gross ratio) >= need.
+    const netAll = netRedeemable(lot, p, taxable);
+    const ratio = netAll > 0 ? netAll / lot.balance : 1;
+    const gross = Math.min(lot.balance, Math.ceil(need / ratio) + 1);
     const net = redeem(lot, p, gross, taxable);
     const used = Math.min(net, need);
     s.cash += net - used;
