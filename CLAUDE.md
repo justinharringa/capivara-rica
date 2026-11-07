@@ -22,6 +22,13 @@ number is in `docs/research/`.
 `npm run size`. All five must pass before pushing. `npm run data:check -- --release` is the
 release gate and fails while any parameter is `memory`/`placeholder`.
 
+## Infrastructure
+Cloudflare DNS, Pages project, custom domains and the typo-domain redirect are Terraform in
+`infrastructure/terraform/cloudflare/` (provider v5 schema; validate with `terraform validate`
+before pushing). `.github/workflows/deploy.yml` plans on PRs, applies on main, then runs
+`wrangler pages deploy`; it is skipped while the repo variable `CLOUDFLARE_ACCOUNT_ID` is unset.
+Never create Pages projects or DNS records by hand.
+
 ## Verifying in a browser
 Playwright and Chromium are available in the cloud sandbox. `window.__game` exposes the store
 for automated play-throughs; the drivers used so far live outside the repo (scratchpad).
