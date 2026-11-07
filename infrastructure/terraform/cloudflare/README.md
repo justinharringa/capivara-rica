@@ -25,7 +25,8 @@ the S3 lockfile. Applied by `deploy.yml` (plan on pull requests, apply on `main`
    Zone · Zone · Read, Zone · DNS · Edit and Zone · Zone Settings · Edit, scoped to the two
    zones → GitHub secret `CLOUDFLARE_API_TOKEN`.
 5. Put the account id in the GitHub repository variable `CLOUDFLARE_ACCOUNT_ID`.
-   The workflow is skipped while that variable is empty, so the repo stays green until then.
+   The deploy workflow's `preflight` job skips everything, and lists what is missing in its
+   summary, until the variable and all three secrets exist.
 
 Do not create a Worker, a Pages project or DNS records by hand.
 

@@ -1,7 +1,7 @@
 # Cloudflare: Terraform (plan on PRs, apply on main) then a Workers static-assets deploy.
-# Skipped entirely until the repository variable CLOUDFLARE_ACCOUNT_ID is set, so the
-# repo stays green before the account is wired up. Secrets: CLOUDFLARE_API_TOKEN,
-# R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY (see infrastructure/terraform/cloudflare/README.md).
+# Skipped (with the missing pieces named in the job summary) until the repository
+# variable CLOUDFLARE_ACCOUNT_ID and the secrets CLOUDFLARE_API_TOKEN, R2_ACCESS_KEY_ID and
+# R2_SECRET_ACCESS_KEY all exist (see infrastructure/terraform/cloudflare/README.md).
 name: Deploy
 
 on:
@@ -20,8 +20,37 @@ env:
   TF_DIR: infrastructure/terraform/cloudflare
 
 jobs:
+  # Secrets cannot be read in a job-level `if`, so a tiny job checks that the account
+  # variable and all three secrets exist and names whatever is missing in the summary.
+  # The deploy jobs run only when everything is present.
+  preflight:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - id: check
+        env:
+          ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          HAS_CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+          HAS_R2_KEY: ${{ secrets.R2_ACCESS_KEY_ID != '' }}
+          HAS_R2_SECRET: ${{ secrets.R2_SECRET_ACCESS_KEY != '' }}
+        run: |
+          missing=()
+          [ -n "$ACCOUNT_ID" ]        || missing+=("repository variable CLOUDFLARE_ACCOUNT_ID")
+          [ "$HAS_CF_TOKEN" = true ]  || missing+=("secret CLOUDFLARE_API_TOKEN")
+          [ "$HAS_R2_KEY" = true ]    || missing+=("secret R2_ACCESS_KEY_ID")
+          [ "$HAS_R2_SECRET" = true ] || missing+=("secret R2_SECRET_ACCESS_KEY")
+          if [ ${#missing[@]} -eq 0 ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+            echo '### Cloudflare deploy: configuration complete' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            { echo '### Cloudflare deploy skipped: missing configuration'; printf -- '- %s\n' "${missing[@]}"; echo; echo 'See infrastructure/terraform/cloudflare/README.md.'; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
   terraform:
-    if: vars.CLOUDFLARE_ACCOUNT_ID != ''
+    needs: preflight
+    if: needs.preflight.outputs.ready == 'true'
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -49,8 +78,8 @@ jobs:
         run: terraform -chdir=$TF_DIR apply -input=false -no-color tfplan
 
   deploy:
-    if: vars.CLOUDFLARE_ACCOUNT_ID != ''
-    needs: terraform
+    needs: [preflight, terraform]
+    if: needs.preflight.outputs.ready == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
