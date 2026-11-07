@@ -19,7 +19,7 @@
 <span class="capi" style="width:{size}px;height:{height}px">
   <img src="{base}capi/{sprite}.webp" width={size} {height} alt="Capivara" decoding="async" />
   {#if mood === 'worried'}
-    <svg class="drop" viewBox="0 0 20 28" aria-hidden="true" style="width:{Math.round(size * 0.1)}px">
+    <svg class="drop" viewBox="0 0 20 28" aria-hidden="true" style="width:{Math.round(size * 0.08)}px">
       <path d="M10 1 C6 9 2 13 2 18.5 A8 8 0 0 0 18 18.5 C18 13 14 9 10 1 Z" fill="#5aa9e6" stroke="#2f6f9e" stroke-width="1.2" />
       <path d="M6.5 19 A3.5 3.5 0 0 0 9 22.5" stroke="#ffffff" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.8" />
     </svg>
@@ -40,8 +40,8 @@
   .drop {
     position: absolute;
     /* on the brow: just above the hinge of the sunglasses, overlapping the head */
-    left: 52%;
-    top: 15%;
+    left: 53%;
+    top: 16%;
     height: auto;
     transform: rotate(14deg);
     animation: drip 1.6s ease-in-out infinite;
