@@ -1,8 +1,3 @@
-output "pages_subdomain" {
-  description = "The project's *.pages.dev hostname (always serves the latest production deploy)."
-  value       = cloudflare_pages_project.game.subdomain
-}
-
 output "primary_zone_name_servers" {
   description = "Set these at registro.br for the primary domain."
   value       = data.cloudflare_zone.primary.name_servers

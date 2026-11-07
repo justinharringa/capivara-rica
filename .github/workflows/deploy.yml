@@ -1,4 +1,4 @@
-# Cloudflare: Terraform (plan on PRs, apply on main) then a Pages deploy.
+# Cloudflare: Terraform (plan on PRs, apply on main) then a Workers static-assets deploy.
 # Skipped entirely until the repository variable CLOUDFLARE_ACCOUNT_ID is set, so the
 # repo stays green before the account is wired up. Secrets: CLOUDFLARE_API_TOKEN,
 # R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY (see infrastructure/terraform/cloudflare/README.md).
@@ -48,7 +48,7 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: terraform -chdir=$TF_DIR apply -input=false -no-color tfplan
 
-  pages:
+  deploy:
     if: vars.CLOUDFLARE_ACCOUNT_ID != ''
     needs: terraform
     runs-on: ubuntu-latest
@@ -67,16 +67,22 @@ jobs:
         env:
           BASE_PATH: /
       - run: npm run size
-      - name: Deploy to Cloudflare Pages
-        id: deploy
+      - name: Deploy to Cloudflare Workers (main)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-          command: >-
-            pages deploy dist --project-name=capivara-rica
-            --branch=${{ github.event_name == 'pull_request' && github.head_ref || 'main' }}
-            --commit-dirty=true
-      - name: Deployment URL
+          command: deploy
+      - name: Upload a preview version (pull request)
+        if: github.event_name == 'pull_request'
+        id: preview
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          command: versions upload --preview-alias pr-${{ github.event.number }}
+      - name: Preview URL
+        if: github.event_name == 'pull_request'
         run: |
-          { echo '### Cloudflare Pages'; echo "${{ steps.deploy.outputs.deployment-url }}"; } >> "$GITHUB_STEP_SUMMARY"
+          { echo '### Preview'; echo '```'; grep -iE 'workers\.dev' <<< "${{ steps.preview.outputs.command-output }}" || echo 'see job log'; echo '```'; } >> "$GITHUB_STEP_SUMMARY"

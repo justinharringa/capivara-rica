@@ -1,6 +1,7 @@
 # Both zones are added to the Cloudflare account by hand (Add a domain, Free plan) and
-# activated by pointing registro.br at Cloudflare's nameservers; everything inside them
-# is managed here.
+# activated by pointing registro.br at Cloudflare's nameservers. Terraform manages the zone
+# settings on both, and the typo-catch zone's placeholder records and redirect; the primary
+# zone's site records belong to wrangler (see wrangler.jsonc).
 
 data "cloudflare_zone" "primary" {
   filter = {
@@ -30,47 +31,10 @@ locals {
   }
 }
 
-# --- Pages project (direct upload: CI builds and runs `wrangler pages deploy`) ---------
-
-resource "cloudflare_pages_project" "game" {
-  account_id        = var.account_id
-  name              = var.project_name
-  production_branch = var.production_branch
-}
-
-resource "cloudflare_pages_domain" "apex" {
-  account_id   = var.account_id
-  project_name = cloudflare_pages_project.game.name
-  name         = var.primary_zone
-}
-
-resource "cloudflare_pages_domain" "www" {
-  account_id   = var.account_id
-  project_name = cloudflare_pages_project.game.name
-  name         = "www.${var.primary_zone}"
-}
-
-# --- DNS: primary zone points at Pages ---------------------------------------------------
-
-resource "cloudflare_dns_record" "apex" {
-  zone_id = local.zones.primary
-  name    = var.primary_zone
-  type    = "CNAME"
-  content = "${cloudflare_pages_project.game.name}.pages.dev"
-  proxied = true
-  ttl     = 1
-  comment = "Capivara Rica: Cloudflare Pages (managed by Terraform)"
-}
-
-resource "cloudflare_dns_record" "www" {
-  zone_id = local.zones.primary
-  name    = "www.${var.primary_zone}"
-  type    = "CNAME"
-  content = "${cloudflare_pages_project.game.name}.pages.dev"
-  proxied = true
-  ttl     = 1
-  comment = "Capivara Rica: Cloudflare Pages (managed by Terraform)"
-}
+# --- Primary zone ------------------------------------------------------------------------
+# The site itself is a Workers static-assets deployment (wrangler.jsonc). wrangler owns the
+# Worker and, through `routes[].custom_domain`, the apex and www DNS records and certificates
+# in this zone, so nothing here points at it; Terraform manages the zone settings only.
 
 # --- DNS + redirect: the typo domain sends everything to the primary --------------------
 

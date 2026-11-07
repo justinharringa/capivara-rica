@@ -23,11 +23,13 @@ number is in `docs/research/`.
 release gate and fails while any parameter is `memory`/`placeholder`.
 
 ## Infrastructure
-Cloudflare DNS, Pages project, custom domains and the typo-domain redirect are Terraform in
-`infrastructure/terraform/cloudflare/` (provider v5 schema; validate with `terraform validate`
-before pushing). `.github/workflows/deploy.yml` plans on PRs, applies on main, then runs
-`wrangler pages deploy`; it is skipped while the repo variable `CLOUDFLARE_ACCOUNT_ID` is unset.
-Never create Pages projects or DNS records by hand.
+The site is Cloudflare Workers static assets: `wrangler.jsonc` owns the Worker, the asset
+directory and the custom domains (wrangler creates their DNS records). Zone settings and the
+typo-domain redirect are Terraform in `infrastructure/terraform/cloudflare/` (provider v5
+schema; validate with `terraform validate` before pushing). `.github/workflows/deploy.yml`
+plans on PRs, applies on main, then runs `wrangler deploy` (`versions upload` on PRs); it is
+skipped while the repo variable `CLOUDFLARE_ACCOUNT_ID` is unset. Never create a Worker, a
+Pages project or DNS records by hand; Cloudflare's dashboard calls Pages "legacy".
 
 ## Verifying in a browser
 Playwright and Chromium are available in the cloud sandbox. `window.__game` exposes the store

@@ -20,7 +20,7 @@
 - [ ] Acessibilidade WCAG 2.2 AA auditada (axe), Lighthouse CI
 
 ## v1.0: lançamento
-- [x] Domínio, Cloudflare Pages (Terraform em `infrastructure/terraform/cloudflare/`), política de privacidade publicada
+- [x] Domínio, Cloudflare Workers static assets (`wrangler.jsonc` + Terraform em `infrastructure/terraform/cloudflare/`), política de privacidade publicada
 - [ ] Revisão jurídica rápida (ECA Digital, LGPD art. 14) do fluxo final
 - [ ] Teste com 10 jogadores de 12 a 20 anos; medir tempo de partida e compreensão
 

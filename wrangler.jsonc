@@ -1,0 +1,23 @@
+{
+  // Capivara Rica is a static site served by Cloudflare Workers static assets (no Worker
+  // code). Deployed by .github/workflows/deploy.yml: `wrangler deploy` on main,
+  // `wrangler versions upload` for pull-request previews on workers.dev.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "capivara-rica",
+  "compatibility_date": "2026-11-07",
+  "assets": {
+    "directory": "./dist",
+    // One page, client-side state only: unknown paths fall back to index.html.
+    "not_found_handling": "single-page-application"
+  },
+  // Custom domains: wrangler creates the DNS records and certificates in the zone on deploy.
+  "routes": [
+    { "pattern": "capivararica.com.br", "custom_domain": true },
+    { "pattern": "www.capivararica.com.br", "custom_domain": true }
+  ],
+  "workers_dev": false,
+  // Version URLs for pull-request previews: <version>-capivara-rica.<account>.workers.dev
+  "preview_urls": true,
+  // No request logging: the game collects nothing (docs/PRIVACY.md).
+  "observability": { "enabled": false }
+}

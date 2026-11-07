@@ -14,15 +14,3 @@ variable "alias_zone" {
   type        = string
   default     = "capivarica.com.br"
 }
-
-variable "project_name" {
-  description = "Cloudflare Pages project name; also the <name>.pages.dev subdomain."
-  type        = string
-  default     = "capivara-rica"
-}
-
-variable "production_branch" {
-  description = "Git branch whose deploys are production."
-  type        = string
-  default     = "main"
-}
