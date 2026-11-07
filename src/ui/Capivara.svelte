@@ -47,12 +47,11 @@
   {/if}
   <!-- accessories by wealth -->
   {#if wealth >= 1}
-    <!-- sunglasses in profile: near lens with a glint, bridge over the nose to a sliver of the far lens, thin arm back to the ear -->
-    <rect x="113" y="30" width="17" height="11" rx="4.5" fill="#1a1a19" />
-    <path d="M117 33 L123 33" stroke="#6b6b6b" stroke-width="1.6" stroke-linecap="round" />
-    <path d="M130 34 Q134 32 138 33" stroke="#1a1a19" stroke-width="2" fill="none" stroke-linecap="round" />
-    <rect x="137" y="31" width="4" height="8" rx="2" fill="#1a1a19" />
-    <path d="M113 34 L104 32" stroke="#1a1a19" stroke-width="1.6" stroke-linecap="round" />
+    <!-- sunglasses in profile: one slanted lens, a straight bridge hooking over the nose, a straight arm to the ear -->
+    <path d="M113 31 H131 L129 41 H115 Q113 41 113 39 Z" fill="#1a1a19" />
+    <path d="M117 38 L126 32" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.35" />
+    <path d="M131 32 H139 V35" stroke="#1a1a19" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M113 33 L103 31" stroke="#1a1a19" stroke-width="1.8" stroke-linecap="round" />
   {/if}
   {#if wealth >= 2}
     <path d="M104 68 Q118 84 136 70" stroke="#d4a017" stroke-width="3" fill="none" />
