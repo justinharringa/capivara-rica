@@ -9,7 +9,7 @@
   a blunt vertical snout with the nostrils on top, a small unlit eye set high and far back,
   one tiny ear, short legs, no tail.
 -->
-<svg width={size} height={size} viewBox="0 0 160 110" role="img" aria-label="Capivara" class="capi">
+<svg width={size} height={size} viewBox="0 0 184 110" role="img" aria-label="Capivara" class="capi">
   <!-- legs: back pair, then front pair; darker toward the hooves -->
   <rect x="22" y="78" width="12" height="22" rx="4" fill="#7a4f26" />
   <rect x="40" y="80" width="12" height="20" rx="4" fill="#7a4f26" />
@@ -23,39 +23,39 @@
   <g stroke="#7a4f26" stroke-width="1.4" stroke-linecap="round" opacity="0.45">
     <path d="M50 54 l-3 7" /><path d="M68 52 l-3 7" /><path d="M86 54 l-3 7" />
   </g>
-  <!-- head: wedge, crown high at the back, sloping to a blunt tall snout -->
-  <path d="M102 60 V30 Q102 20 112 20 H138 L154 30 V60 Q154 70 144 70 H112 Q102 70 102 60 Z" fill="#9c6b3c" />
-  <!-- muzzle face, slightly lighter -->
-  <path d="M136 30 L154 30 V60 Q154 70 144 70 H136 Z" fill="#b07d4a" />
-  <!-- nostrils on top of the snout -->
-  <ellipse cx="146" cy="32" rx="2.4" ry="1.5" fill="#3f2712" />
-  <ellipse cx="151" cy="33" rx="2" ry="1.3" fill="#3f2712" />
+  <!-- head: long wedge, about twice as long as tall; crown at the back, top line sloping down to a deep blunt nose -->
+  <path d="M98 60 V30 Q98 20 108 20 H140 L176 32 V60 Q176 70 166 70 H108 Q98 70 98 60 Z" fill="#9c6b3c" />
+  <!-- muzzle, slightly lighter, from below the eye to the nose -->
+  <path d="M138 29 L176 32 V60 Q176 70 166 70 H138 Z" fill="#b07d4a" />
+  <!-- nostrils on top of the snout, right at the tip -->
+  <ellipse cx="168" cy="34" rx="2.4" ry="1.5" fill="#3f2712" />
+  <ellipse cx="173" cy="35" rx="2" ry="1.3" fill="#3f2712" />
   <!-- mouth low on the front -->
-  <path d="M146 61 q4 2 7 0" stroke="#3f2712" stroke-width="1.8" fill="none" stroke-linecap="round" />
-  <!-- whisker dots -->
-  <circle cx="141" cy="52" r="1" fill="#6b4420" /><circle cx="145" cy="55" r="1" fill="#6b4420" />
+  <path d="M166 62 q4 2 7 0" stroke="#3f2712" stroke-width="1.8" fill="none" stroke-linecap="round" />
+  <!-- whisker dots along the muzzle -->
+  <circle cx="156" cy="52" r="1" fill="#6b4420" /><circle cx="161" cy="55" r="1" fill="#6b4420" /><circle cx="151" cy="56" r="1" fill="#6b4420" />
   <!-- one tiny ear, far back, below the crown line -->
-  <ellipse cx="111" cy="26" rx="4.5" ry="3.5" fill="#7a4f26" />
-  <ellipse cx="111" cy="26" rx="2.4" ry="1.8" fill="#4a2e14" />
-  <!-- eye: small, unlit, high and far back -->
-  <ellipse cx="124" cy="36" rx="3" ry="2.3" fill="#1a1a19" />
+  <ellipse cx="107" cy="26" rx="4.5" ry="3.5" fill="#7a4f26" />
+  <ellipse cx="107" cy="26" rx="2.4" ry="1.8" fill="#4a2e14" />
+  <!-- eye: small, unlit, high and close to the ear -->
+  <ellipse cx="121" cy="36" rx="3" ry="2.3" fill="#1a1a19" />
   <!-- brow by mood -->
   {#if mood === 'worried'}
-    <path d="M118 30 L130 32.5" stroke="#5b3a1a" stroke-width="2.2" stroke-linecap="round" />
+    <path d="M115 30 L127 32.5" stroke="#5b3a1a" stroke-width="2.2" stroke-linecap="round" />
   {:else if mood === 'happy'}
-    <path d="M119 31 Q124 28.5 129 31" stroke="#5b3a1a" stroke-width="2.2" fill="none" stroke-linecap="round" />
+    <path d="M116 31 Q121 28.5 126 31" stroke="#5b3a1a" stroke-width="2.2" fill="none" stroke-linecap="round" />
   {/if}
   <!-- accessories by wealth -->
   {#if wealth >= 1}
-    <rect x="115" y="31" width="18" height="9" rx="3" fill="#1a1a19" />
-    <path d="M115 35 L104 33" stroke="#1a1a19" stroke-width="2" stroke-linecap="round" />
+    <rect x="112" y="31" width="18" height="9" rx="3" fill="#1a1a19" />
+    <path d="M112 35 L100 33" stroke="#1a1a19" stroke-width="2" stroke-linecap="round" />
   {/if}
   {#if wealth >= 2}
     <path d="M104 68 Q118 84 136 70" stroke="#d4a017" stroke-width="3" fill="none" />
     <circle cx="120" cy="79" r="4" fill="#d4a017" />
   {/if}
   {#if wealth >= 3}
-    <path d="M108 20 L111 8 L118 16 L126 5 L134 16 L141 8 L144 20 Z" fill="#d4a017" stroke="#9a7212" stroke-width="1.5" />
+    <path d="M104 20 L107 8 L114 16 L122 5 L130 16 L137 8 L140 20 Z" fill="#d4a017" stroke="#9a7212" stroke-width="1.5" />
   {/if}
 </svg>
 
