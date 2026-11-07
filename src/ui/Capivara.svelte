@@ -39,9 +39,9 @@
   }
   .drop {
     position: absolute;
-    /* on the temple: behind the sunglasses, just below the ear line, overlapping the head */
-    left: 44%;
-    top: 14%;
+    /* on the brow: just above the hinge of the sunglasses, overlapping the head */
+    left: 52%;
+    top: 11%;
     height: auto;
     transform: rotate(14deg);
     animation: drip 1.6s ease-in-out infinite;
