@@ -4,7 +4,7 @@
    * `mood` picks the expression; every combination has its own sprite.
    * Sprites are cut from the two sheets in assets/raw by scripts/cut-sprites.py (see ASSETS.md).
    * With sunglasses on, the worried face is hard to tell from calm, so the worried mood also
-   * gets a sweat drop drawn over the sprite.
+   * gets a sweat drop drawn over the sprite, in front of the glasses.
    */
   let { wealth = 0, mood = 'calm', size = 96 }: { wealth?: number; mood?: 'calm' | 'worried' | 'happy'; size?: number } = $props();
 
@@ -23,10 +23,6 @@
       <path d="M10 1 C6 9 2 13 2 18.5 A8 8 0 0 0 18 18.5 C18 13 14 9 10 1 Z" fill="#5aa9e6" stroke="#2f6f9e" stroke-width="1.2" />
       <path d="M6.5 19 A3.5 3.5 0 0 0 9 22.5" stroke="#ffffff" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.8" />
     </svg>
-    {#if level >= 1}
-      <!-- the sunglasses sit in front of the drop: repaint just the lens region of the sprite on top -->
-      <img class="lens" src="{base}capi/{sprite}.webp" width={size} {height} alt="" aria-hidden="true" decoding="async" />
-    {/if}
   {/if}
 </span>
 
@@ -49,13 +45,6 @@
     height: auto;
     transform: rotate(14deg);
     animation: drip 1.6s ease-in-out infinite;
-  }
-  .lens {
-    position: absolute;
-    inset: 0;
-    /* the sunglasses box, measured from the sprites: x 52%..80%, y 17%..28% */
-    clip-path: inset(16.5% 20% 71.5% 51.5%);
-    pointer-events: none;
   }
   @keyframes drip {
     0%,
