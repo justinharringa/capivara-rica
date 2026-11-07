@@ -23,6 +23,10 @@
       <path d="M10 1 C6 9 2 13 2 18.5 A8 8 0 0 0 18 18.5 C18 13 14 9 10 1 Z" fill="#5aa9e6" stroke="#2f6f9e" stroke-width="1.2" />
       <path d="M6.5 19 A3.5 3.5 0 0 0 9 22.5" stroke="#ffffff" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.8" />
     </svg>
+    {#if level >= 1}
+      <!-- the sunglasses sit in front of the drop: repaint just the lens region of the sprite on top -->
+      <img class="lens" src="{base}capi/{sprite}.webp" width={size} {height} alt="" aria-hidden="true" decoding="async" />
+    {/if}
   {/if}
 </span>
 
@@ -40,11 +44,18 @@
   .drop {
     position: absolute;
     /* on the brow: just above the hinge of the sunglasses, overlapping the head */
-    left: 53%;
-    top: 19%;
+    left: 55%;
+    top: 21%;
     height: auto;
     transform: rotate(14deg);
     animation: drip 1.6s ease-in-out infinite;
+  }
+  .lens {
+    position: absolute;
+    inset: 0;
+    /* the sunglasses box, measured from the sprites: x 52%..80%, y 17%..28% */
+    clip-path: inset(16.5% 20% 71.5% 51.5%);
+    pointer-events: none;
   }
   @keyframes drip {
     0%,
