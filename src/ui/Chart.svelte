@@ -115,7 +115,8 @@
   svg {
     width: 100%;
     height: auto;
-    touch-action: none;
+    /* Horizontal drags drive the crosshair; vertical ones must still scroll the page. */
+    touch-action: pan-y;
   }
   .legend {
     display: flex;

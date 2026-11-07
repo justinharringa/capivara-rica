@@ -56,6 +56,17 @@ describe('rotativo and the 100% cap', () => {
     expect(total).toBeGreaterThan(0);
   });
 
+  it('reports the parcelled balance, not zero, when the fatura is converted', () => {
+    const s = adultWithCard();
+    s.card.policy = 'parcelar';
+    s.cash = 0;
+    chargeCard(s, reais(1000));
+    const r = settleCard(s, p);
+    expect(r.parcelou).toBe(true);
+    expect(r.toRevolving).toBe(reais(1000));
+    expect(s.card.revolving).toBe(0);
+  });
+
   it('pays in full when there is cash and resets the cap base', () => {
     const s = adultWithCard();
     s.cash = reais(3000);

@@ -20,7 +20,8 @@
   const compLabel = $derived(comp >= params.comprometimentoRed ? 'alto' : comp >= params.comprometimentoYellow ? 'atenção' : 'ok');
   const wealth = $derived(nw >= 20000000 ? 3 : nw >= 5000000 ? 2 : nw >= 1000000 ? 1 : 0);
   const mood = $derived(isNegativado(s) || comp >= params.comprometimentoRed ? 'worried' : wealth >= 2 ? 'happy' : 'calm');
-  const recent = $derived(s.log.slice(-8).reverse());
+  // Keyed by the entry's absolute position in the log, which is stable while the log only grows.
+  const recent = $derived(s.log.slice(-8).map((e, i, arr) => ({ e, key: s.log.length - arr.length + i })).reverse());
 
   function logText(e: (typeof s.log)[number]): string {
     if (e.key.startsWith('ev:')) return events[e.key.slice(3)]?.title ? t(events[e.key.slice(3)]!.title, e.vars) : e.key;
@@ -87,7 +88,7 @@
   <details class="card" open>
     <summary><strong>{ui('log')}</strong></summary>
     <ul class="log small">
-      {#each recent as e, i (s.log.length - i)}
+      {#each recent as { e, key } (key)}
         <li class={e.kind}><span class="muted">{Math.floor(e.ageMonths / 12)}a{e.ageMonths % 12 ? `${e.ageMonths % 12}m` : ''}</span> {logText(e)}</li>
       {/each}
     </ul>

@@ -134,12 +134,14 @@ export function settleCard(s: GameState, p: Params): CardSettlement {
 
   if (c.revolving > 0) {
     if (c.policy === 'parcelar' || c.revolvingMonths >= 1) {
+      // Capture the balance before parcelarFatura() moves it into instalments and zeroes it.
+      result.toRevolving = c.revolving;
       parcelarFatura(s, p);
       result.parcelou = true;
     } else {
       result.interest = accrueRotativo(s, p);
+      result.toRevolving = c.revolving;
     }
-    result.toRevolving = c.revolving;
   } else {
     c.revolvingMonths = 0;
     if (s.parcelas.every((x) => !x.onCard)) {
