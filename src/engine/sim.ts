@@ -41,7 +41,7 @@ export function newGame(opts: NewGameOptions, p: Params): GameState {
   const { seed, startAge } = opts;
   const adult = startAge >= 18;
   const s: GameState = {
-    version: 2,
+    version: 3,
     seed,
     startAge,
     month: 0,
@@ -49,6 +49,7 @@ export function newGame(opts: NewGameOptions, p: Params): GameState {
     calendarMonth: 0,
     cash: adult ? 0 : 0,
     cofrinho: 0,
+    fgts: 0,
     peDeMeiaLocked: 0,
     inv: { poupanca: emptyLot(), tesouroSelic: emptyLot(), cdb: emptyLot() },
     card: {
@@ -91,6 +92,7 @@ export function newGame(opts: NewGameOptions, p: Params): GameState {
     stats: { interestEarned: 0, interestPaid: 0, leisureSpent: 0 },
     lastMonth: null,
     chapterStart: { ageMonths: startAge * 12, netWorth: 0, interestEarned: 0, interestPaid: 0 },
+    actions: [],
     rng: initRng(seed),
     history: [],
     log: [],
@@ -176,7 +178,7 @@ export function debtTotal(s: GameState): Centavos {
 }
 
 export function netWorth(s: GameState): Centavos {
-  return Math.max(0, s.cash) + s.cofrinho + s.peDeMeiaLocked + investedTotal(s) - debtTotal(s);
+  return Math.max(0, s.cash) + s.cofrinho + s.peDeMeiaLocked + s.fgts + investedTotal(s) - debtTotal(s);
 }
 
 /** Net worth in reais of the start year. */
@@ -189,7 +191,22 @@ export function monthlyIncome(s: GameState, p: Params): Centavos {
     total += Math.round((p.mesadaMonthly + p.mesadaYearlyStep * Math.max(0, ageYears(s) - 10)) * s.macro.wageIndex);
   }
   if (s.flags.peDeMeia && isTeen(s)) total += priced(s, p.peDeMeiaMonthly);
+  if ((s.flags.seguroMeses ?? 0) > 0) total += s.flags.seguroValor ?? 0;
   return total;
+}
+
+/** CLT jobs carry FGTS; the apprentice at a lower rate; gig work and no job carry none. */
+export function fgtsMonthly(s: GameState, p: Params): Centavos {
+  switch (s.career.job) {
+    case 'aprendiz':
+      return Math.round(s.career.salary * p.fgtsRateApprentice);
+    case 'atendente':
+    case 'tecnico':
+    case 'superior':
+      return Math.round(s.career.salary * p.fgtsRate);
+    default:
+      return 0;
+  }
 }
 
 /** The lifestyle multiplier on the discretionary budget. */
@@ -229,14 +246,25 @@ export function lifestyleMood(s: GameState, p: Params): number {
 
 export function monthlyFixedCosts(s: GameState, p: Params): Centavos {
   let total = leisureCost(s, p);
-  if (!isAdult(s) && s.standing.lanche === 'compra') total += priced(s, p.lanchePrice * p.schoolDaysPerMonth);
+  if (!isAdult(s) && s.standing.lanche === 'compra') {
+    // A child on a mesada buys on the days the money allows: the cantina cannot cost more
+    // than what comes in (a sourced R$ 9 snack on 20 days is R$ 180 against a R$ 100 mesada).
+    const cantina = priced(s, p.lanchePrice * p.schoolDaysPerMonth);
+    total += s.career.job === 'nenhum' ? Math.min(cantina, monthlyIncome(s, p)) : cantina;
+  }
   if (s.hasPhone) total += priced(s, p.phonePlan);
   if (isAdult(s)) {
-    if (s.living === 'sozinho') total += priced(s, p.rentKitnetSP + p.cestaBasicaSP);
-    else if (s.career.job !== 'nenhum') total += priced(s, p.familyContribution);
+    if (s.living === 'sozinho') {
+      // Living with a partner splits the rent; each still eats.
+      const rent = s.flags.juntos ? Math.round(p.rentKitnetSP / 2) : p.rentKitnetSP;
+      total += priced(s, rent + p.cestaBasicaSP);
+    } else if (s.career.job !== 'nenhum') total += priced(s, p.familyContribution);
     if (s.career.job === 'ifood' || s.career.job === 'nenhum') total += priced(s, p.busFareSP * 40);
+    if (s.flags.planoSaude) total += priced(s, p.healthPlanYoung);
   }
   if (s.hasMoto) total += priced(s, p.motoRunningCost);
+  if (s.flags.carro) total += priced(s, p.carRunningCost);
+  if (s.flags.filhos) total += priced(s, p.childMonthlyCost) * s.flags.filhos * (s.flags.crecheParticular ? 1.5 : 1);
   if (s.career.study) total += s.career.study.monthlyCost;
   return total;
 }
@@ -326,6 +354,17 @@ export function stepMonth(s: GameState, p: Params): void {
   s.cash += income;
   summary.income = income;
   if (s.career.job !== 'nenhum') s.career.monthsInJob += 1;
+  s.fgts += fgtsMonthly(s, p);
+  if ((s.flags.seguroMeses ?? 0) > 0) {
+    s.flags.seguroMeses = (s.flags.seguroMeses ?? 0) - 1;
+    if (s.flags.seguroMeses === 0) s.flags.seguroValor = 0;
+  }
+  if (s.flags.inglesAte && s.month >= s.flags.inglesAte && !s.flags.ingles) {
+    s.flags.ingles = 1;
+    s.flags.inglesAte = 0;
+    if (s.career.job !== 'nenhum') s.career.salary = Math.round(s.career.salary * (1 + p.englishPremium));
+    log(s, 'good', 'ingles_concluido');
+  }
   if (s.flags.peDeMeia && isTeen(s) && s.calendarMonth === 11) {
     s.peDeMeiaLocked += priced(s, p.peDeMeiaAnnualLocked);
   }
@@ -564,19 +603,22 @@ export function choose(s: GameState, p: Params, choiceId: string): void {
   if (!offered || !def) throw new Error(`Choice ${choiceId} is not available for ${stop.eventId}`);
   def.apply({ s, p }, stop.vars);
   log(s, 'choice', `ch:${stop.eventId}:${choiceId}`, { ...stop.vars, ...(offered.vars ?? {}) });
+  s.actions.push({ kind: 'choice', month: s.month, eventId: stop.eventId, choiceId });
   s.pending = null;
   // An overlay (the chapter card) must not eat the month's one event slot: the 14th birthday
   // and the age-22 "sair de casa" offer share its month and were silently skipped.
   if (ev.passthrough) pickEvent(s, p);
 }
 
-export function setStanding(s: GameState, patch: Partial<Standing>): void {
+export function setStanding(s: GameState, patch: Partial<Standing>, record = false): void {
+  if (record) s.actions.push({ kind: 'standing', month: s.month, patch });
   s.standing = { ...s.standing, ...patch };
   if (s.standing.saveInto !== 'cofrinho' && !s.hasBankAccount) s.standing.saveInto = 'cofrinho';
   s.standing.savePct = clamp(s.standing.savePct, 0, 1);
 }
 
-export function setCardPolicy(s: GameState, policy: CardPolicy): void {
+export function setCardPolicy(s: GameState, policy: CardPolicy, record = false): void {
+  if (record) s.actions.push({ kind: 'cardPolicy', month: s.month, policy });
   s.card.policy = policy;
 }
 
@@ -593,9 +635,10 @@ export function bucketBalance(s: GameState, target: SaveTarget): Centavos {
  * Put `amount` from the account into the standing-order target. Clamped to the positive
  * cash balance; a player in overdraft cannot deposit. Returns what was moved.
  */
-export function depositSavings(s: GameState, amount: Centavos): Centavos {
+export function depositSavings(s: GameState, amount: Centavos, record = false): Centavos {
   const amt = Math.min(Math.max(0, Math.round(amount)), Math.max(0, s.cash));
   if (amt <= 0) return 0;
+  if (record) s.actions.push({ kind: 'deposit', month: s.month, amount: amt });
   s.cash -= amt;
   saveInto(s, amt);
   log(s, 'info', 'deposito', { valor: amt, onde: s.standing.saveInto });
@@ -612,9 +655,10 @@ export function previewWithdrawal(s: GameState, p: Params, target: SaveTarget, a
 }
 
 /** Move `amount` from a bucket back to the account, net of IR. Returns what reached the account. */
-export function withdrawSavings(s: GameState, p: Params, target: SaveTarget, amount: Centavos): Centavos {
+export function withdrawSavings(s: GameState, p: Params, target: SaveTarget, amount: Centavos, record = false): Centavos {
   const r = previewWithdrawal(s, p, target, amount);
   if (r.gross <= 0) return 0;
+  if (record) s.actions.push({ kind: 'withdraw', month: s.month, target, amount: r.gross });
   if (target === 'cofrinho') s.cofrinho -= r.gross;
   else redeem(s.inv[target], p, r.gross, target !== 'poupanca');
   s.cash += r.net;

@@ -28,7 +28,7 @@ operacional do que o código implementa hoje e do que falta.
   CDB a 100% do CDI, IR regressivo no resgate, cofrinho a 0%.
 - Macro anual: IPCA e Selic real sorteados com reversão à média; índice de preços deflaciona
   o placar; índice de salários reajusta mesada e salários.
-- 30 eventos (`src/engine/events.ts`); textos em `content/pt-BR/events.json`.
+- 39 eventos (`src/engine/events.ts`); textos em `content/pt-BR/events.json`.
 - Interface mobile-first em Svelte 5, PWA offline, salvamento local, gráfico você × Capivara.
 - Cinco capítulos (infância 10-13, ensino médio 14-17, primeiro emprego 18-21, vida adulta
   22-25, rumo aos 30). Cada fronteira abre um cartão de capítulo com o patrimônio no começo e
@@ -49,6 +49,18 @@ operacional do que o código implementa hoje e do que falta.
   instrumento, não só CDB; cofrinho não vale) e um teto, e o texto diz o teto.
 - Black Friday varia o objeto (sete, nunca o mesmo duas vezes seguidas) e vem no máximo a cada
   dois anos.
+- Dos 22 aos 30 (v0.2): demissão sem justa causa paga o FGTS (8% que o patrão deposita todo mês,
+  2% para aprendiz; conta no patrimônio) mais 40% de multa, e 3 a 5 parcelas de seguro-desemprego;
+  filho (custo mensal, creche pública ou particular); carro usado (financiar, à vista ou sem);
+  morar junto (aluguel dividido; civil, festa em 12x ou depois); plano de saúde (coparticipação na
+  emergência); viagem (à vista com reserva, 10x ou ficar); curso de inglês (12 parcelas, depois
+  um prêmio salarial que sobrevive aos reajustes).
+- Fim de partida (v0.2): coda "e aos 40?" com palpite antes de revelar; as três decisões que mais
+  custaram, recontadas com a escolha da Capivara naquele único momento e o resto da vida igual
+  (`src/engine/review.ts`, a partir do log de ações que o save guarda desde a v3); cartão PNG para
+  compartilhar.
+- Toda ação do jogador (escolha, ordem mensal, política do cartão, depósito, resgate) fica no
+  `actions` do save, o que torna uma vida reproduzível a partir da semente.
 
 ## Guardrails pedagógicos (da evidência)
 
@@ -60,9 +72,9 @@ operacional do que o código implementa hoje e do que falta.
 
 ## Gaps conhecidos (ver `npm run data:check` e o relatório, seção "Still to verify")
 
-- 12 parâmetros `placeholder` e 2 `memory` em `data/br/2026-11.json`.
+- Parâmetros `secondary` fracos em `data/br/2026-11.json` (ver roadmap v0.2).
 - Percentual mínimo da fatura e leitura por operação do teto de 100%.
 - Custos de SENAI/SENAC/ETEC/cursinho.
 - O "e aos 40?" (coda de projeção) e a lista das 3 decisões mais caras ainda não existem.
-- Balanceamento: eventos tardios (25-30 anos) são escassos. Os gastos base de lazer
-  (`leisureTeenMonthly`, `leisureAdultMonthly`) e os preços da Black Friday são `placeholder`.
+- Números: nenhum parâmetro é mais `placeholder`/`memory` (v0.2), mas 87 são `secondary`; os mais
+  fracos estão listados no roadmap.

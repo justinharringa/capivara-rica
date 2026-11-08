@@ -4,6 +4,7 @@ import type { GameState, StartAge, Standing, CardPolicy, SaveTarget } from '$eng
 import { newGame, stepMonth, choose, setStanding, setCardPolicy, runWithPolicy, runWithPolicyFrom, debtTotal, committedMonthly, depositSavings, withdrawSavings } from '$engine/sim';
 import { savedTotal } from '$engine/investments';
 import { capivaraPolicy } from '$engine/policies';
+import { costliestDecisions, replay, type DecisionCost } from '$engine/review';
 import { loadSave, loadGhostFork, writeSave, clearSave } from './save';
 
 export const params = loadParams(brJson as ParamFile);
@@ -51,6 +52,8 @@ export class Game {
   newerSave = $state(false);
   /** Age in months from which the Capivara plays, when the game was migrated; null when from birth. */
   ghostSince = $state<number | null>(null);
+  /** The costliest decisions, computed once the game ends; null when the action log cannot replay the life. */
+  review = $state.raw<DecisionCost[] | null>(null);
 
   async init(): Promise<void> {
     const r = await loadSave(params);
@@ -64,6 +67,7 @@ export class Game {
     if (!r.state) return;
     this.state = r.state;
     this.lastOutcome = null;
+    this.review = null;
     const fork = await loadGhostFork(params);
     if (fork && fork.seed === r.state.seed) {
       this.ghost = runWithPolicyFrom(fork, params, capivaraPolicy);
@@ -78,6 +82,7 @@ export class Game {
     this.lastOutcome = null;
     this.ghostSince = null;
     this.state = newGame({ seed: randomSeed(), startAge, publicSchool }, params);
+    this.review = null;
     this.ghost = this.buildGhost(this.state);
     void writeSave(this.state);
   }
@@ -162,7 +167,7 @@ export class Game {
   updateStanding(patch: Partial<Standing>): void {
     const s = this.state;
     if (!s) return;
-    setStanding(s, patch);
+    setStanding(s, patch, true);
     this.touch(s);
     void writeSave(s);
   }
@@ -171,7 +176,7 @@ export class Game {
   deposit(amount: number): void {
     const s = this.state;
     if (!s) return;
-    depositSavings(s, amount);
+    depositSavings(s, amount, true);
     this.touch(s);
     void writeSave(s);
   }
@@ -180,7 +185,7 @@ export class Game {
   withdraw(target: SaveTarget, amount: number): void {
     const s = this.state;
     if (!s) return;
-    withdrawSavings(s, params, target, amount);
+    withdrawSavings(s, params, target, amount, true);
     this.touch(s);
     void writeSave(s);
   }
@@ -188,7 +193,7 @@ export class Game {
   updateCardPolicy(policy: CardPolicy): void {
     const s = this.state;
     if (!s) return;
-    setCardPolicy(s, policy);
+    setCardPolicy(s, policy, true);
     this.touch(s);
     void writeSave(s);
   }
@@ -198,6 +203,10 @@ export class Game {
     if (!s) return;
     if (s.ended) {
       if (!this.ghost) this.ghost = this.buildGhost(s);
+      if (this.review === null) {
+        const r = replay(s, params);
+        this.review = r && r.ended ? costliestDecisions(s, params, capivaraPolicy) : null;
+      }
       await clearSave();
       this.hasSave = false;
     } else {
@@ -210,6 +219,7 @@ export class Game {
     this.state = null;
     this.ghost = null;
     this.ghostSince = null;
+    this.review = null;
     this.lastOutcome = null;
     this.hasSave = false;
   }

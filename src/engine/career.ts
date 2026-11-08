@@ -2,9 +2,9 @@ import type { Centavos } from './money';
 import type { Params } from './params';
 import type { GameState, JobId, StudyTrack, EducationLevel } from './state';
 
-/** Gross monthly pay for a job at today's wage index. */
+/** Gross monthly pay for a job at today's wage index. English fluency adds its premium on top. */
 export function jobSalary(s: GameState, p: Params, job: JobId): Centavos {
-  const w = s.macro.wageIndex;
+  const w = s.macro.wageIndex * (s.flags.ingles ? 1 + p.englishPremium : 1);
   switch (job) {
     case 'nenhum':
       return 0;

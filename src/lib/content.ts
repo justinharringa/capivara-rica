@@ -24,11 +24,12 @@ export const strings = stringsJson as unknown as {
 };
 
 /** Vars that are plain numbers, not centavos. Everything else numeric is money. */
-const NON_MONEY = new Set(['idade', 'chance', 'meses', 'anos', 'comprometido', 'guardando', 'minimo', 'start', 'capitulo', 'total', 'aliquota']);
+const NON_MONEY = new Set(['idade', 'chance', 'meses', 'anos', 'comprometido', 'guardando', 'minimo', 'start', 'capitulo', 'total', 'aliquota', 'premio']);
 
 /** String vars that are keys into a strings.app table rather than literal text. */
 const STRING_TABLES: Record<string, Dict> = {
   cargo: strings.app.jobs,
+  onde: strings.app,
   item: strings.app.bfItems,
   titulo: strings.app.chapters,
   anterior: strings.app.chapters,
@@ -36,7 +37,6 @@ const STRING_TABLES: Record<string, Dict> = {
 
 export function fmtVar(key: string, value: string | number): string {
   if (typeof value === 'string') {
-    if (key === 'onde') return strings.app[value] ?? value;
     const table = STRING_TABLES[key];
     return table ? (table[value] ?? value) : value;
   }
