@@ -47,6 +47,11 @@
     <div class="stat"><div class="label">{ui('ghost')}</div><div class="value big">{formatBRL(theirs)}</div></div>
   </div>
 
+  <div class="grid two">
+    <div class="stat"><div class="label">{ui('endInterest')}</div><div class="value good">{formatBRL(s.stats.interestEarned)}</div></div>
+    <div class="stat"><div class="label">{ui('endInterestPaid')}</div><div class="value" class:bad={s.stats.interestPaid > 0}>{formatBRL(s.stats.interestPaid)}</div></div>
+  </div>
+
   {#if g}
     <section class="card">
       <h2>{ui('ghostTitle')}</h2>

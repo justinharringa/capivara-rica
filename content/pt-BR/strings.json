@@ -67,8 +67,61 @@
       "tecnico": "Técnico",
       "superior": "Nível superior"
     },
-    "living": { "pais": "Com os pais", "sozinho": "Kitnet" },
-    "shareText": "Joguei Capivara Rica: comecei aos {start} anos e cheguei aos 30 com {score}. A Capivara, com as mesmas cartas, fez {ghost}. Joga aí: {url}"
+    "living": {
+      "pais": "Com os pais",
+      "sozinho": "Kitnet"
+    },
+    "shareText": "Joguei Capivara Rica: comecei aos {start} anos e cheguei aos 30 com {score}. A Capivara, com as mesmas cartas, fez {ghost}. Joga aí: {url}",
+    "lifestyle": "Estilo de vida",
+    "lifestyleHint": "Rolê, roupa, lazer: {valor} por mês",
+    "lifestyleNone": "Sem salário, sem gasto fixo de lazer",
+    "lifestyles": {
+      "economico": "Econômico",
+      "normal": "Normal",
+      "folgado": "Folgado"
+    },
+    "chapter": "Capítulo",
+    "chapters": {
+      "infancia": "Infância",
+      "ensino_medio": "Ensino médio",
+      "primeiro_emprego": "Primeiro emprego",
+      "vida_adulta": "Vida adulta",
+      "rumo_aos_30": "Rumo aos 30"
+    },
+    "bfItems": {
+      "tv": "A TV nova",
+      "celular": "O celular top de linha",
+      "videogame": "O videogame novo",
+      "fone": "O fone sem fio",
+      "tenis": "O tênis do momento",
+      "notebook": "O notebook",
+      "airfryer": "A air fryer"
+    },
+    "ghostNow": "Capivara agora",
+    "ghostNowHint": "Mesma sorte, mesma idade",
+    "lastMonth": "Mês passado",
+    "lmIncome": "renda",
+    "lmCosts": "gastos",
+    "lmCommitted": "parcelas e fatura",
+    "lmSaved": "guardado",
+    "lmInterest": "juros recebidos",
+    "lmInterestPaid": "juros pagos",
+    "lmBets": "apostas",
+    "outcome": "Resultado da escolha",
+    "outCash": "Na conta",
+    "outSaved": "Guardado",
+    "outDebt": "Dívidas",
+    "outWellbeing": "Bem-estar",
+    "outCommitted": "Comprometido",
+    "outSame": "A Capivara faria o mesmo.",
+    "outGhost": "A Capivara faria: {escolha}",
+    "outNothing": "Nada mudou nos números. Ainda.",
+    "chapterYou": "Você",
+    "chapterGhost": "Capivara, com a mesma sorte",
+    "chapterInterest": "Juros recebidos no capítulo",
+    "chapterInterestPaid": "Juros pagos no capítulo",
+    "endInterest": "Juros recebidos na vida",
+    "endInterestPaid": "Juros pagos na vida"
   },
   "log": {
     "ano_novo": "Novo ano: inflação de {ipca}% e Selic em {selic}%.",

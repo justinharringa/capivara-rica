@@ -10,19 +10,34 @@ export interface EventText {
 }
 
 export const events = eventsJson as Record<string, EventText>;
+type Dict = Record<string, string>;
 export const strings = stringsJson as unknown as {
-  app: Record<string, string> & { jobs: Record<string, string>; living: Record<string, string> };
-  log: Record<string, string>;
+  app: Record<string, string> & {
+    jobs: Dict;
+    living: Dict;
+    lifestyles: Dict;
+    chapters: Dict;
+    bfItems: Dict;
+  };
+  log: Dict;
 };
 
 /** Vars that are plain numbers, not centavos. Everything else numeric is money. */
-const NON_MONEY = new Set(['idade', 'chance', 'meses', 'anos', 'comprometido', 'guardando', 'minimo', 'start']);
+const NON_MONEY = new Set(['idade', 'chance', 'meses', 'anos', 'comprometido', 'guardando', 'minimo', 'start', 'capitulo', 'total']);
+
+/** String vars that are keys into a strings.app table rather than literal text. */
+const STRING_TABLES: Record<string, Dict> = {
+  cargo: strings.app.jobs,
+  item: strings.app.bfItems,
+  titulo: strings.app.chapters,
+  anterior: strings.app.chapters,
+};
 
 export function fmtVar(key: string, value: string | number): string {
   if (typeof value === 'string') {
     if (key === 'onde') return strings.app[value] ?? value;
-    if (key === 'cargo') return strings.app.jobs[value] ?? value;
-    return value;
+    const table = STRING_TABLES[key];
+    return table ? (table[value] ?? value) : value;
   }
   if (NON_MONEY.has(key)) return String(value);
   return formatBRL(value);

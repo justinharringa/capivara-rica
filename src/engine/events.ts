@@ -4,7 +4,7 @@ import type { Params } from './params';
 import type { GameState } from './state';
 import { isAdult, isTeen, isChild, ageYears, isNegativado } from './state';
 import { random, randomInt } from './rng';
-import { spendable, deposit } from './investments';
+import { spendable, deposit, investedTotal } from './investments';
 import { chargeCard } from './card';
 import { jobSalary, trackInfo, LEVEL_RANK } from './career';
 import {
@@ -20,7 +20,11 @@ import {
   monthlyIncome,
   projectSavings,
   comprometimento,
+  netWorth,
+  startChapter,
+  atChapterBoundary,
 } from './sim';
+import { chapterOf } from './state';
 
 export interface EventContext {
   s: GameState;
@@ -49,6 +53,24 @@ export interface EventDef {
 }
 
 const at = (s: GameState, years: number, months = 0): boolean => s.ageMonths >= years * 12 + months;
+const CHAPTERS_TOTAL = 5;
+
+/** Black Friday objects; the id is the key into strings.app.bfItems, the price a param. */
+export const BF_ITEMS: ReadonlyArray<{ id: string; price: keyof Params }> = [
+  { id: 'tv', price: 'bfPriceTv' },
+  { id: 'celular', price: 'bfPriceCelular' },
+  { id: 'videogame', price: 'bfPriceVideogame' },
+  { id: 'fone', price: 'bfPriceFone' },
+  { id: 'tenis', price: 'bfPriceTenis' },
+  { id: 'notebook', price: 'bfPriceNotebook' },
+  { id: 'airfryer', price: 'bfPriceAirfryer' },
+];
+const BF_INDEX: Record<string, number> = Object.fromEntries(BF_ITEMS.map((it, i) => [it.id, i + 1]));
+/** Remember which object was offered and when; flags hold numbers, so the item is stored by index. */
+function bfSeen(s: GameState, v: Vars): void {
+  s.flags.bfMonth = s.month;
+  s.flags.bfLastItem = BF_INDEX[String(v.item)] ?? 0;
+}
 const phonePrice = (c: EventContext): Centavos => priced(c.s, c.p.entryPhonePrice);
 const usedPhonePrice = (c: EventContext): Centavos => priced(c.s, c.p.usedPhonePrice);
 
@@ -100,6 +122,32 @@ const phoneVars = (c: EventContext): Vars => {
 };
 
 export const EVENTS: EventDef[] = [
+  // ---------------------------------------------------------------- chapters
+  {
+    // First in the list so a chapter opens before any event scheduled for the same month.
+    id: 'capitulo',
+    kind: 'scheduled',
+    yearly: true,
+    eligible: ({ s }) => atChapterBoundary(s),
+    vars: ({ s }) => {
+      const c = chapterOf(s.ageMonths);
+      const inicio = s.chapterStart.netWorth;
+      const agora = netWorth(s);
+      return {
+        capitulo: c.n,
+        total: CHAPTERS_TOTAL,
+        titulo: c.id,
+        anterior: chapterOf(s.ageMonths - 1).id,
+        idade: ageYears(s),
+        inicio,
+        patrimonio: agora,
+        delta: agora - inicio,
+        juros: s.stats.interestEarned - s.chapterStart.interestEarned,
+        jurosPagos: s.stats.interestPaid - s.chapterStart.interestPaid,
+      };
+    },
+    choices: [{ id: 'continuar', tags: ['capivara'], apply: ({ s }) => startChapter(s) }],
+  },
   // ---------------------------------------------------------------- childhood
   {
     id: 'presente_vovo',
@@ -285,8 +333,15 @@ export const EVENTS: EventDef[] = [
     id: 'cartao_garantido',
     kind: 'scheduled',
     once: true,
-    eligible: ({ s, p }) => at(s, 16) && !isAdult(s) && s.hasBankAccount && !s.card.has && s.inv.cdb.balance >= p.securedCardMinSavings,
-    vars: ({ s, p }) => ({ limite: Math.min(s.inv.cdb.balance, priced(s, p.securedCardMaxLimit)) }),
+    // A secured card: the limit is the teen's own money, held as collateral (Nubank 16-17, Inter
+    // "CDB Mais Limite"). Any invested savings count, not just the CDB; the cofrinho cannot back
+    // a card. The game caps the limit so a first card stays small, and the text says so.
+    eligible: ({ s, p }) => at(s, 16) && !isAdult(s) && s.hasBankAccount && !s.card.has && investedTotal(s) >= p.securedCardMinSavings,
+    vars: ({ s, p }) => {
+      const guardado = investedTotal(s);
+      const teto = priced(s, p.securedCardMaxLimit);
+      return { guardado, teto, limite: Math.min(guardado, teto) };
+    },
     choices: [
       {
         id: 'aceitar',
@@ -650,32 +705,50 @@ export const EVENTS: EventDef[] = [
     ],
   },
   {
+    // A different object each time, never the same as last time, and at most every other year:
+    // the TV every November read as a bug to the first players (2026-11-08).
     id: 'black_friday',
     kind: 'scheduled',
     yearly: true,
-    eligible: ({ s, p }) => s.calendarMonth === 10 && at(s, 16) && (s.card.has || spendable(s, p) >= priced(s, p.blackFridayMinCash)),
+    eligible: ({ s, p }) =>
+      s.calendarMonth === 10 &&
+      at(s, 16) &&
+      (!s.flags.bfMonth || s.month - s.flags.bfMonth >= 20) &&
+      (s.card.has || spendable(s, p) >= priced(s, p.blackFridayMinCash)),
     vars: ({ s, p }) => {
-      const preco = priced(s, p.blackFridayPrice);
-      return { preco, pix: Math.round(preco * (1 - p.blackFridayPixDiscount)), parcela: Math.ceil(preco / 12) };
+      let i = randomInt(s.rng, 'misc', 0, BF_ITEMS.length - 1);
+      if (BF_INDEX[BF_ITEMS[i]!.id] === s.flags.bfLastItem) i = (i + 1) % BF_ITEMS.length;
+      const item = BF_ITEMS[i]!;
+      const preco = priced(s, p[item.price]);
+      return { item: item.id, preco, pix: Math.round(preco * (1 - p.blackFridayPixDiscount)), parcela: Math.ceil(preco / 12) };
     },
     choices: [
       {
         id: 'parcelar',
         available: ({ s }, v) => s.card.has && !s.card.blocked && s.card.statement + s.card.revolving + Number(v.preco) <= s.card.limit,
         apply: ({ s }, v) => {
+          bfSeen(s, v);
           addParcela(s, 'bf', 'Black Friday 12x', Number(v.parcela), 12, true);
           bumpWellbeing(s, 6);
         },
       },
       {
         id: 'avista',
-        available: (c, v) => spendable(c.s, c.p) >= Number(v.pix) * 2,
+        available: (c, v) => spendable(c.s, c.p) >= Number(v.pix) * c.p.reserveMultipleBigPurchase,
         apply: ({ s, p }, v) => {
+          bfSeen(s, v);
           trySpend(s, p, Number(v.pix));
           bumpWellbeing(s, 6);
         },
       },
-      { id: 'passar', tags: ['capivara'], apply: ({ s }) => bumpWellbeing(s, -2) },
+      {
+        id: 'passar',
+        tags: ['capivara'],
+        apply: ({ s }, v) => {
+          bfSeen(s, v);
+          bumpWellbeing(s, -2);
+        },
+      },
     ],
   },
   {
@@ -701,7 +774,7 @@ export const EVENTS: EventDef[] = [
       {
         id: 'avista',
         tags: ['capivara2'],
-        available: (c, v) => spendable(c.s, c.p) >= Number(v.preco) * 1.5,
+        available: (c, v) => spendable(c.s, c.p) >= Number(v.preco) * c.p.reserveMultipleMoto,
         apply: ({ s, p }, v) => {
           trySpend(s, p, Number(v.preco));
           s.hasMoto = true;

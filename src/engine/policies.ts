@@ -14,12 +14,12 @@ export function chooseByTags(stop: Stop, priority: string[]): string {
 }
 
 /**
- * The ghost: calm, saves a fifth of every surplus, pays the fatura in full,
- * studies when offered, never bets, buys used phones.
+ * The ghost: calm, saves a fifth of every surplus, lives a normal (not stingy) lifestyle,
+ * pays the fatura in full, studies when offered, never bets, buys used phones.
  */
 export const capivaraPolicy: Policy = {
   onStart: (s) => {
-    setStanding(s, { savePct: 0.2, lanche: 'casa', bets: 0 });
+    setStanding(s, { savePct: 0.2, lanche: 'casa', bets: 0, lifestyle: 'normal' });
     if (s.hasBankAccount) setStanding(s, { saveInto: 'cdb' });
     s.card.policy = 'integral';
   },
@@ -34,7 +34,7 @@ export const firstChoicePolicy: Policy = {
 /** The anti-ghost: spends, pays the minimum, bets. Used in tests to prove the economy bites. */
 export const gastaoPolicy: Policy = {
   onStart: (s) => {
-    setStanding(s, { savePct: 0, lanche: 'compra' });
+    setStanding(s, { savePct: 0, lanche: 'compra', lifestyle: 'folgado' });
     s.card.policy = 'minimo';
   },
   choose: (_s, _p, stop) => chooseByTags(stop, ['parcelado', 'comprar', 'gastar', 'mensal', 'cantina', 'minimo', 'financiar', 'parcelar', 'aceitar', 'comemorar', 'sozinho', 'ifood', 'nada', 'continuar', 'ignorar', 'ficar_sem', 'sus']),

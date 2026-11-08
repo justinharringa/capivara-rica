@@ -1,11 +1,14 @@
 <script lang="ts">
-  import { game } from '$lib/game.svelte';
+  import { game, params } from '$lib/game.svelte';
   import { ui } from '$lib/content';
-  import { isAdult } from '$engine/state';
-  import type { SaveTarget, CardPolicy } from '$engine/state';
+  import { isAdult, LIFESTYLES } from '$engine/state';
+  import type { SaveTarget, CardPolicy, Lifestyle } from '$engine/state';
   import { formatBRL } from '$engine/money';
+  import { leisureCost } from '$engine/sim';
+  import { t, strings } from '$lib/content';
 
   const s = $derived(game.state!);
+  const leisure = $derived(leisureCost(s, params));
   const targets: SaveTarget[] = ['cofrinho', 'poupanca', 'tesouroSelic', 'cdb'];
   const policies: CardPolicy[] = ['integral', 'minimo', 'parcelar'];
 </script>
@@ -32,6 +35,15 @@
         {/each}
       </select>
       {#if !s.hasBankAccount}<span class="small muted">{ui('noAccount')}</span>{/if}
+    </label>
+    <label>
+      {ui('lifestyle')}
+      <select value={s.standing.lifestyle} onchange={(e) => game.updateStanding({ lifestyle: (e.target as HTMLSelectElement).value as Lifestyle })}>
+        {#each LIFESTYLES as l (l)}
+          <option value={l}>{strings.app.lifestyles[l]} ({formatBRL(leisureCost(s, params, l))}/mês)</option>
+        {/each}
+      </select>
+      <span class="small muted">{leisure > 0 ? t(ui('lifestyleHint'), { valor: leisure }) : ui('lifestyleNone')}</span>
     </label>
     {#if s.card.has}
       <label>

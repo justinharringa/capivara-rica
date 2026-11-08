@@ -1,11 +1,25 @@
 import brJson from '$data/br/2026-11.json';
 import { loadParams, type ParamFile } from '$engine/params';
 import type { GameState, StartAge, Standing, CardPolicy } from '$engine/state';
-import { newGame, stepMonth, choose, setStanding, setCardPolicy, runWithPolicy } from '$engine/sim';
-import { capivaraPolicy } from '$engine/policies';
+import { newGame, stepMonth, choose, setStanding, setCardPolicy, runWithPolicy, debtTotal, committedMonthly } from '$engine/sim';
+import { investedTotal } from '$engine/investments';
+import { capivaraPolicy, chooseByTags } from '$engine/policies';
 import { loadSave, writeSave, clearSave } from './save';
 
 export const params = loadParams(brJson as ParamFile);
+
+/** What one choice did to the numbers, shown right after it so the feedback is immediate. */
+export interface Outcome {
+  eventId: string;
+  choiceId: string;
+  cash: number;
+  saved: number;
+  debt: number;
+  committed: number;
+  wellbeing: number;
+  /** The choice the ghost would have made, when it differs from the player's. */
+  ghostChoiceId: string | null;
+}
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -15,9 +29,21 @@ function randomSeed(): number {
   return a[0]! || 1;
 }
 
+function snapshot(s: GameState) {
+  return {
+    cash: s.cash,
+    saved: investedTotal(s) + s.cofrinho + s.peDeMeiaLocked,
+    debt: debtTotal(s),
+    committed: committedMonthly(s, params),
+    wellbeing: s.wellbeing,
+  };
+}
+
 export class Game {
   state = $state.raw<GameState | null>(null);
+  /** The Capivara's life on the same seed. Built at the start, so every screen can compare. */
   ghost = $state.raw<GameState | null>(null);
+  lastOutcome = $state.raw<Outcome | null>(null);
   busy = $state(false);
   hasSave = $state(false);
 
@@ -28,13 +54,40 @@ export class Game {
 
   async resume(): Promise<void> {
     const s = await loadSave();
-    if (s) this.state = s;
+    if (!s) return;
+    this.state = s;
+    this.lastOutcome = null;
+    this.ghost = this.buildGhost(s);
   }
 
   start(startAge: StartAge, publicSchool: boolean): void {
-    this.ghost = null;
+    this.lastOutcome = null;
     this.state = newGame({ seed: randomSeed(), startAge, publicSchool }, params);
+    this.ghost = this.buildGhost(this.state);
     void writeSave(this.state);
+  }
+
+  /** Deterministic: same seed, same macro draws, same luck. A few milliseconds. */
+  private buildGhost(s: GameState): GameState {
+    return runWithPolicy({ seed: s.seed, startAge: s.startAge, publicSchool: s.publicSchool }, params, capivaraPolicy);
+  }
+
+  /** The ghost's net worth at the player's current age, or null before the ghost exists. */
+  ghostNetWorthNow(): number | null {
+    const s = this.state;
+    const g = this.ghost;
+    if (!s || !g) return null;
+    const i = s.ageMonths - s.startAge * 12;
+    const h = g.history[i];
+    return h && h.ageMonths === s.ageMonths ? h.netWorth : null;
+  }
+
+  /** The ghost's history up to the player's current age, for a chapter chart. */
+  ghostHistorySoFar() {
+    const s = this.state;
+    const g = this.ghost;
+    if (!s || !g) return [];
+    return g.history.slice(0, s.ageMonths - s.startAge * 12 + 1);
   }
 
   /**
@@ -59,6 +112,8 @@ export class Game {
       } while (untilStop && !s.pending && !s.ended);
     } finally {
       this.busy = false;
+      // A new stop replaces the last outcome; between stops it stays as a reminder.
+      if (s.pending) this.lastOutcome = null;
       this.touch(s);
       await this.afterChange();
     }
@@ -67,7 +122,21 @@ export class Game {
   async choose(choiceId: string): Promise<void> {
     const s = this.state;
     if (!s || !s.pending) return;
+    const stop = s.pending;
+    const before = snapshot(s);
+    const ghostChoice = chooseByTags(stop, ['capivara', 'capivara2']);
     choose(s, params, choiceId);
+    const after = snapshot(s);
+    this.lastOutcome = {
+      eventId: stop.eventId,
+      choiceId,
+      cash: after.cash - before.cash,
+      saved: after.saved - before.saved,
+      debt: after.debt - before.debt,
+      committed: after.committed - before.committed,
+      wellbeing: after.wellbeing - before.wellbeing,
+      ghostChoiceId: ghostChoice === choiceId ? null : ghostChoice,
+    };
     this.touch(s);
     await this.afterChange();
   }
@@ -91,8 +160,8 @@ export class Game {
   private async afterChange(): Promise<void> {
     const s = this.state;
     if (!s) return;
-    if (s.ended && !this.ghost) {
-      this.ghost = runWithPolicy({ seed: s.seed, startAge: s.startAge, publicSchool: s.publicSchool }, params, capivaraPolicy);
+    if (s.ended) {
+      if (!this.ghost) this.ghost = this.buildGhost(s);
       await clearSave();
       this.hasSave = false;
     } else {
@@ -104,6 +173,7 @@ export class Game {
     await clearSave();
     this.state = null;
     this.ghost = null;
+    this.lastOutcome = null;
     this.hasSave = false;
   }
 }

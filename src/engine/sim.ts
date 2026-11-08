@@ -9,7 +9,10 @@ import {
   type LogKind,
   type Standing,
   type CardPolicy,
+  type Lifestyle,
+  type MonthSummary,
   emptyLot,
+  chapterOf,
   END_AGE,
   isAdult,
   isChild,
@@ -37,7 +40,7 @@ export function newGame(opts: NewGameOptions, p: Params): GameState {
   const { seed, startAge } = opts;
   const adult = startAge >= 18;
   const s: GameState = {
-    version: 1,
+    version: 2,
     seed,
     startAge,
     month: 0,
@@ -61,7 +64,7 @@ export function newGame(opts: NewGameOptions, p: Params): GameState {
     },
     parcelas: [],
     loans: [],
-    standing: { savePct: 0, saveInto: 'cofrinho', lanche: 'compra', bets: 0 },
+    standing: { savePct: 0, saveInto: 'cofrinho', lanche: 'compra', bets: 0, lifestyle: 'normal' },
     career: {
       job: 'nenhum',
       salary: 0,
@@ -84,6 +87,9 @@ export function newGame(opts: NewGameOptions, p: Params): GameState {
       wageIndex: 1,
     },
     flags: {},
+    stats: { interestEarned: 0, interestPaid: 0, leisureSpent: 0 },
+    lastMonth: null,
+    chapterStart: { ageMonths: startAge * 12, netWorth: 0, interestEarned: 0, interestPaid: 0 },
     rng: initRng(seed),
     history: [],
     log: [],
@@ -185,8 +191,37 @@ export function monthlyIncome(s: GameState, p: Params): Centavos {
   return total;
 }
 
+/** The lifestyle multiplier on the discretionary budget. */
+export function lifestyleFactor(p: Params, lifestyle: Lifestyle): number {
+  switch (lifestyle) {
+    case 'economico':
+      return p.lifestyleEconomicoFactor;
+    case 'normal':
+      return 1;
+    case 'folgado':
+      return p.lifestyleFolgadoFactor;
+  }
+}
+
+/**
+ * Discretionary spending (rolê, roupa, lazer, transporte) every month. A teen with a salary
+ * pays the teen base; an adult pays the adult base; a child or a teen on mesada pays nothing
+ * here, their pocket money is the lanche and the one-off events. Scaled by the lifestyle.
+ */
+export function leisureCost(s: GameState, p: Params, lifestyle: Lifestyle = s.standing.lifestyle): Centavos {
+  let base = 0;
+  if (isAdult(s)) base = p.leisureAdultMonthly;
+  else if (isTeen(s) && s.career.job !== 'nenhum') base = p.leisureTeenMonthly;
+  return Math.round(priced(s, base) * lifestyleFactor(p, lifestyle));
+}
+
+/** How the lifestyle moves the wellbeing level the player drifts back to (60 by default). */
+export function lifestyleMood(lifestyle: Lifestyle): number {
+  return lifestyle === 'economico' ? -5 : lifestyle === 'folgado' ? 5 : 0;
+}
+
 export function monthlyFixedCosts(s: GameState, p: Params): Centavos {
-  let total = 0;
+  let total = leisureCost(s, p);
   if (!isAdult(s) && s.standing.lanche === 'compra') total += priced(s, p.lanchePrice * p.schoolDaysPerMonth);
   if (s.hasPhone) total += priced(s, p.phonePlan);
   if (isAdult(s)) {
@@ -266,10 +301,23 @@ export function stepMonth(s: GameState, p: Params): void {
   s.ageMonths += 1;
   s.calendarMonth = (s.calendarMonth + 1) % 12;
   if (s.calendarMonth === 0) yearlyMacro(s, p);
+  const summary: MonthSummary = {
+    month: s.month,
+    income: 0,
+    costs: 0,
+    committed: 0,
+    saved: 0,
+    interestEarned: 0,
+    interestPaid: 0,
+    betsLost: 0,
+    cashBefore: s.cash,
+    cashAfter: 0,
+  };
 
   // 1. Income.
   const income = monthlyIncome(s, p);
   s.cash += income;
+  summary.income = income;
   if (s.career.job !== 'nenhum') s.career.monthsInJob += 1;
   if (s.flags.peDeMeia && isTeen(s) && s.calendarMonth === 11) {
     s.peDeMeiaLocked += priced(s, p.peDeMeiaAnnualLocked);
@@ -283,6 +331,8 @@ export function stepMonth(s: GameState, p: Params): void {
   // 2. Compulsory costs.
   const costs = monthlyFixedCosts(s, p);
   s.cash -= costs;
+  summary.costs = costs;
+  s.stats.leisureSpent += leisureCost(s, p);
 
   // 3. Instalments and loans. Card instalments go to the statement; the rest leaves cash.
   let committedPaid = 0;
@@ -295,6 +345,7 @@ export function stepMonth(s: GameState, p: Params): void {
   s.parcelas = s.parcelas.filter((x) => x.remaining > 0);
   for (const l of s.loans) {
     const interest = interestOn(l.balance, l.rateMonthly);
+    summary.interestPaid += interest;
     l.balance = Math.max(0, l.balance + interest - l.instalment);
     s.cash -= l.instalment;
     committedPaid += l.instalment;
@@ -305,7 +356,10 @@ export function stepMonth(s: GameState, p: Params): void {
 
   // 4. The fatura.
   if (s.card.has) {
+    const chargesBefore = s.card.capCharges;
     const r = settleCard(s, p);
+    // capCharges only grows (rotativo accrual, parcelamento interest) until the debt clears.
+    summary.interestPaid += Math.max(0, s.card.capCharges - chargesBefore);
     if (r.missedMinimum) {
       s.flags.cardMissedThisYear = 1;
       log(s, 'bad', 'fatura_nao_paga', { valor: r.due });
@@ -327,6 +381,7 @@ export function stepMonth(s: GameState, p: Params): void {
     const stake = Math.min(s.standing.bets, Math.max(0, s.cash));
     const lost = Math.round(stake * p.betsExpectedLoss);
     s.cash -= lost;
+    summary.betsLost = lost;
     s.flags.betsLostTotal = (s.flags.betsLostTotal ?? 0) + lost;
   }
 
@@ -336,6 +391,7 @@ export function stepMonth(s: GameState, p: Params): void {
     const amount = Math.min(s.cash, Math.round(surplus * s.standing.savePct));
     s.cash -= amount;
     saveInto(s, amount);
+    summary.saved = amount;
     if (s.standing.saveInto !== 'cofrinho' && !s.flags.primeiraAplicacao) {
       s.flags.primeiraAplicacao = 1;
       s.flags.primeiraAplicacaoValor = amount;
@@ -349,6 +405,7 @@ export function stepMonth(s: GameState, p: Params): void {
     if (isAdult(s) && s.hasBankAccount) {
       const juros = interestOn(-s.cash, p.chequeEspecialMonthly);
       s.cash -= juros;
+      summary.interestPaid += juros;
       log(s, 'bad', 'cheque_especial', { juros, saldo: -s.cash });
       // Pull from savings first before letting the overdraft roll.
       const short = drawDown(s, p, -s.cash + 0);
@@ -376,7 +433,9 @@ export function stepMonth(s: GameState, p: Params): void {
   }
 
   // 8. Interest on savings.
+  const investedBefore = investedTotal(s);
   accrueInvestments(s, p);
+  summary.interestEarned = investedTotal(s) - investedBefore;
 
   // 9. Study progress.
   if (s.career.study) {
@@ -397,15 +456,22 @@ export function stepMonth(s: GameState, p: Params): void {
   }
   if (s.ageMonths === 18 * 12 && LEVEL_RANK[s.career.level] < LEVEL_RANK.medio) s.career.level = 'medio';
 
-  // 10. Wellbeing drifts back toward 60; being negativado weighs on it.
-  if (s.wellbeing < 60) bumpWellbeing(s, 1);
-  else if (s.wellbeing > 60) bumpWellbeing(s, -1);
+  // 10. Wellbeing drifts back toward 60 (shifted by the lifestyle); being negativado weighs on it.
+  const target = 60 + lifestyleMood(s.standing.lifestyle);
+  if (s.wellbeing < target) bumpWellbeing(s, 1);
+  else if (s.wellbeing > target) bumpWellbeing(s, -1);
   if (isNegativado(s)) bumpWellbeing(s, -1);
   if (s.negativadoUntilMonth !== null && s.month >= s.negativadoUntilMonth) {
     s.negativadoUntilMonth = null;
     s.card.blocked = false;
     log(s, 'good', 'nome_limpo');
   }
+
+  summary.committed = committedPaid;
+  summary.cashAfter = s.cash;
+  s.lastMonth = summary;
+  s.stats.interestEarned += summary.interestEarned;
+  s.stats.interestPaid += summary.interestPaid;
 
   pushHistory(s);
   if (s.ageMonths >= END_AGE * 12) {
@@ -522,5 +588,21 @@ export function runWithPolicy(opts: NewGameOptions, p: Params, policy: Policy, m
   return s;
 }
 
+/** Called by the chapter event when a new chapter opens: snapshot the baseline for the next card. */
+export function startChapter(s: GameState): void {
+  s.chapterStart = {
+    ageMonths: s.ageMonths,
+    netWorth: netWorth(s),
+    interestEarned: s.stats.interestEarned,
+    interestPaid: s.stats.interestPaid,
+  };
+}
+
+/** True on the first month of a chapter that is not the one the game started in. */
+export function atChapterBoundary(s: GameState): boolean {
+  const c = chapterOf(s.ageMonths);
+  return s.ageMonths === c.fromAge * 12 && s.ageMonths > s.startAge * 12;
+}
+
 export const END_MONTHS = END_AGE * 12;
-export { chargeCard, accrueRotativo, isChild, isTeen, isAdult, ageYears, liquid, spendable };
+export { chargeCard, accrueRotativo, isChild, isTeen, isAdult, ageYears, liquid, spendable, chapterOf };
