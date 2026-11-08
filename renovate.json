@@ -13,9 +13,16 @@
     ":pinDevDependencies"
   ],
   "timezone": "America/Los_Angeles",
-  "schedule": ["at any time"],
-  "labels": ["dependencies", "renovate"],
-  "assignees": ["justinharringa"],
+  "schedule": [
+    "at any time"
+  ],
+  "labels": [
+    "dependencies",
+    "renovate"
+  ],
+  "assignees": [
+    "justinharringa"
+  ],
   "semanticCommits": "enabled",
   "commitMessagePrefix": "chore(deps):",
   "prConcurrentLimit": 0,
@@ -29,71 +36,113 @@
   "keepUpdatedLabel": "keep-updated",
   "vulnerabilityAlerts": {
     "enabled": true,
-    "labels": ["security"],
+    "labels": [
+      "security"
+    ],
     "dependencyDashboardApproval": false
   },
   "packageRules": [
     {
       "description": "Group every npm devDependency update into one PR (the toolchain: Svelte, Vite, vitest, svelte-check, TypeScript, vite-plugin-pwa). Majors separate out into their own '(major)' group by separateMajorMinor and stay manual.",
-      "matchManagers": ["npm"],
-      "matchDepTypes": ["devDependencies"],
+      "matchManagers": [
+        "npm"
+      ],
+      "matchDepTypes": [
+        "devDependencies"
+      ],
       "groupName": "npm dev dependencies",
       "commitMessageTopic": "npm dev dependencies"
     },
     {
       "description": "Automerge devDependency minor and patch bumps. ci.yml's `check` job runs the whole toolchain against the bump before merge: svelte-check, vitest, data:check, a production build and the size budget. A toolchain release that breaks any of them goes red and simply does not merge. Runtime dependencies (idb-keyval) are not covered: nothing in CI exercises the browser save path, so they stay manual and the triage skill smoke-tests them in Playwright.",
-      "matchManagers": ["npm"],
-      "matchDepTypes": ["devDependencies"],
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchManagers": [
+        "npm"
+      ],
+      "matchDepTypes": [
+        "devDependencies"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
       "automerge": true
     },
     {
-      "description": "TypeScript majors (TS 7, the native compiler) wait for a dashboard checkbox: svelte-check must support them first. Own group so the approval gate does not hold the rest of the devDependency majors hostage.",
-      "matchDepNames": ["typescript"],
-      "matchUpdateTypes": ["major"],
-      "groupName": "TypeScript (major)",
-      "dependencyDashboardApproval": true
+      "description": "TypeScript stays below 7 until svelte-check supports it without the experimental --tsgo setup (svelte-check 4.7.8 wants TS 6 AND 7 installed under an npm alias plus a flag). This is a CEILING, so it ships with a lifter: scripts/check-ceilings.ts fails CI once svelte-check's peerDependencies admit TypeScript 7, which is the signal to delete this rule. Majors below the ceiling (5 -> 6, done by hand 2026-11-08) stay manual via the majors rule.",
+      "matchDepNames": [
+        "typescript"
+      ],
+      "allowedVersions": "<7"
     },
     {
       "description": "Node.js (.nvmrc) and @types/node move together, as one PR. Node is what CI and the deploy build run on, so a Node major is a build-environment change and stays manual (majors rule below). Placed after the devDependency rules so it wins for @types/node.",
-      "matchDepNames": ["node", "@types/node"],
+      "matchDepNames": [
+        "node",
+        "@types/node"
+      ],
       "groupName": "node.js",
       "commitMessageTopic": "Node.js"
     },
     {
       "description": "Group GitHub Actions bumps and automerge minor, patch and digest. A SHA pin that still resolves to its version tag is low-risk, and ci.yml exercises checkout, setup-node, upload-artifact and setup-terraform on every PR. Majors fall through to the manual-review rule below.",
-      "matchManagers": ["github-actions"],
-      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest"
+      ],
       "groupName": "GitHub Actions",
       "commitMessageTopic": "GitHub Actions",
       "automerge": true
     },
     {
       "description": "cloudflare/wrangler-action is the one action no PR check runs: it appears only in deploy.yml, holds the Cloudflare API token, and a broken bump would only show up in the approved deploy. Own PR, never automerged, whatever the update type. Must stay after the GitHub Actions rule (later rules win).",
-      "matchManagers": ["github-actions"],
-      "matchDepNames": ["cloudflare/wrangler-action"],
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchDepNames": [
+        "cloudflare/wrangler-action"
+      ],
       "groupName": "wrangler-action (deploy)",
       "commitMessageTopic": "wrangler-action",
       "automerge": false,
-      "addLabels": ["applies-on-merge"]
+      "addLabels": [
+        "applies-on-merge"
+      ]
     },
     {
       "description": "The Cloudflare Terraform provider APPLIES ON MERGE: deploy.yml runs `terraform apply` right after the owner approves the deploy, and a provider release can change how an existing resource is planned (provider v5 renamed most of them). ci.yml validates the schema on the PR, but the plan against live state only runs in the deploy. Own PR, manual, and read the plan in the deploy run's summary before approving it.",
-      "matchManagers": ["terraform"],
-      "matchDepNames": ["cloudflare/cloudflare"],
+      "matchManagers": [
+        "terraform"
+      ],
+      "matchDepNames": [
+        "cloudflare/cloudflare"
+      ],
       "groupName": "Cloudflare Terraform provider",
       "commitMessageTopic": "Cloudflare Terraform provider",
       "automerge": false,
-      "addLabels": ["applies-on-merge"],
+      "addLabels": [
+        "applies-on-merge"
+      ],
       "prBodyNotes": [
         "**Applies on merge.** After the deploy is approved, `deploy.yml` runs `terraform plan` and `apply` with this provider against the live zone. Read the plan in the run summary before approving; anything other than `No changes` on a provider-only bump needs a look."
       ]
     },
     {
       "description": "Major version updates require manual review.",
-      "matchUpdateTypes": ["major"],
-      "labels": ["dependencies", "major-update", "renovate"],
-      "reviewers": ["justinharringa"],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "labels": [
+        "dependencies",
+        "major-update",
+        "renovate"
+      ],
+      "reviewers": [
+        "justinharringa"
+      ],
       "prPriority": 10
     }
   ]
