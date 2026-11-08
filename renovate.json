@@ -1,60 +1,100 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": [
+    "PRINCIPLE (copied from justinharringa/knuckles, 2026-11-08): no setting in this file may turn 'update available' into 'no PR'. Every knob here must delay or annotate an update, never suppress it. Renovate reports a suppressed update exactly like a non-existent one (the Dependency Dashboard parks it under 'Pending Status Checks' or 'Rate-Limited' and no PR is ever opened), so a suppressing setting does not degrade the automation, it silently switches it off. Hence no `schedule` windows, no `prConcurrentLimit`, no `minimumReleaseAge` against datasources that cannot report a release date. To batch, use `groupName`, never `schedule`.",
+    "AUTOMERGE: `automerge: false` globally, switched on per rule only where a PR check exercises the update before merge. `platformAutomerge: true` hands the merge to GitHub native auto-merge the moment the required `CI gate` check passes (needs the repo setting Allow auto-merge and the `main` ruleset in docs/rulesets/). A merge to main is NOT a deploy here: deploy.yml waits for the owner's approval in the `production` GitHub Environment, so an auto-merged PR still passes a human before it reaches Cloudflare.",
+    "REBASE POLICY: `rebaseWhen: auto` (behind-base-branch for automerge PRs so they are tested against current main, conflicted for everything else). Never `behind-base-branch` globally and never a ruleset with 'require branches to be up to date': both rebase every open PR on every push to main, and every rebase re-runs CI. To keep one PR current while reviewing it, add the `keep-updated` label."
+  ],
   "extends": [
     "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
     "helpers:pinGitHubActionDigests",
     ":pinDevDependencies"
   ],
   "timezone": "America/Los_Angeles",
-  "labels": [
-    "dependencies"
-  ],
+  "schedule": ["at any time"],
+  "labels": ["dependencies", "renovate"],
+  "assignees": ["justinharringa"],
+  "semanticCommits": "enabled",
+  "commitMessagePrefix": "chore(deps):",
+  "prConcurrentLimit": 0,
+  "prHourlyLimit": 0,
+  "separateMajorMinor": true,
+  "separateMinorPatch": false,
+  "prCreation": "immediate",
+  "automerge": false,
+  "platformAutomerge": true,
+  "rebaseWhen": "auto",
+  "keepUpdatedLabel": "keep-updated",
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"],
+    "dependencyDashboardApproval": false
+  },
   "packageRules": [
     {
-      "description": "Group all npm devDependency updates into one PR.",
-      "matchManagers": [
-        "npm"
-      ],
-      "matchDepTypes": [
-        "devDependencies"
-      ],
-      "groupName": "npm dev dependencies"
+      "description": "Group every npm devDependency update into one PR (the toolchain: Svelte, Vite, vitest, svelte-check, TypeScript, vite-plugin-pwa). Majors separate out into their own '(major)' group by separateMajorMinor and stay manual.",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["devDependencies"],
+      "groupName": "npm dev dependencies",
+      "commitMessageTopic": "npm dev dependencies"
     },
     {
-      "description": "GitHub Actions digests and versions together.",
-      "matchManagers": [
-        "github-actions"
-      ],
-      "groupName": "github actions"
+      "description": "Automerge devDependency minor and patch bumps. ci.yml's `check` job runs the whole toolchain against the bump before merge: svelte-check, vitest, data:check, a production build and the size budget. A toolchain release that breaks any of them goes red and simply does not merge. Runtime dependencies (idb-keyval) are not covered: nothing in CI exercises the browser save path, so they stay manual and the triage skill smoke-tests them in Playwright.",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
     },
     {
-      "description": "The Cloudflare Terraform provider moves fast; keep it on its own PR.",
-      "matchManagers": [
-        "terraform"
-      ],
-      "matchDepNames": [
-        "cloudflare/cloudflare"
-      ],
-      "groupName": "cloudflare terraform provider"
-    },
-    {
-      "description": "TypeScript majors (the TS 7 native compiler) wait for a dashboard checkbox: svelte-check must support them first.",
-      "matchDepNames": [
-        "typescript"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
+      "description": "TypeScript majors (TS 7, the native compiler) wait for a dashboard checkbox: svelte-check must support them first. Own group so the approval gate does not hold the rest of the devDependency majors hostage.",
+      "matchDepNames": ["typescript"],
+      "matchUpdateTypes": ["major"],
+      "groupName": "TypeScript (major)",
       "dependencyDashboardApproval": true
     },
     {
-      "description": "Node.js (.nvmrc) and @types/node move together, as one PR.",
-      "matchDepNames": [
-        "node",
-        "@types/node"
-      ],
-      "groupName": "node.js"
+      "description": "Node.js (.nvmrc) and @types/node move together, as one PR. Node is what CI and the deploy build run on, so a Node major is a build-environment change and stays manual (majors rule below). Placed after the devDependency rules so it wins for @types/node.",
+      "matchDepNames": ["node", "@types/node"],
+      "groupName": "node.js",
+      "commitMessageTopic": "Node.js"
+    },
+    {
+      "description": "Group GitHub Actions bumps and automerge minor, patch and digest. A SHA pin that still resolves to its version tag is low-risk, and ci.yml exercises checkout, setup-node, upload-artifact and setup-terraform on every PR. Majors fall through to the manual-review rule below.",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "groupName": "GitHub Actions",
+      "commitMessageTopic": "GitHub Actions",
+      "automerge": true
+    },
+    {
+      "description": "cloudflare/wrangler-action is the one action no PR check runs: it appears only in deploy.yml, holds the Cloudflare API token, and a broken bump would only show up in the approved deploy. Own PR, never automerged, whatever the update type. Must stay after the GitHub Actions rule (later rules win).",
+      "matchManagers": ["github-actions"],
+      "matchDepNames": ["cloudflare/wrangler-action"],
+      "groupName": "wrangler-action (deploy)",
+      "commitMessageTopic": "wrangler-action",
+      "automerge": false,
+      "addLabels": ["applies-on-merge"]
+    },
+    {
+      "description": "The Cloudflare Terraform provider APPLIES ON MERGE: deploy.yml runs `terraform apply` right after the owner approves the deploy, and a provider release can change how an existing resource is planned (provider v5 renamed most of them). ci.yml validates the schema on the PR, but the plan against live state only runs in the deploy. Own PR, manual, and read the plan in the deploy run's summary before approving it.",
+      "matchManagers": ["terraform"],
+      "matchDepNames": ["cloudflare/cloudflare"],
+      "groupName": "Cloudflare Terraform provider",
+      "commitMessageTopic": "Cloudflare Terraform provider",
+      "automerge": false,
+      "addLabels": ["applies-on-merge"],
+      "prBodyNotes": [
+        "**Applies on merge.** After the deploy is approved, `deploy.yml` runs `terraform plan` and `apply` with this provider against the live zone. Read the plan in the run summary before approving; anything other than `No changes` on a provider-only bump needs a look."
+      ]
+    },
+    {
+      "description": "Major version updates require manual review.",
+      "matchUpdateTypes": ["major"],
+      "labels": ["dependencies", "major-update", "renovate"],
+      "reviewers": ["justinharringa"],
+      "prPriority": 10
     }
-  ],
-  "dependencyDashboard": true
+  ]
 }

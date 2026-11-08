@@ -34,6 +34,18 @@ clear message if any secret is missing. Third-party actions are pinned to commit
 SHAs (Renovate keeps them current); keep it that way in a public repo. Never create a Worker, a
 Pages project or DNS records by hand; Cloudflare's dashboard calls Pages "legacy".
 
+## Dependencies and the merge gate
+Renovate policy is modelled on justinharringa/knuckles: the `description` block at the top of
+`renovate.json` is the rule (nothing may turn "update available" into "no PR"; auto-merge only
+where a PR check exercises the bump; `rebaseWhen: auto`, never a ruleset with "require branches
+to be up to date"). `ci.yml` ends in one job named `CI gate` that `needs:` every other job and
+runs `if: always()`; it is the only status check the `main` ruleset requires
+(`docs/rulesets/main.json`, imported by hand, see `docs/rulesets/README.md`). Keep that name.
+No workflow other than `ci.yml` may trigger on `pull_request` or `push`. The merge gate and the
+deploy gate are different things: a merge to main only queues a `Deploy` run that waits for the
+owner's approval. To triage open Renovate PRs, run `/renovate-triage`
+(`.claude/skills/renovate-triage/SKILL.md`); the Dependency Dashboard is issue #4.
+
 ## Verifying in a browser
 Playwright and Chromium are available in the cloud sandbox. `window.__game` exposes the store
 for automated play-throughs; the drivers used so far live outside the repo (scratchpad).
