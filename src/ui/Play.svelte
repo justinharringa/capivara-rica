@@ -69,6 +69,7 @@
       <Stat id="ghostNow" label={ui('ghostNow')} ghost>
         {formatBRL(ghostNow)}
         <span class="small" class:good={nw >= ghostNow} class:bad={nw < ghostNow}>({signed(nw - ghostNow)})</span>
+        {#if game.ghostSince !== null}<br /><span class="small muted">{t(ui('ghostSinceShort'), { idade: Math.floor(game.ghostSince / 12) })}</span>{/if}
       </Stat>
     {/if}
     <Stat id="cash" label={ui('cash')} valueClass={s.cash < 0 ? 'bad' : ''}>{formatBRL(s.cash)}</Stat>

@@ -301,3 +301,23 @@ describe('review fixes (2026-11-08)', () => {
     expect(parseReais('abc')).toBe(0);
   });
 });
+
+describe('cheque especial', () => {
+  it('is charged only on what savings cannot cover', () => {
+    const s = newGame({ seed: 1, startAge: 18 }, p);
+    s.pending = null;
+    s.hasBankAccount = true;
+    s.career.job = 'atendente';
+    s.career.salary = 0; // no income this month
+    setStanding(s, { savePct: 0, lifestyle: 'normal' });
+    s.cash = 100; // R$ 1,00 in the account
+    deposit(s.inv.poupanca, 500000); // R$ 5.000 saved
+    stepMonth(s, p);
+    while (s.pending) choose(s, p, chooseByTags(s.pending, ['capivara', 'capivara2']));
+    // Costs exceeded cash; savings covered them; no overdraft interest.
+    expect(s.cash).toBeGreaterThanOrEqual(0);
+    expect(s.lastMonth!.interestPaid).toBe(0);
+    expect(s.log.some((e) => e.key === 'cheque_especial')).toBe(false);
+    expect(s.inv.poupanca.balance).toBeLessThan(500000);
+  });
+});
