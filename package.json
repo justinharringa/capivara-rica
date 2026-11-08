@@ -17,14 +17,14 @@
     "size": "node --experimental-strip-types scripts/check-size.ts"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@sveltejs/vite-plugin-svelte": "7.3.1",
     "@types/node": "^22.20.5",
-    "svelte": "^5.57.3",
-    "svelte-check": "^4.7.8",
-    "typescript": "^5.9.3",
-    "vite": "^8.3.6",
-    "vite-plugin-pwa": "^2.0.0",
-    "vitest": "^5.1.0"
+    "svelte": "5.57.3",
+    "svelte-check": "4.7.8",
+    "typescript": "5.9.3",
+    "vite": "8.3.6",
+    "vite-plugin-pwa": "2.0.0",
+    "vitest": "5.1.0"
   },
   "dependencies": {
     "idb-keyval": "^6.3.0"
