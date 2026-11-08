@@ -127,6 +127,44 @@ describe('the 22-30 events', () => {
     expect(s.log.some((x) => x.key === 'ingles_concluido')).toBe(true);
   });
 
+  it('a parent can wait, and the question comes back two years later at the earliest', () => {
+    const s = adult();
+    const e = ev('filho');
+    expect(e.eligible({ s, p })).toBe(true);
+    e.choices.find((c) => c.id === 'depois')!.apply({ s, p }, {});
+    expect(s.flags.filhos).toBeUndefined();
+    expect(e.eligible({ s, p })).toBe(false);
+    s.month += 24;
+    expect(e.eligible({ s, p })).toBe(true);
+  });
+
+  it('financing is offered only when the instalment fits under the red line', () => {
+    const s = adult();
+    const car = ev('carro');
+    const v = car.vars!({ s, p });
+    // A R$ 1.300 instalment on a minimum wage is over 40% of income: not offered.
+    expect(car.choices.find((c) => c.id === 'financiar')!.available!({ s, p }, v)).toBe(false);
+    s.career.salary = 2000000; // R$ 20k gross
+    expect(car.choices.find((c) => c.id === 'financiar')!.available!({ s, p }, v)).toBe(true);
+  });
+
+  it('taking any job ends the seguro-desemprego, and a graduate is offered a job at their level', () => {
+    const s = adult();
+    s.career.job = 'nenhum';
+    s.career.level = 'superior';
+    s.flags.seguroMeses = 3;
+    s.flags.seguroValor = 100000;
+    const vaga = ev('vaga');
+    const v = vaga.vars!({ s, p });
+    expect(v.cargo).toBe('superior');
+    const nivel = vaga.choices.find((c) => c.id === 'nivel')!;
+    expect(nivel.available!({ s, p }, v)).toBe(true);
+    nivel.apply({ s, p }, v);
+    expect(s.career.job).toBe('superior');
+    expect(s.flags.seguroMeses).toBe(0);
+    expect(monthlyIncome(s, p)).toBeGreaterThan(0);
+  });
+
   it('a trip comes at most every two years', () => {
     const s = runWithPolicy({ seed: 7, startAge: 18 }, p, gastaoPolicy);
     const trips = s.log.filter((e) => e.key === 'ev:viagem');

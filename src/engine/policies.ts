@@ -1,5 +1,5 @@
 import type { Policy } from './sim';
-import { setStanding, setCardPolicy } from './sim';
+import { setStanding, setCardPolicy, monthlyIncome, monthlyFixedCosts, committedMonthly, priced } from './sim';
 import type { Stop } from './state';
 
 /** Picks the first choice carrying a tag, in priority order, else the first choice. */
@@ -24,7 +24,17 @@ export const capivaraPolicy: Policy = {
     if (s.hasBankAccount) setStanding(s, { saveInto: 'cdb' }, true);
     setCardPolicy(s, 'integral', true);
   },
-  choose: (_s, _p, stop) => chooseByTags(stop, ['capivara', 'capivara2']),
+  choose: (s, p, stop) => {
+    // In the red, she tightens the belt before anything else (recorded, so her life replays).
+    if (s.cash < 0 && s.standing.lifestyle !== 'economico') setStanding(s, { lifestyle: 'economico' }, true);
+    // A child only when the budget already has room for it; otherwise "esperar mais um pouco".
+    if (stop.eventId === 'filho') {
+      const room = monthlyIncome(s, p) - monthlyFixedCosts(s, p) - committedMonthly(s, p);
+      const custo = Math.round(priced(s, p.childMonthlyCost) / (s.flags.juntos ? 2 : 1));
+      if (room < custo && stop.choices.some((c) => c.id === 'depois')) return 'depois';
+    }
+    return chooseByTags(stop, ['capivara', 'capivara2']);
+  },
 };
 
 /** Always takes the first offered choice; useful as a stress test. */

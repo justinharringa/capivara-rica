@@ -1,7 +1,7 @@
 <script lang="ts">
   import { game, params } from '$lib/game.svelte';
   import { ui, t, events } from '$lib/content';
-  import { formatBRL, futureValueOfSeries } from '$engine/money';
+  import { formatBRL, futureValueOfSeries, parseReais, annualToMonthly } from '$engine/money';
   import { score, netWorth, monthlyIncome, monthlyFixedCosts, committedMonthly } from '$engine/sim';
   import { monthlyRate } from '$engine/investments';
   import { renderShareCard, shareOrDownload } from '$lib/shareCard';
@@ -17,10 +17,14 @@
   let copied = $state(false);
   let shared = $state(false);
 
-  // "E aos 40?": the current standing order, kept for ten more years, in reais of today.
+  // "E aos 40?": the current standing order kept for ten more years, compounding at the REAL
+  // rate of the chosen instrument (nominal minus the inflation the game is running at), so the
+  // answer is in the same reais of today as the score. Debt and locked money do not compound
+  // at a savings rate, so the base is what is actually invested, never negative.
   const monthly = $derived(Math.max(0, Math.round(Math.max(0, monthlyIncome(s, params) - monthlyFixedCosts(s, params) - committedMonthly(s, params)) * s.standing.savePct)));
-  const rate = $derived(monthlyRate(s, params, s.standing.saveInto));
-  const at40 = $derived(Math.round((netWorth(s) * Math.pow(1 + rate, 120) + futureValueOfSeries(monthly, rate, 120)) / s.macro.priceIndex));
+  const realRate = $derived((1 + monthlyRate(s, params, s.standing.saveInto)) / (1 + annualToMonthly(s.macro.ipcaAnnual)) - 1);
+  const base = $derived(Math.max(0, netWorth(s) - s.fgts - s.peDeMeiaLocked));
+  const at40 = $derived(Math.round((base * Math.pow(1 + realRate, 120) + futureValueOfSeries(monthly, realRate, 120)) / s.macro.priceIndex));
   let guess = $state('');
   let revealed = $state(false);
 
@@ -94,7 +98,7 @@
       <button class="primary" onclick={() => (revealed = true)} disabled={!guess}>{ui('codaReveal')}</button>
     {:else}
       <p class="reveal">
-        Seu palpite: <strong>{formatBRL(Math.round(Number(guess.replace(/\D/g, '')) * 100) || 0)}</strong>.
+        Seu palpite: <strong>{formatBRL(Math.max(0, parseReais(guess)))}</strong>.
         {t(ui('codaResult'), { aos40: at40, depositado: monthly * 120 })}
       </p>
       <p class="capi-line small"><span aria-hidden="true">🐾</span> {ui('codaCapi')}</p>

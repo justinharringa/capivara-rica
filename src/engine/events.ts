@@ -17,6 +17,8 @@ import {
   saveInto,
   setStanding,
   trySpend,
+  takeJob,
+  canCommit,
   monthlyIncome,
   projectSavings,
   comprometimento,
@@ -78,6 +80,11 @@ function layOff(s: GameState, v: Vars): void {
   s.flags.seguroMeses = Number(v.meses);
   s.flags.seguroValor = Number(v.parcela);
   bumpWellbeing(s, -8);
+}
+
+/** Leaving the parents' home for a shared flat needs the player's share (half the rent, their food) to fit the income. */
+function canMoveInTogether(s: GameState, p: Params, v: Vars): boolean {
+  return s.living === 'sozinho' || monthlyIncome(s, p) > Number(v.aluguel) + priced(s, p.cestaBasicaSP);
 }
 
 /** Moving in with a partner: the rent is shared from now on; a player still at home moves out. */
@@ -446,20 +453,12 @@ export const EVENTS: EventDef[] = [
       {
         id: 'clt',
         tags: ['capivara'],
-        apply: ({ s, p }) => {
-          s.career.job = 'atendente';
-          s.career.salary = jobSalary(s, p, 'atendente');
-          s.career.monthsInJob = 0;
-          s.hasBankAccount = true;
-        },
+        apply: ({ s, p }) => takeJob(s, p, 'atendente'),
       },
       {
         id: 'ifood',
         apply: ({ s, p }) => {
-          s.career.job = 'ifood';
-          s.career.salary = jobSalary(s, p, 'ifood');
-          s.career.monthsInJob = 0;
-          s.hasBankAccount = true;
+          takeJob(s, p, 'ifood');
           bumpWellbeing(s, -3);
         },
       },
@@ -478,26 +477,26 @@ export const EVENTS: EventDef[] = [
     kind: 'random',
     eligible: ({ s }) => isAdult(s) && s.career.job === 'nenhum',
     monthlyProb: () => 0.08,
-    vars: ({ s, p }) => ({ clt: jobSalary(s, p, 'atendente'), ifood: jobSalary(s, p, 'ifood') }),
+    vars: ({ s, p }) => {
+      // A graduate who lost a job is offered one at their level, not only the counter.
+      const nivel = s.career.level === 'superior' ? 'superior' : s.career.level === 'tecnico' ? 'tecnico' : null;
+      return { clt: jobSalary(s, p, 'atendente'), ifood: jobSalary(s, p, 'ifood'), cargo: nivel ?? 'atendente', nivelSalario: nivel ? jobSalary(s, p, nivel) : 0 };
+    },
     choices: [
       {
-        id: 'clt',
+        id: 'nivel',
         tags: ['capivara'],
-        apply: ({ s, p }) => {
-          s.career.job = 'atendente';
-          s.career.salary = jobSalary(s, p, 'atendente');
-          s.career.monthsInJob = 0;
-          s.hasBankAccount = true;
-        },
+        available: ({ s }) => s.career.level === 'superior' || s.career.level === 'tecnico',
+        apply: ({ s, p }, v) => takeJob(s, p, v.cargo === 'superior' ? 'superior' : 'tecnico'),
+      },
+      {
+        id: 'clt',
+        tags: ['capivara2'],
+        apply: ({ s, p }) => takeJob(s, p, 'atendente'),
       },
       {
         id: 'ifood',
-        apply: ({ s, p }) => {
-          s.career.job = 'ifood';
-          s.career.salary = jobSalary(s, p, 'ifood');
-          s.career.monthsInJob = 0;
-          s.hasBankAccount = true;
-        },
+        apply: ({ s, p }) => takeJob(s, p, 'ifood'),
       },
       { id: 'nao', apply: ({ s }) => bumpWellbeing(s, -2) },
     ],
@@ -657,11 +656,7 @@ export const EVENTS: EventDef[] = [
         tags: ['capivara'],
         apply: ({ s, p }, v) => {
           s.flags.formatura = 0;
-          const job = v.cargo === 'superior' ? 'superior' : 'tecnico';
-          s.career.job = job;
-          s.career.salary = jobSalary(s, p, job);
-          s.career.monthsInJob = 0;
-          s.hasBankAccount = true;
+          takeJob(s, p, v.cargo === 'superior' ? 'superior' : 'tecnico');
           bumpWellbeing(s, 6);
         },
       },
@@ -788,7 +783,7 @@ export const EVENTS: EventDef[] = [
     choices: [
       {
         id: 'financiar',
-        available: ({ s }) => !isNegativado(s),
+        available: ({ s, p }, v) => !isNegativado(s) && canCommit(s, p, Number(v.parcela)),
         apply: ({ s, p }, v) => {
           addLoan(s, 'moto', 'moto 60x', Number(v.preco), p.motoFinanceMonthly, p.motoFinanceMonths);
           s.hasMoto = true;
@@ -950,8 +945,7 @@ export const EVENTS: EventDef[] = [
   {
     id: 'filho',
     kind: 'random',
-    once: true,
-    eligible: ({ s }) => at(s, 25) && (s.career.job !== 'nenhum' || !!s.flags.juntos),
+    eligible: ({ s }) => at(s, 25) && !s.flags.filhos && (s.career.job !== 'nenhum' || !!s.flags.juntos) && (!s.flags.filhoMonth || s.month - s.flags.filhoMonth >= 24),
     monthlyProb: () => 0.012,
     vars: ({ s, p }) => ({ custo: priced(s, p.childMonthlyCost), creche: Math.round(priced(s, p.childMonthlyCost) * 1.5) }),
     choices: [
@@ -971,6 +965,13 @@ export const EVENTS: EventDef[] = [
           bumpWellbeing(s, 10);
         },
       },
+      {
+        id: 'depois',
+        apply: ({ s }) => {
+          s.flags.filhoMonth = s.month;
+          bumpWellbeing(s, -2);
+        },
+      },
     ],
   },
   {
@@ -986,7 +987,7 @@ export const EVENTS: EventDef[] = [
     choices: [
       {
         id: 'financiar',
-        available: ({ s }) => !isNegativado(s),
+        available: ({ s, p }, v) => !isNegativado(s) && canCommit(s, p, Number(v.parcela)),
         apply: ({ s, p }, v) => {
           addLoan(s, 'carro', 'carro usado', Number(v.preco), p.carFinanceMonthly, p.carFinanceMonths);
           s.flags.carro = 1;
@@ -996,7 +997,7 @@ export const EVENTS: EventDef[] = [
       {
         id: 'avista',
         tags: ['capivara2'],
-        available: (c, v) => spendable(c.s, c.p) >= Number(v.preco) * c.p.reserveMultipleMoto,
+        available: (c, v) => spendable(c.s, c.p) >= Number(v.preco) * c.p.reserveMultipleBigPurchase,
         apply: ({ s, p }, v) => {
           trySpend(s, p, Number(v.preco));
           s.flags.carro = 1;
@@ -1025,7 +1026,7 @@ export const EVENTS: EventDef[] = [
       {
         id: 'civil',
         tags: ['capivara'],
-        available: (c, v) => spendable(c.s, c.p) >= Number(v.civil),
+        available: (c, v) => spendable(c.s, c.p) >= Number(v.civil) && canMoveInTogether(c.s, c.p, v),
         apply: ({ s, p }, v) => {
           trySpend(s, p, Number(v.civil));
           moveInTogether(s);
@@ -1034,7 +1035,7 @@ export const EVENTS: EventDef[] = [
       },
       {
         id: 'festa',
-        available: ({ s }, v) => s.card.has && !s.card.blocked && s.card.statement + s.card.revolving + Number(v.festa) <= s.card.limit,
+        available: ({ s, p }, v) => canMoveInTogether(s, p, v) && s.card.has && !s.card.blocked && s.card.statement + s.card.revolving + Number(v.festa) <= s.card.limit,
         apply: ({ s }, v) => {
           addParcela(s, 'casamento', 'festa de casamento 12x', Number(v.parcela), 12, true);
           moveInTogether(s);

@@ -24,6 +24,7 @@ import {
 import { accrueInvestments, deposit, drawDown, investedTotal, liquid, spendable, monthlyRate, previewRedeem, redeem, type Redemption } from './investments';
 import { settleCard, chargeCard, accrueRotativo } from './card';
 import { annualRaise, jobSalary, netPay, LEVEL_RANK } from './career';
+import type { JobId } from './state';
 import { EVENTS, type EventDef, type EventContext } from './events';
 
 // ---------------------------------------------------------------------------
@@ -166,6 +167,27 @@ export function saveInto(s: GameState, amount: Centavos): void {
 
 export const priced = (s: GameState, base: Centavos): Centavos => Math.round(base * s.macro.priceIndex);
 
+/** Start a job: salary at today's market, tenure reset, an account opened, any seguro-desemprego over. */
+export function takeJob(s: GameState, p: Params, job: Exclude<JobId, 'nenhum'>): void {
+  s.career.job = job;
+  s.career.salary = jobSalary(s, p, job);
+  s.career.monthsInJob = 0;
+  s.hasBankAccount = true;
+  s.flags.seguroMeses = 0;
+  s.flags.seguroValor = 0;
+}
+
+/**
+ * Would one more monthly commitment keep the player under the red line? A bank would ask the
+ * same question before financing; the first players were being handed a R$ 40k car loan on a
+ * minimum wage.
+ */
+export function canCommit(s: GameState, p: Params, instalment: Centavos): boolean {
+  const income = monthlyIncome(s, p);
+  if (income <= 0) return false;
+  return (committedMonthly(s, p) + instalment) / income < p.comprometimentoRed;
+}
+
 // ---------------------------------------------------------------------------
 // Derived figures
 // ---------------------------------------------------------------------------
@@ -264,7 +286,8 @@ export function monthlyFixedCosts(s: GameState, p: Params): Centavos {
   }
   if (s.hasMoto) total += priced(s, p.motoRunningCost);
   if (s.flags.carro) total += priced(s, p.carRunningCost);
-  if (s.flags.filhos) total += priced(s, p.childMonthlyCost) * s.flags.filhos * (s.flags.crecheParticular ? 1.5 : 1);
+  // A child's cost is a family figure; with a partner in the house each pays half.
+  if (s.flags.filhos) total += Math.round((priced(s, p.childMonthlyCost) * s.flags.filhos * (s.flags.crecheParticular ? 1.5 : 1)) / (s.flags.juntos ? 2 : 1));
   if (s.career.study) total += s.career.study.monthlyCost;
   return total;
 }
@@ -382,9 +405,13 @@ export function stepMonth(s: GameState, p: Params): void {
 
   // 3. Instalments and loans. Card instalments go to the statement; the rest leaves cash.
   let committedPaid = 0;
+  let refinanced = 0;
   for (const x of s.parcelas) {
-    if (x.onCard) s.card.statement += x.amount;
-    else s.cash -= x.amount;
+    if (x.onCard) {
+      s.card.statement += x.amount;
+      // Instalments of a parcelada fatura are the old debt coming round again, not new credit.
+      if (x.label === 'fatura parcelada') refinanced += x.amount;
+    } else s.cash -= x.amount;
     committedPaid += x.amount;
     // A parcelada fatura carries its interest inside each instalment.
     summary.interestPaid += x.interest ?? 0;
@@ -404,7 +431,7 @@ export function stepMonth(s: GameState, p: Params): void {
 
   // 4. The fatura.
   if (s.card.has) {
-    const r = settleCard(s, p);
+    const r = settleCard(s, p, refinanced);
     // Rotativo interest accrued this month. Parcelamento interest is attributed per
     // instalment above, not all at once when the balance converts.
     summary.interestPaid += r.interest;
@@ -569,6 +596,11 @@ function eligible(s: GameState, p: Params, ev: EventDef): boolean {
 
 export function pickEvent(s: GameState, p: Params): void {
   if (s.pending || s.ended) return;
+  // One draw per month from the events stream, before anything else can return, so that two
+  // lives with the same seed see the same luck whatever their scheduled stops did. (Until
+  // 2026-11-08 the draw sat after the scheduled loop: one shifted stop moved every later
+  // random event, which broke both the ghost comparison and the costed-decisions replay.)
+  const roll = random(s.rng, 'events');
   for (const ev of EVENTS) {
     if (ev.kind === 'random') continue;
     if (eligible(s, p, ev)) {
@@ -576,9 +608,6 @@ export function pickEvent(s: GameState, p: Params): void {
       return;
     }
   }
-  // One draw per month from the events stream, whatever is eligible, so that the
-  // ghost replay sees exactly the same luck as the player.
-  const roll = random(s.rng, 'events');
   if (s.month - s.lastRandomStopMonth < 2) return;
   let acc = 0;
   for (const ev of EVENTS) {

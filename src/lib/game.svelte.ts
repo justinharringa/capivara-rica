@@ -4,7 +4,7 @@ import type { GameState, StartAge, Standing, CardPolicy, SaveTarget } from '$eng
 import { newGame, stepMonth, choose, setStanding, setCardPolicy, runWithPolicy, runWithPolicyFrom, debtTotal, committedMonthly, depositSavings, withdrawSavings } from '$engine/sim';
 import { savedTotal } from '$engine/investments';
 import { capivaraPolicy } from '$engine/policies';
-import { costliestDecisions, replay, type DecisionCost } from '$engine/review';
+import { costliestDecisions, type DecisionCost } from '$engine/review';
 import { loadSave, loadGhostFork, writeSave, clearSave } from './save';
 
 export const params = loadParams(brJson as ParamFile);
@@ -203,10 +203,7 @@ export class Game {
     if (!s) return;
     if (s.ended) {
       if (!this.ghost) this.ghost = this.buildGhost(s);
-      if (this.review === null) {
-        const r = replay(s, params);
-        this.review = r && r.ended ? costliestDecisions(s, params, capivaraPolicy) : null;
-      }
+      if (this.review === null) this.review = costliestDecisions(s, params, capivaraPolicy);
       await clearSave();
       this.hasSave = false;
     } else {

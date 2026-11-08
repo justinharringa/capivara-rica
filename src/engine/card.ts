@@ -90,7 +90,7 @@ export interface CardSettlement {
  * and then savings. Card instalments were already added to `statement` by the
  * parcela step, so they are part of `due`.
  */
-export function settleCard(s: GameState, p: Params): CardSettlement {
+export function settleCard(s: GameState, p: Params, refinanced: Centavos = 0): CardSettlement {
   const c = s.card;
   const due = faturaDue(s);
   const result: CardSettlement = { due, paid: 0, toRevolving: 0, interest: 0, parcelou: false, missedMinimum: false };
@@ -120,9 +120,12 @@ export function settleCard(s: GameState, p: Params): CardSettlement {
   result.paid = paid;
 
   const unpaid = due - paid;
-  // Whatever entered rotativo for the first time widens the cap base.
+  // New credit that enters rotativo for the first time widens the cap base. Instalments of
+  // an earlier parcelada fatura that go unpaid again are the same debt coming round, so they
+  // do not: otherwise the base grows on every re-entry and the 100% cap never binds (seen on
+  // 2026-11-08: a spendthrift life reached a capBase of R$ 38M).
   const newlyRevolving = Math.max(0, unpaid - c.revolving);
-  c.capBase += newlyRevolving;
+  c.capBase += Math.max(0, newlyRevolving - Math.min(refinanced, unpaid));
   c.revolving = unpaid;
   c.statement = 0;
 

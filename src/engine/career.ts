@@ -2,9 +2,12 @@ import type { Centavos } from './money';
 import type { Params } from './params';
 import type { GameState, JobId, StudyTrack, EducationLevel } from './state';
 
-/** Gross monthly pay for a job at today's wage index. English fluency adds its premium on top. */
+/** Jobs where English fluency moves the pay. A minimum-wage counter job or gig work pays the same either way. */
+const ENGLISH_PAYS: ReadonlySet<JobId> = new Set<JobId>(['tecnico', 'superior']);
+
+/** Gross monthly pay for a job at today's wage index. English fluency adds its premium where it counts. */
 export function jobSalary(s: GameState, p: Params, job: JobId): Centavos {
-  const w = s.macro.wageIndex * (s.flags.ingles ? 1 + p.englishPremium : 1);
+  const w = s.macro.wageIndex * (s.flags.ingles && ENGLISH_PAYS.has(job) ? 1 + p.englishPremium : 1);
   switch (job) {
     case 'nenhum':
       return 0;

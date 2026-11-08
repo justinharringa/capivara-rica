@@ -76,35 +76,52 @@ export function replay(s: GameState, p: Params, onStop?: (state: GameState, inde
   return r;
 }
 
-/** Play on from `start`: the player's later actions where they still apply, the policy otherwise. */
+type ChoiceAction = Extract<Action, { kind: 'choice' }>;
+
+/**
+ * Play on from `start`, keeping the player's own later decisions. A counterfactual shifts
+ * later events by months, so recorded choices are matched by event, in order of occurrence,
+ * never by month: the player's n-th answer to an event is reused for its n-th occurrence here.
+ * A stop with no recorded answer left takes the player's last answer to that event, when it
+ * is still offered; only an event the player never met falls back to the policy. Standing
+ * orders and money moves still happen at their recorded months.
+ */
 function playOn(start: GameState, p: Params, actions: Action[], from: number, policy: Policy): GameState {
   const s = structuredClone(start);
-  let j = from;
+  const later = actions.slice(from);
+  const queues = new Map<string, string[]>();
+  const lastAnswer = new Map<string, string>();
+  for (const a of actions) {
+    if (a.kind !== 'choice') continue;
+    lastAnswer.set(a.eventId, a.choiceId);
+  }
+  for (const a of later) {
+    if (a.kind !== 'choice') continue;
+    (queues.get(a.eventId) ?? queues.set(a.eventId, []).get(a.eventId)!).push(a.choiceId);
+  }
+  const others = later.filter((a): a is Exclude<Action, ChoiceAction> => a.kind !== 'choice');
+  let k = 0;
   let guard = 0;
   while (!s.ended && guard < 2000) {
     guard += 1;
-    // Standing orders and money moves recorded for this month or earlier still happen; a
-    // recorded choice whose month has passed is gone.
-    while (j < actions.length && actions[j]!.month <= s.month) {
-      const a = actions[j]!;
-      if (a.kind === 'choice') {
-        if (a.month < s.month) {
-          j += 1;
-          continue;
-        }
-        break;
-      }
-      applyAction(s, p, a);
-      j += 1;
+    while (k < others.length && others[k]!.month <= s.month) {
+      applyAction(s, p, others[k]!);
+      k += 1;
     }
     if (s.pending) {
-      const a = actions[j];
-      if (a && a.month === s.month && choiceFits(s, a)) {
-        applyAction(s, p, a);
-        j += 1;
+      const offered = (id: string | undefined): id is string => !!id && s.pending!.choices.some((c) => c.id === id);
+      const queue = queues.get(s.pending.eventId);
+      const next = queue?.[0];
+      let pick: string;
+      if (offered(next)) {
+        queue!.shift();
+        pick = next;
+      } else if (offered(lastAnswer.get(s.pending.eventId))) {
+        pick = lastAnswer.get(s.pending.eventId)!;
       } else {
-        choose(s, p, policy.choose(s, p, s.pending));
+        pick = policy.choose(s, p, s.pending);
       }
+      choose(s, p, pick);
     } else {
       stepMonth(s, p);
     }
@@ -113,11 +130,12 @@ function playOn(start: GameState, p: Params, actions: Action[], from: number, po
 }
 
 /**
- * The `n` decisions that cost the most, by the score at 30. Empty when the action log does not
- * reproduce the life, or when every choice was already the Capivara's.
+ * The `n` decisions that cost the most, by the score at 30. Null when the action log does not
+ * reproduce the life (the UI then says the review is unavailable, rather than praising the
+ * player); empty when every choice was already the Capivara's.
  */
-export function costliestDecisions(s: GameState, p: Params, policy: Policy, n = 3): DecisionCost[] {
-  if (!s.ended) return [];
+export function costliestDecisions(s: GameState, p: Params, policy: Policy, n = 3): DecisionCost[] | null {
+  if (!s.ended) return null;
   const forks: Array<{ index: number; before: GameState; alt: string }> = [];
   const replayed = replay(s, p, (state, index) => {
     const a = s.actions[index]!;
@@ -125,11 +143,11 @@ export function costliestDecisions(s: GameState, p: Params, policy: Policy, n = 
     const alt = taggedChoice(state.pending);
     if (alt && alt !== a.choiceId) forks.push({ index, before: structuredClone(state), alt });
   });
-  if (!replayed || !replayed.ended || score(replayed) !== score(s)) return [];
+  if (!replayed || !replayed.ended || score(replayed) !== score(s)) return null;
   const actual = score(s);
   const out: DecisionCost[] = [];
   for (const f of forks) {
-    const a = s.actions[f.index] as Extract<Action, { kind: 'choice' }>;
+    const a = s.actions[f.index] as ChoiceAction;
     const cf = f.before;
     choose(cf, p, f.alt);
     const end = playOn(cf, p, s.actions, f.index + 1, policy);
