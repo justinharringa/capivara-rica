@@ -25,9 +25,9 @@ job summary.
    Settings · Read; User · User Details · Read; and on the two zones only: Zone · Zone · Read,
    Zone · DNS · Edit, Zone · Zone Settings · Edit, Zone · Workers Routes · Edit.
 5. In GitHub → Settings → Environments create **`production`** with Deployment branches set
-   to *Selected branches* → `main`. Optionally add yourself under *Required reviewers*: every
-   deploy then waits for one click, which is the strongest guard against a bad merge reaching
-   Cloudflare. Put the three secrets into that environment and the account id in a repository
+   to *Selected branches* → `main`, and add yourself under *Required reviewers*: every push to
+   `main` then waits for one approval before anything touches Cloudflare (the workflow is a
+   single job, so it is exactly one click per push). Put the three secrets into that environment and the account id in a repository
    variable:
 
    ```
@@ -38,9 +38,9 @@ job summary.
    ```
 
    Pull requests never receive Cloudflare credentials: `ci.yml` checks them and uploads the
-   built site as an artifact; only a push to `main` applies Terraform and deploys. The
-   `preflight` job skips everything, and lists what is missing in its summary, until the
-   variable and all three secrets exist.
+   built site as an artifact; only a push to `main` applies Terraform and deploys. The job's
+   first step stops with the missing items named in its summary if the variable or any of
+   the three secrets is absent.
 
 Do not create a Worker, a Pages project or DNS records by hand.
 
