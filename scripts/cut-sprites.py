@@ -7,6 +7,10 @@ Usage:
 
 The sheet is a grid of the same character on a flat background (#f9eddd as Gemini
 rendered it). Cells are named left to right, top to bottom; "-" skips a cell.
+Figures are found by their own pixels (runs of non-background columns inside runs of
+non-background rows), not by dividing the sheet into equal cells: Gemini does not centre
+figures in equal cells, and a nose that crosses the grid line was being cut off (child
+sheet, 2026-11-08). --grid-cut restores the equal-cell crop the adult sheets were cut with.
 --canvas fixes the source-pixel canvas every sprite is placed on, so sprites cut from
 different sheets come out at the same scale. Both sheets so far use 622x573.
 --icons also writes icon-512.png, icon-192.png and favicon.png from the cell named "icon".
@@ -14,8 +18,8 @@ different sheets come out at the same scale. Both sheets so far use 622x573.
 Needs Pillow and numpy.
 
 Sheets used so far:
-  assets/raw/capi-sheet-gemini-2026-11-07.jpg        --names wealth0,wealth1,wealth2,wealth3,-,worried,happy,icon --icons
-  assets/raw/capi-sheet-moods-gemini-2026-11-07.jpg  --names -,worried1,worried2,worried3,happy1,-,happy2,happy3 --flip happy3 --canvas 622x573
+  assets/raw/capi-sheet-gemini-2026-11-07.jpg        --names wealth0,wealth1,wealth2,wealth3,-,worried,happy,icon --icons --grid-cut
+  assets/raw/capi-sheet-moods-gemini-2026-11-07.jpg  --names=-,worried1,worried2,worried3,happy1,-,happy2,happy3 --flip happy3 --canvas 622x573 --grid-cut
   assets/raw/capi-sheet-child-gemini-2026-11-08.jpg        public/capi/child --names wealth0,wealth1,wealth2,wealth3,worried,happy,happy1,happy3 --flip happy3 --canvas 622x573 --width 200
   assets/raw/capi-sheet-child-moods-gemini-2026-11-08.jpg  public/capi/child --names=-,-,-,happy2,worried1,worried2,worried3,- --canvas 622x573 --width 200
     (the child is drawn smaller on the same canvas on purpose; a name list that starts with "-"
@@ -40,6 +44,7 @@ ap.add_argument('--flip', default='')
 ap.add_argument('--canvas', default='')
 ap.add_argument('--icons', action='store_true')
 ap.add_argument('--width', type=int, default=400)
+ap.add_argument('--grid-cut', action='store_true', help='crop equal cells instead of finding figures')
 args = ap.parse_args()
 
 os.makedirs(args.outdir, exist_ok=True)
@@ -58,16 +63,27 @@ alpha = np.clip((dist - 14) / 30.0, 0, 1)
 full = Image.fromarray(np.dstack([a.astype(np.uint8), (alpha * 255).astype(np.uint8)]), 'RGBA')
 
 cw, ch = W // cols, H // rows
-cells, boxes = {}, {}
-for i, name in enumerate(names):
-    if name == '-':
-        continue
+
+
+def runs(present, min_gap):
+    """Runs of True in a 1-D mask, merging gaps shorter than min_gap (a detached chain link)."""
+    idx = np.where(present)[0]
+    if len(idx) == 0:
+        return []
+    out, start, prev = [], idx[0], idx[0]
+    for i in idx[1:]:
+        if i - prev > min_gap:
+            out.append((int(start), int(prev) + 1))
+            start = i
+        prev = i
+    out.append((int(start), int(prev) + 1))
+    return out
+
+
+def grid_cell(i):
+    """Equal-cell crop, with a neighbour's nose or crown blanked when it pokes across the line."""
     r, c = divmod(i, cols)
     cell = full.crop((c * cw, r * ch, (c + 1) * cw, (r + 1) * ch))
-    if name in flip:
-        cell = cell.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-    # Neighbouring cells can poke a nose or crown across the grid line. Keep only the
-    # contiguous run of columns and rows that contains the cell centre; blank the rest.
     arr = np.array(cell)
     al = arr[:, :, 3]
     for axis, centre in ((0, cw // 2), (1, ch // 2)):
@@ -85,7 +101,29 @@ for i, name in enumerate(names):
         else:
             arr[~keep, :, 3] = 0
         al = arr[:, :, 3]
-    cell = Image.fromarray(arr, 'RGBA')
+    return Image.fromarray(arr, 'RGBA')
+
+
+if args.grid_cut:
+    figure_boxes = [None] * (cols * rows)
+else:
+    al_all = np.asarray(full)[:, :, 3] > 20
+    bands = runs(al_all.any(axis=1), int(0.02 * H))
+    assert len(bands) == rows, f'found {len(bands)} rows of figures, expected {rows}; try --grid-cut'
+    figure_boxes = []
+    for y0, y1 in bands:
+        cols_here = runs(al_all[y0:y1].any(axis=0), int(0.02 * W))
+        assert len(cols_here) == cols, f'found {len(cols_here)} figures in a row, expected {cols}; try --grid-cut'
+        figure_boxes += [(x0, y0, x1, y1) for x0, x1 in cols_here]
+
+cells, boxes = {}, {}
+for i, name in enumerate(names):
+    if name == '-':
+        continue
+    cell = grid_cell(i) if args.grid_cut else full.crop(figure_boxes[i])
+    if name in flip:
+        cell = cell.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+    al = np.array(cell)[:, :, 3]
     ys, xs = np.where(al > 20)
     boxes[name] = (int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1)
     cells[name] = cell

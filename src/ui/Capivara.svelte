@@ -68,7 +68,7 @@
      x 47-88% / y 27-38% on the teen and x 51-81% / y 39-48% on the child. The drop sits on the
      ear-side end of the glasses in all three. */
   .teen .drop {
-    left: 50%;
+    left: 53%;
     top: 32%;
   }
   .child .drop {
