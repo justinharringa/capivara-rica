@@ -26,6 +26,22 @@ export function futureValueOfSeries(monthly: Centavos, rateMonthly: number, mont
 }
 
 /** Price (PMT) of a loan: level instalment for `principal` at `rateMonthly` over `n` months. */
+/**
+ * Parse what a person types into a reais field, into centavos. Accepts "10,50", "10.50",
+ * "1.000", "1.000,50", "R$ 2000" and "2000". A single dot followed by one or two digits is a
+ * decimal point; dots followed by three digits are thousands separators. Returns 0 on nonsense.
+ */
+export function parseReais(text: string): Centavos {
+  const t = text.replace(/[^\d.,-]/g, '').trim();
+  if (!t) return 0;
+  let normalized: string;
+  if (t.includes(',')) normalized = t.replace(/\./g, '').replace(',', '.');
+  else if (/^-?\d{1,3}(\.\d{3})+$/.test(t)) normalized = t.replace(/\./g, '');
+  else normalized = t;
+  const n = Number(normalized);
+  return Number.isFinite(n) ? Math.round(n * 100) : 0;
+}
+
 export function instalment(principal: Centavos, rateMonthly: number, n: number): Centavos {
   if (n <= 0) return principal;
   if (rateMonthly === 0) return Math.ceil(principal / n);

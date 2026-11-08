@@ -6,11 +6,15 @@
 - [x] PWA offline, sem coleta de dados, orçamento de tamanho em CI
 
 ## v0.2: números e balanceamento
-- [ ] Mover os multiplicadores de reserva (2× Black Friday, 1,5× moto em `src/engine/events.ts`) para parâmetros nomeados
+- [x] Mover os multiplicadores de reserva (2× Black Friday, 1,5× moto) para parâmetros nomeados
+- [x] Capítulos com cartão de balanço; Capivara visível desde o início; resultado de cada escolha; linha "mês passado"
+- [x] Estilo de vida (gasto de lazer) para quem tem salário; cartão aos 16 honesto sobre o teto
+- [ ] Verificar os gastos de lazer por idade (POF/IBGE) e os preços da Black Friday
 - [ ] Zerar `placeholder`/`memory` em `data/br/2026-11.json` (P0 do relatório: mínimo da fatura,
       IOF, taxas de setembro/2026 no BCB, Pix vs 12x real, Tesouro Selic, poupança/TR)
 - [ ] Custos de curso técnico/cursinho; renda por escolaridade (IBGE SIDRA)
-- [ ] Mais eventos para 25-30 anos; Black Friday a cada 2 anos; variar a Capivara por idade
+- [x] Black Friday a cada 2 anos, com objeto diferente a cada vez
+- [ ] Mais eventos para 25-30 anos; variar a Capivara por idade
 - [ ] Coda "e aos 40?" com palpite; as 3 decisões que mais custaram, comparadas ao fantasma
 - [ ] Cartão de resultado em PNG para compartilhar (Web Share API)
 

@@ -28,8 +28,25 @@ operacional do que o código implementa hoje e do que falta.
   CDB a 100% do CDI, IR regressivo no resgate, cofrinho a 0%.
 - Macro anual: IPCA e Selic real sorteados com reversão à média; índice de preços deflaciona
   o placar; índice de salários reajusta mesada e salários.
-- 28 eventos (`src/engine/events.ts`); textos em `content/pt-BR/events.json`.
+- 30 eventos (`src/engine/events.ts`); textos em `content/pt-BR/events.json`.
 - Interface mobile-first em Svelte 5, PWA offline, salvamento local, gráfico você × Capivara.
+- Cinco capítulos (infância 10-13, ensino médio 14-17, primeiro emprego 18-21, vida adulta
+  22-25, rumo aos 30). Cada fronteira abre um cartão de capítulo com o patrimônio no começo e
+  no fim, os juros recebidos e pagos no período, a Capivara na mesma idade e o gráfico até ali.
+  É também o ponto natural de parar e voltar depois (o jogo salva sozinho).
+- Feedback imediato (2026-11-08): a Capivara é simulada no início da partida, não no fim, então
+  o painel mostra "Capivara agora" (mesma sorte, mesma idade) o tempo todo; cada escolha abre um
+  cartão de resultado com o que mudou (conta, guardado, dívidas, comprometido, bem-estar) e o que
+  a Capivara teria escolhido; e uma linha "mês passado" decompõe renda, gastos, parcelas, o que
+  foi guardado e os juros nos dois sentidos.
+- Estilo de vida (ordem mensal): econômico / normal / folgado multiplica um gasto base de lazer
+  (rolê, roupa, transporte) que só existe para quem tem salário (aprendiz ou adulto) e desloca
+  em ±5 o ponto para onde o bem-estar converge. Sem isso um aprendiz de 16 anos chegava a
+  R$ 35 mil sem fazer nada: só o celular custava algo.
+- Cartão aos 16 é garantido: o limite é o menor entre o que está investido (qualquer
+  instrumento, não só CDB; cofrinho não vale) e um teto, e o texto diz o teto.
+- Black Friday varia o objeto (sete, nunca o mesmo duas vezes seguidas) e vem no máximo a cada
+  dois anos.
 
 ## Guardrails pedagógicos (da evidência)
 
@@ -45,4 +62,5 @@ operacional do que o código implementa hoje e do que falta.
 - Percentual mínimo da fatura e leitura por operação do teto de 100%.
 - Custos de SENAI/SENAC/ETEC/cursinho.
 - O "e aos 40?" (coda de projeção) e a lista das 3 decisões mais caras ainda não existem.
-- Balanceamento: eventos tardios (25-30 anos) são escassos; Black Friday repete todo ano.
+- Balanceamento: eventos tardios (25-30 anos) são escassos. Os gastos base de lazer
+  (`leisureTeenMonthly`, `leisureAdultMonthly`) e os preços da Black Friday são `placeholder`.

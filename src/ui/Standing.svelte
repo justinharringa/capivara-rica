@@ -1,11 +1,15 @@
 <script lang="ts">
-  import { game } from '$lib/game.svelte';
+  import { game, params } from '$lib/game.svelte';
   import { ui } from '$lib/content';
-  import { isAdult } from '$engine/state';
-  import type { SaveTarget, CardPolicy } from '$engine/state';
+  import { isAdult, LIFESTYLES } from '$engine/state';
+  import type { SaveTarget, CardPolicy, Lifestyle } from '$engine/state';
   import { formatBRL } from '$engine/money';
+  import { leisureCost } from '$engine/sim';
+  import { t, strings } from '$lib/content';
+  import Help from './Help.svelte';
 
   const s = $derived(game.state!);
+  const leisure = $derived(leisureCost(s, params));
   const targets: SaveTarget[] = ['cofrinho', 'poupanca', 'tesouroSelic', 'cdb'];
   const policies: CardPolicy[] = ['integral', 'minimo', 'parcelar'];
 </script>
@@ -14,7 +18,7 @@
   <summary><strong>{ui('standing')}</strong></summary>
   <div class="form">
     <label>
-      {ui('savePct')}: <strong>{Math.round(s.standing.savePct * 100)}%</strong>
+      <span>{ui('savePct')}: <strong>{Math.round(s.standing.savePct * 100)}%</strong><Help id="savePct" label={ui('savePct')} /></span>
       <input
         type="range"
         min="0"
@@ -25,7 +29,7 @@
       />
     </label>
     <label>
-      {ui('saveInto')}
+      <span>{ui('saveInto')}<Help id="saveInto" label={ui('saveInto')} /></span>
       <select value={s.standing.saveInto} onchange={(e) => game.updateStanding({ saveInto: (e.target as HTMLSelectElement).value as SaveTarget })}>
         {#each targets as tg (tg)}
           <option value={tg} disabled={tg !== 'cofrinho' && !s.hasBankAccount}>{ui(tg)}</option>
@@ -33,9 +37,18 @@
       </select>
       {#if !s.hasBankAccount}<span class="small muted">{ui('noAccount')}</span>{/if}
     </label>
+    <label>
+      <span>{ui('lifestyle')}<Help id="lifestyle" label={ui('lifestyle')} /></span>
+      <select value={s.standing.lifestyle} onchange={(e) => game.updateStanding({ lifestyle: (e.target as HTMLSelectElement).value as Lifestyle })}>
+        {#each LIFESTYLES as l (l)}
+          <option value={l}>{strings.app.lifestyles[l]} ({formatBRL(leisureCost(s, params, l))}/mês)</option>
+        {/each}
+      </select>
+      <span class="small muted">{leisure > 0 ? t(ui('lifestyleHint'), { valor: leisure }) : ui('lifestyleNone')}</span>
+    </label>
     {#if s.card.has}
       <label>
-        {ui('cardPolicy')}
+        <span>{ui('cardPolicy')}<Help id="cardPolicy" label={ui('cardPolicy')} /></span>
         <select value={s.card.policy} onchange={(e) => game.updateCardPolicy((e.target as HTMLSelectElement).value as CardPolicy)}>
           {#each policies as pol (pol)}
             <option value={pol}>{ui(pol)}</option>
@@ -45,7 +58,7 @@
     {/if}
     {#if !isAdult(s)}
       <label>
-        {ui('lanche')}
+        <span>{ui('lanche')}<Help id="lanche" label={ui('lanche')} /></span>
         <select value={s.standing.lanche} onchange={(e) => game.updateStanding({ lanche: (e.target as HTMLSelectElement).value as 'compra' | 'casa' })}>
           <option value="compra">{ui('lancheCompra')}</option>
           <option value="casa">{ui('lancheCasa')}</option>

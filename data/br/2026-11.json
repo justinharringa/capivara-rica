@@ -541,12 +541,12 @@
       "note": "Nubank 16-17 secured card: limit equals the Caixinha balance; minimum not published"
     },
     "securedCardMaxLimit": {
-      "value": 50000,
+      "value": 100000,
       "unit": "centavos",
       "asOf": "2025-09",
       "source": "docs/research/notes/credit_rule_details.md",
       "status": "placeholder",
-      "note": "Cap the game applies to the secured card"
+      "note": "Cap the game applies to the secured card. Nubank publishes none (limit = Caixinha balance); R$ 1.000 keeps a 16-year-old's first card small"
     },
     "betsStake": {
       "value": 5000,
@@ -580,14 +580,6 @@
       "status": "placeholder",
       "note": "High end; not sourced"
     },
-    "blackFridayPrice": {
-      "value": 250000,
-      "unit": "centavos",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/consumer_credit.md",
-      "status": "placeholder",
-      "note": "A mid-range TV; not sourced"
-    },
     "blackFridayPixDiscount": {
       "value": 0.1,
       "unit": "rate",
@@ -619,6 +611,110 @@
       "source": "docs/research/notes/consumer_credit.md",
       "status": "placeholder",
       "note": "Typical CLT consignado ticket; not sourced"
+    },
+    "bfPriceTv": {
+      "value": 250000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/consumer_credit.md",
+      "status": "placeholder",
+      "note": "50-inch 4K TV, typical Black Friday price; inherits the old blackFridayPrice placeholder"
+    },
+    "bfPriceCelular": {
+      "value": 350000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/consumer_credit.md",
+      "status": "placeholder",
+      "note": "Flagship-ish phone on Black Friday; not sourced"
+    },
+    "bfPriceVideogame": {
+      "value": 380000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/consumer_credit.md",
+      "status": "placeholder",
+      "note": "Current-generation console on Black Friday; not sourced"
+    },
+    "bfPriceFone": {
+      "value": 120000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/consumer_credit.md",
+      "status": "placeholder",
+      "note": "Wireless noise-cancelling headphones; not sourced"
+    },
+    "bfPriceTenis": {
+      "value": 60000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/tween_teen_money_life.md",
+      "status": "placeholder",
+      "note": "Hype sneaker; clothes/accessories tie with eating out as the top teen spend category (Kidscorp 2025-26, unverified)"
+    },
+    "bfPriceNotebook": {
+      "value": 300000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/consumer_credit.md",
+      "status": "placeholder",
+      "note": "Entry notebook; not sourced"
+    },
+    "bfPriceAirfryer": {
+      "value": 50000,
+      "unit": "centavos",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/consumer_credit.md",
+      "status": "placeholder",
+      "note": "Air fryer, the perennial Black Friday item; not sourced"
+    },
+    "leisureTeenMonthly": {
+      "value": 35000,
+      "unit": "centavos/month",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/tween_teen_money_life.md",
+      "status": "placeholder",
+      "note": "Discretionary spend (rolê, roupa, transporte, comida fora) of a teen with a salary, about half an apprentice wage. No BRL figure found; the notes only rank categories"
+    },
+    "leisureAdultMonthly": {
+      "value": 40000,
+      "unit": "centavos/month",
+      "asOf": "2026-11",
+      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "status": "placeholder",
+      "note": "Discretionary spend (lazer, roupa, streaming, barbearia) of a young adult. POF shares not yet pulled"
+    },
+    "lifestyleEconomicoFactor": {
+      "value": 0.5,
+      "unit": "multiple of the leisure base",
+      "asOf": "2026-11",
+      "source": "docs/DESIGN.md",
+      "status": "secondary",
+      "note": "Design knob: the \"econômico\" lifestyle spends half the base and costs 5 wellbeing points of drift target"
+    },
+    "lifestyleFolgadoFactor": {
+      "value": 1.6,
+      "unit": "multiple of the leisure base",
+      "asOf": "2026-11",
+      "source": "docs/DESIGN.md",
+      "status": "secondary",
+      "note": "Design knob: the \"folgado\" lifestyle spends 1.6x the base and gains 5 wellbeing points of drift target"
+    },
+    "reserveMultipleBigPurchase": {
+      "value": 2.0,
+      "unit": "multiple of the price",
+      "asOf": "2026-11",
+      "source": "docs/DESIGN.md",
+      "status": "secondary",
+      "note": "Paying a Black Friday item à vista is only offered when liquid savings cover twice the price (keeps a reserve)"
+    },
+    "reserveMultipleMoto": {
+      "value": 1.5,
+      "unit": "multiple of the price",
+      "asOf": "2026-11",
+      "source": "docs/DESIGN.md",
+      "status": "secondary",
+      "note": "Buying the moto à vista is only offered when liquid savings cover 1.5x the price"
     }
   }
 }

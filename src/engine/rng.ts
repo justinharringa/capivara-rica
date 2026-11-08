@@ -13,7 +13,8 @@ export const RNG_STREAMS: readonly RngStream[] = ['macro', 'events', 'shocks', '
 
 export type RngState = Record<RngStream, number>;
 
-function hash32(seed: number, salt: number): number {
+/** A stateless 32-bit hash, for choices that must not consume a stream (e.g. which object is on sale). */
+export function hash32(seed: number, salt: number): number {
   let h = (seed ^ (salt * 0x9e3779b9)) >>> 0;
   h = Math.imul(h ^ (h >>> 16), 0x85ebca6b) >>> 0;
   h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35) >>> 0;

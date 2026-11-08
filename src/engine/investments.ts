@@ -51,20 +51,41 @@ export function accrueInvestments(s: GameState, p: Params): void {
   }
 }
 
+export interface Redemption {
+  /** What leaves the lot. */
+  gross: Centavos;
+  /** The share of `gross` that is gain, taxed at `rate`. */
+  gain: Centavos;
+  rate: number;
+  tax: Centavos;
+  /** What reaches the account. */
+  net: Centavos;
+}
+
+/** What redeeming `amount` from a lot would cost, without touching it. */
+export function previewRedeem(lot: Lot, p: Params, amount: Centavos, taxable: boolean): Redemption {
+  const gross = Math.max(0, Math.min(amount, lot.balance));
+  const gainShare = lot.balance > 0 ? Math.max(0, lot.balance - lot.principal) / lot.balance : 0;
+  const gain = Math.round(gross * gainShare);
+  const rate = taxable ? irRate(p, lot.holdingMonths) : 0;
+  const tax = Math.round(gain * rate);
+  return { gross, gain, rate, tax, net: gross - tax };
+}
+
 /** Redeem `amount` (or everything) from a lot. Returns the net cash after IR on the proportional gain. */
 export function redeem(lot: Lot, p: Params, amount: Centavos, taxable: boolean): Centavos {
-  const take = Math.min(amount, lot.balance);
-  if (take <= 0) return 0;
-  const gainShare = lot.balance > 0 ? Math.max(0, lot.balance - lot.principal) / lot.balance : 0;
-  const gain = Math.round(take * gainShare);
-  const tax = taxable ? Math.round(gain * irRate(p, lot.holdingMonths)) : 0;
-  lot.principal = Math.max(0, lot.principal - (take - gain));
-  lot.balance -= take;
-  return take - tax;
+  const r = previewRedeem(lot, p, amount, taxable);
+  if (r.gross <= 0) return 0;
+  lot.principal = Math.max(0, lot.principal - (r.gross - r.gain));
+  lot.balance -= r.gross;
+  return r.net;
 }
 
 export const investedTotal = (s: GameState): Centavos =>
   s.inv.poupanca.balance + s.inv.tesouroSelic.balance + s.inv.cdb.balance;
+
+/** Everything put away: cofrinho, the three instruments and the locked Pé-de-Meia. The "Guardado" tile. */
+export const savedTotal = (s: GameState): Centavos => investedTotal(s) + s.cofrinho + s.peDeMeiaLocked;
 
 /** Liquid money the player can reach this month, in order of cheapness: cash, cofrinho, then investments. */
 export function liquid(s: GameState): Centavos {

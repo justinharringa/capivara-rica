@@ -11,6 +11,28 @@ export type EducationLevel = 'fundamental' | 'medio' | 'tecnico' | 'superior';
 export type StudyTrack = 'tecnico' | 'superiorPublica' | 'superiorEad' | 'cursinho';
 export type JobId = 'nenhum' | 'aprendiz' | 'atendente' | 'ifood' | 'tecnico' | 'superior';
 export type Living = 'pais' | 'sozinho';
+/** How much of the discretionary budget (lazer, roupa, rolê) the player spends each month. */
+export type Lifestyle = 'economico' | 'normal' | 'folgado';
+export const LIFESTYLES: readonly Lifestyle[] = ['economico', 'normal', 'folgado'];
+
+/** Life chapters. The game pauses on a chapter card at each boundary after the first. */
+export interface Chapter {
+  n: number;
+  id: string;
+  fromAge: number;
+  toAge: number;
+}
+export const CHAPTERS: readonly Chapter[] = [
+  { n: 1, id: 'infancia', fromAge: 10, toAge: 14 },
+  { n: 2, id: 'ensino_medio', fromAge: 14, toAge: 18 },
+  { n: 3, id: 'primeiro_emprego', fromAge: 18, toAge: 22 },
+  { n: 4, id: 'vida_adulta', fromAge: 22, toAge: 26 },
+  { n: 5, id: 'rumo_aos_30', fromAge: 26, toAge: 30 },
+];
+export function chapterOf(ageMonths: number): Chapter {
+  const years = ageMonths / 12;
+  return CHAPTERS.find((c) => years < c.toAge) ?? CHAPTERS[CHAPTERS.length - 1]!;
+}
 
 export interface Parcela {
   id: string;
@@ -19,6 +41,8 @@ export interface Parcela {
   remaining: number;
   /** True when the instalments are charged to the credit card statement. */
   onCard: boolean;
+  /** Interest inside each instalment, when the instalments carry any (a parcelada fatura). */
+  interest?: Centavos;
 }
 
 export interface Loan {
@@ -69,6 +93,42 @@ export interface Standing {
   lanche: 'compra' | 'casa';
   /** Monthly betting stake; 0 means none. */
   bets: Centavos;
+  lifestyle: Lifestyle;
+}
+
+/** Running totals the chapter cards and the end screen report. */
+export interface Stats {
+  /** Interest credited on poupança, Tesouro and CDB. */
+  interestEarned: Centavos;
+  /** Rotativo and parcelado charges, loan interest and cheque especial. */
+  interestPaid: Centavos;
+  /** Discretionary spending (lifestyle) actually paid. */
+  leisureSpent: Centavos;
+}
+
+/** Where the cash went last month, for the feedback line under the stats. */
+export interface MonthSummary {
+  month: number;
+  income: Centavos;
+  /** Fixed costs including lifestyle. */
+  costs: Centavos;
+  /** Instalments, loan payments and whatever was paid on the fatura. */
+  committed: Centavos;
+  /** The standing order that left cash for savings. */
+  saved: Centavos;
+  interestEarned: Centavos;
+  interestPaid: Centavos;
+  betsLost: Centavos;
+  cashBefore: Centavos;
+  cashAfter: Centavos;
+}
+
+/** Snapshot taken at the start of the current chapter, so a chapter card can show the delta. */
+export interface ChapterStart {
+  ageMonths: number;
+  netWorth: Centavos;
+  interestEarned: Centavos;
+  interestPaid: Centavos;
 }
 
 export interface Study {
@@ -132,7 +192,7 @@ export interface Stop {
 }
 
 export interface GameState {
-  version: 1;
+  version: 2;
   seed: number;
   startAge: StartAge;
   /** Months since the game started. */
@@ -162,6 +222,9 @@ export interface GameState {
   macro: Macro;
   /** Free-form counters and once-flags used by events. */
   flags: Record<string, number>;
+  stats: Stats;
+  lastMonth: MonthSummary | null;
+  chapterStart: ChapterStart;
   rng: RngState;
   history: HistoryPoint[];
   log: LogEntry[];
