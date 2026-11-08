@@ -11,6 +11,7 @@
   import Standing from './Standing.svelte';
   import Outcome from './Outcome.svelte';
   import Stat from './Stat.svelte';
+  import MoveMoney from './MoveMoney.svelte';
 
   const s = $derived(game.state!);
   const nw = $derived(netWorth(s));
@@ -27,6 +28,7 @@
   const chapterFrom = $derived(Math.max(chapter.fromAge, s.startAge) * 12);
   const chapterPct = $derived(Math.round(((s.ageMonths - chapterFrom) / (chapter.toAge * 12 - chapterFrom)) * 100));
   const lm = $derived(s.lastMonth);
+  let moveOpen = $state(false);
   // Keyed by the entry's absolute position in the log, which is stable while the log only grows.
   const recent = $derived(s.log.slice(-8).map((e, i, arr) => ({ e, key: s.log.length - arr.length + i })).reverse());
 
@@ -70,7 +72,12 @@
       </Stat>
     {/if}
     <Stat id="cash" label={ui('cash')} valueClass={s.cash < 0 ? 'bad' : ''}>{formatBRL(s.cash)}</Stat>
-    <Stat id="saved" label={ui('saved')}>{formatBRL(investedTotal(s) + s.cofrinho + s.peDeMeiaLocked)}</Stat>
+    <Stat id="saved" label={ui('saved')}>
+      {formatBRL(investedTotal(s) + s.cofrinho + s.peDeMeiaLocked)}
+      {#snippet action()}
+        <button type="button" aria-expanded={moveOpen} aria-controls="move-money" onclick={() => (moveOpen = !moveOpen)}>{ui('move')}</button>
+      {/snippet}
+    </Stat>
     <Stat id="debt" label={ui('debt')} valueClass={debtTotal(s) > 0 ? 'bad' : ''}>{formatBRL(debtTotal(s))}</Stat>
     <Stat id="income" label={ui('income')}>{formatBRL(income)}</Stat>
     <Stat id="committed" label={ui('committed')} valueClass={compClass}>{Math.round(comp * 100)}% <span class="small">({compLabel})</span></Stat>
@@ -85,6 +92,10 @@
       </Stat>
     {/if}
   </div>
+
+  {#if moveOpen}
+    <MoveMoney onclose={() => (moveOpen = false)} />
+  {/if}
 
   {#if lm}
     <p class="lastmonth small muted" aria-live="polite">

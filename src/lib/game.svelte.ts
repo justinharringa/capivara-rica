@@ -1,7 +1,7 @@
 import brJson from '$data/br/2026-11.json';
 import { loadParams, type ParamFile } from '$engine/params';
-import type { GameState, StartAge, Standing, CardPolicy } from '$engine/state';
-import { newGame, stepMonth, choose, setStanding, setCardPolicy, runWithPolicy, debtTotal, committedMonthly } from '$engine/sim';
+import type { GameState, StartAge, Standing, CardPolicy, SaveTarget } from '$engine/state';
+import { newGame, stepMonth, choose, setStanding, setCardPolicy, runWithPolicy, debtTotal, committedMonthly, depositSavings, withdrawSavings } from '$engine/sim';
 import { investedTotal } from '$engine/investments';
 import { capivaraPolicy, chooseByTags } from '$engine/policies';
 import { loadSave, writeSave, clearSave } from './save';
@@ -145,6 +145,24 @@ export class Game {
     const s = this.state;
     if (!s) return;
     setStanding(s, patch);
+    this.touch(s);
+    void writeSave(s);
+  }
+
+  /** Conta → Guardado, into the standing-order target. */
+  deposit(amount: number): void {
+    const s = this.state;
+    if (!s) return;
+    depositSavings(s, amount);
+    this.touch(s);
+    void writeSave(s);
+  }
+
+  /** Guardado → Conta, net of IR. */
+  withdraw(target: SaveTarget, amount: number): void {
+    const s = this.state;
+    if (!s) return;
+    withdrawSavings(s, params, target, amount);
     this.touch(s);
     void writeSave(s);
   }

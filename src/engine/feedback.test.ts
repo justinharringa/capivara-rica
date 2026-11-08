@@ -173,3 +173,51 @@ describe('help texts', () => {
     }
   });
 });
+
+describe('moving money by hand', () => {
+  it('deposits from the account into the standing-order target, never more than the cash', async () => {
+    const { depositSavings, bucketBalance } = await import('./sim');
+    const s = newGame({ seed: 1, startAge: 18 }, p);
+    s.pending = null;
+    s.cash = 100000;
+    setStanding(s, { saveInto: 'cdb' });
+    expect(depositSavings(s, 250000)).toBe(100000);
+    expect(s.cash).toBe(0);
+    expect(bucketBalance(s, 'cdb')).toBe(100000);
+    expect(depositSavings(s, 1)).toBe(0);
+    expect(s.log.at(-1)?.key).toBe('deposito');
+  });
+
+  it('withdraws net of IR on the gain and says so first', async () => {
+    const { withdrawSavings, previewWithdrawal } = await import('./sim');
+    const s = newGame({ seed: 1, startAge: 18 }, p);
+    s.pending = null;
+    deposit(s.inv.cdb, 100000);
+    s.inv.cdb.balance = 110000; // R$ 100 of gain, held under 6 months: 22.5%
+    const pv = previewWithdrawal(s, p, 'cdb', 110000);
+    expect(pv.gain).toBe(10000);
+    expect(pv.rate).toBe(p.irFixedIncome0to6);
+    expect(pv.tax).toBe(2250);
+    expect(pv.net).toBe(107750);
+    const before = s.cash;
+    expect(withdrawSavings(s, p, 'cdb', 110000)).toBe(pv.net);
+    expect(s.cash - before).toBe(pv.net);
+    expect(s.inv.cdb.balance).toBe(0);
+    expect(s.log.at(-1)?.key).toBe('resgate');
+  });
+
+  it('poupança and the cofrinho pay no tax; the locked Pé-de-Meia is not a bucket', async () => {
+    const { withdrawSavings, previewWithdrawal, bucketBalance } = await import('./sim');
+    const s = newGame({ seed: 1, startAge: 14 }, p);
+    s.pending = null;
+    s.cofrinho = 5000;
+    deposit(s.inv.poupanca, 20000);
+    s.inv.poupanca.balance = 21000;
+    s.peDeMeiaLocked = 100000;
+    expect(previewWithdrawal(s, p, 'poupanca', 21000).tax).toBe(0);
+    expect(withdrawSavings(s, p, 'cofrinho', 9999)).toBe(5000);
+    expect(s.cofrinho).toBe(0);
+    expect(bucketBalance(s, 'poupanca')).toBe(21000);
+    expect(s.peDeMeiaLocked).toBe(100000);
+  });
+});

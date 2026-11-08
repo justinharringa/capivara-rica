@@ -11,6 +11,7 @@ import {
   type CardPolicy,
   type Lifestyle,
   type MonthSummary,
+  type SaveTarget,
   emptyLot,
   chapterOf,
   END_AGE,
@@ -20,7 +21,7 @@ import {
   ageYears,
   isNegativado,
 } from './state';
-import { accrueInvestments, deposit, drawDown, investedTotal, liquid, spendable, monthlyRate } from './investments';
+import { accrueInvestments, deposit, drawDown, investedTotal, liquid, spendable, monthlyRate, previewRedeem, redeem, type Redemption } from './investments';
 import { settleCard, chargeCard, accrueRotativo } from './card';
 import { annualRaise, jobSalary, netPay, LEVEL_RANK } from './career';
 import { EVENTS, type EventDef, type EventContext } from './events';
@@ -556,6 +557,48 @@ export function setStanding(s: GameState, patch: Partial<Standing>): void {
 
 export function setCardPolicy(s: GameState, policy: CardPolicy): void {
   s.card.policy = policy;
+}
+
+// ---------------------------------------------------------------------------
+// Moving money by hand: conta ⇄ guardado
+// ---------------------------------------------------------------------------
+
+/** How much a bucket holds. The locked Pé-de-Meia is not a bucket: it cannot be touched. */
+export function bucketBalance(s: GameState, target: SaveTarget): Centavos {
+  return target === 'cofrinho' ? s.cofrinho : s.inv[target].balance;
+}
+
+/**
+ * Put `amount` from the account into the standing-order target. Clamped to the positive
+ * cash balance; a player in overdraft cannot deposit. Returns what was moved.
+ */
+export function depositSavings(s: GameState, amount: Centavos): Centavos {
+  const amt = Math.min(Math.max(0, Math.round(amount)), Math.max(0, s.cash));
+  if (amt <= 0) return 0;
+  s.cash -= amt;
+  saveInto(s, amt);
+  log(s, 'info', 'deposito', { valor: amt, onde: s.standing.saveInto });
+  return amt;
+}
+
+/** What a withdrawal would do: the cofrinho and poupança pay no IR; Tesouro and CDB do. */
+export function previewWithdrawal(s: GameState, p: Params, target: SaveTarget, amount: Centavos): Redemption {
+  if (target === 'cofrinho') {
+    const gross = Math.max(0, Math.min(Math.round(amount), s.cofrinho));
+    return { gross, gain: 0, rate: 0, tax: 0, net: gross };
+  }
+  return previewRedeem(s.inv[target], p, Math.round(amount), target !== 'poupanca');
+}
+
+/** Move `amount` from a bucket back to the account, net of IR. Returns what reached the account. */
+export function withdrawSavings(s: GameState, p: Params, target: SaveTarget, amount: Centavos): Centavos {
+  const r = previewWithdrawal(s, p, target, amount);
+  if (r.gross <= 0) return 0;
+  if (target === 'cofrinho') s.cofrinho -= r.gross;
+  else redeem(s.inv[target], p, r.gross, target !== 'poupanca');
+  s.cash += r.net;
+  log(s, 'info', 'resgate', { bruto: r.gross, liquido: r.net, imposto: r.tax, onde: target });
+  return r.net;
 }
 
 /** Move everything from the cofrinho into the chosen instrument (used once an account exists). */

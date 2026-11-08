@@ -9,7 +9,8 @@
     valueClass = '',
     ghost = false,
     children,
-  }: { id: string; label: string; valueClass?: string; ghost?: boolean; children: Snippet } = $props();
+    action,
+  }: { id: string; label: string; valueClass?: string; ghost?: boolean; children: Snippet; action?: Snippet } = $props();
   let open = $state(false);
   const text = $derived(help(id));
 </script>
@@ -24,6 +25,9 @@
     {/if}
   </div>
   <div class="value {valueClass}">{@render children()}</div>
+  {#if action}
+    <div class="action">{@render action()}</div>
+  {/if}
   {#if open && text}
     <p id={`help-${id}`} class="help small">{text}</p>
   {/if}
@@ -63,6 +67,14 @@
     background: var(--brand);
     border-color: var(--brand);
     color: var(--brand-ink);
+  }
+  .action {
+    margin-top: 6px;
+  }
+  .action :global(button) {
+    min-height: 32px;
+    padding: 4px 10px;
+    font-size: 0.85rem;
   }
   .help {
     margin: 6px 0 0;

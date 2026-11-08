@@ -122,7 +122,24 @@
     "chapterInterestPaid": "Juros pagos no capítulo",
     "endInterest": "Juros recebidos na vida",
     "endInterestPaid": "Juros pagos na vida",
-    "helpButton": "O que é isso?"
+    "helpButton": "O que é isso?",
+    "move": "Mover dinheiro",
+    "moveTitle": "Mover dinheiro",
+    "moveDeposit": "Conta → Guardado",
+    "moveWithdraw": "Guardado → Conta",
+    "moveAmount": "Valor em reais",
+    "moveAll": "Tudo",
+    "moveTo": "Vai para",
+    "moveFrom": "De onde",
+    "moveAvailable": "Disponível: {valor}",
+    "moveDepositDo": "Guardar {valor}",
+    "moveWithdrawDo": "Resgatar {valor}",
+    "movePreview": "Sai {bruto}, chega {liquido} na conta. Imposto: {imposto} ({aliquota}% sobre o ganho de {ganho}).",
+    "movePreviewNoTax": "Sai {bruto}, chega {bruto} na conta. Sem imposto.",
+    "moveLocked": "O Pé-de-Meia ({valor}) fica travado até os 18.",
+    "moveNothing": "Nada guardado ainda.",
+    "moveOverdraft": "Conta negativa: nada para guardar.",
+    "close": "Fechar"
   },
   "log": {
     "ano_novo": "Novo ano: inflação de {ipca}% e Selic em {selic}%.",
@@ -141,12 +158,14 @@
     "trancou": "Trancou o curso.",
     "negativado": "Nome negativado por 5 anos.",
     "negativado_renegociou": "Dívida renegociada. Nome limpo em 5 dias úteis; cartão bloqueado por 1 ano.",
-    "nome_limpo": "Nome limpo de novo."
+    "nome_limpo": "Nome limpo de novo.",
+    "deposito": "Você guardou {valor} em {onde}.",
+    "resgate": "Resgatou {bruto} de {onde}: {liquido} na conta, {imposto} de imposto."
   },
   "help": {
     "netWorth": "Tudo que é seu menos tudo que você deve: na conta + guardado − dívidas. É o placar do jogo.",
     "cash": "O dinheiro na conta corrente (ou no bolso). Rende zero. É daqui que saem os gastos do mês.",
-    "saved": "Cofrinho + investimentos (poupança, Tesouro Selic, CDB) + o Pé-de-Meia travado. Rende juros todo mês, menos o cofrinho. Se faltar na conta, o jogo resgata daqui sozinho, pagando o imposto.",
+    "saved": "Cofrinho + investimentos (poupança, Tesouro Selic, CDB) + o Pé-de-Meia travado. Rende juros todo mês, menos o cofrinho. Se faltar na conta, o jogo resgata daqui sozinho, pagando o imposto. Use \"Mover dinheiro\" para guardar ou resgatar quando quiser.",
     "debt": "Fatura e rotativo do cartão, as parcelas que ainda faltam, empréstimos e cheque especial.",
     "income": "O que entra por mês: salário líquido (ou mesada) mais o Pé-de-Meia.",
     "committed": "Quanto da renda já está prometido a parcelas, empréstimos e o mínimo do cartão. Acima de 30% acende o amarelo; 40%, o vermelho.",

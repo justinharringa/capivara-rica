@@ -24,7 +24,7 @@ export const strings = stringsJson as unknown as {
 };
 
 /** Vars that are plain numbers, not centavos. Everything else numeric is money. */
-const NON_MONEY = new Set(['idade', 'chance', 'meses', 'anos', 'comprometido', 'guardando', 'minimo', 'start', 'capitulo', 'total']);
+const NON_MONEY = new Set(['idade', 'chance', 'meses', 'anos', 'comprometido', 'guardando', 'minimo', 'start', 'capitulo', 'total', 'aliquota']);
 
 /** String vars that are keys into a strings.app table rather than literal text. */
 const STRING_TABLES: Record<string, Dict> = {
