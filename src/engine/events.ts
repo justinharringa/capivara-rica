@@ -180,6 +180,10 @@ export const EVENTS: EventDef[] = [
     id: 'presente_vovo',
     kind: 'scheduled',
     once: true,
+    // Passthrough so the lunch question follows in the same month 0: the default standing order
+    // is the cantina, and charging it for a month before asking put the player R$ 80 behind the
+    // Capivara through no choice of theirs (first playtest, 2026-11-08).
+    passthrough: true,
     eligible: ({ s }) => s.startAge === 10 && s.month === 0,
     vars: ({ s, p }) => ({ valor: priced(s, p.giftGrandma) }),
     choices: [
@@ -203,7 +207,7 @@ export const EVENTS: EventDef[] = [
     id: 'lanche',
     kind: 'scheduled',
     once: true,
-    eligible: ({ s }) => isChild(s) && s.month >= 1,
+    eligible: ({ s }) => isChild(s),
     vars: ({ s, p }) => ({ cantina: priced(s, p.lanchePrice * p.schoolDaysPerMonth), mesada: monthlyIncome(s, p) }),
     choices: [
       { id: 'cantina', apply: ({ s }) => setStanding(s, { lanche: 'compra' }) },

@@ -321,3 +321,33 @@ describe('cheque especial', () => {
     expect(s.inv.poupanca.balance).toBeLessThan(500000);
   });
 });
+
+describe('fairness of the ghost comparison', () => {
+  it('a player who makes the Capivara\'s choice at every stop has her net worth at every month', () => {
+    for (const startAge of START_AGES) {
+      const ghost = runWithPolicy({ seed: 44, startAge }, p, capivaraPolicy);
+      // The player: the same choices by tag, including lunch from home when asked (not before),
+      // and the standing orders the Capivara's policy sets through the UI levers.
+      const s = newGame({ seed: 44, startAge }, p);
+      setStanding(s, { savePct: 0.2, bets: 0, lifestyle: 'normal' });
+      if (s.hasBankAccount) setStanding(s, { saveInto: 'cdb' });
+      s.card.policy = 'integral';
+      let guard = 0;
+      while (!s.ended && guard++ < 2000) {
+        if (s.pending) choose(s, p, capivaraPolicy.choose(s, p, s.pending));
+        else stepMonth(s, p);
+      }
+      for (let i = 0; i < ghost.history.length; i += 1) {
+        expect(s.history[i]!.netWorth, `start ${startAge}, month ${i}`).toBe(ghost.history[i]!.netWorth);
+      }
+    }
+  });
+
+  it('asks about lunch before the first month is charged, so the default never costs a child money unasked', () => {
+    const s = newGame({ seed: 1, startAge: 10 }, p);
+    expect(s.pending?.eventId).toBe('presente_vovo');
+    choose(s, p, 'guardar');
+    expect(s.pending?.eventId).toBe('lanche');
+    expect(s.month).toBe(0);
+  });
+});
