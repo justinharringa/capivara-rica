@@ -1,8 +1,9 @@
 # --- Contact address: contato@ forwards to the maintainer's inbox -----------------------
 # Cloudflare Email Routing, on the primary zone only. Enabling it adds and locks the MX and
 # SPF records Cloudflare needs; the registrar's mail-lockdown records (null MX, `v=spf1 -all`)
-# must be deleted by hand first, or the null MX keeps winning and every message bounces (see
-# README.md). The DMARC `p=reject` record stays: the project sends no mail.
+# must be deleted by hand first, or the null MX keeps winning and every message bounces (step 6
+# in infrastructure/terraform/cloudflare/README.md). The DMARC `p=reject` record stays: the
+# project sends no mail.
 #
 # The destination is an ordinary inbox outside this zone. Cloudflare e-mails it a verification
 # link when the address is created; until that link is clicked the rule exists but delivers
