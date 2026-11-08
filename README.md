@@ -20,7 +20,8 @@ Brasil. Para quem tem de 10 a 25 anos, e para quem ensina.
 
 ## Jogar
 
-Em breve em um domínio próprio. Enquanto isso: `npm install && npm run dev`.
+**https://capivararica.com.br** (Cloudflare Workers; `capivarica.com.br` redireciona para lá).
+Localmente: `npm install && npm run dev`.
 
 ## Desenvolver
 
@@ -34,7 +35,10 @@ npm run build        # build estático em dist/
 npm run size         # orçamento de tamanho (200 KB gzip de JS+CSS, 500 KB total)
 ```
 
-Node 22 (`.nvmrc`). Sem back-end: o build é um site estático e um PWA.
+Node 22 (`.nvmrc`). Sem back-end: o build é um site estático e um PWA, publicado como
+Cloudflare Workers static assets (`wrangler.jsonc`) por `.github/workflows/deploy.yml`.
+Configurações de zona e o redirecionamento do domínio de digitação errada são Terraform em
+`infrastructure/terraform/cloudflare/` (veja o README de lá para o bootstrap único).
 
 ### Estrutura
 
@@ -45,7 +49,8 @@ src/lib/        store reativo, conteúdo, salvamento local
 content/pt-BR/  todos os textos: eventos, falas da Capivara, interface
 data/br/        parâmetros econômicos com proveniência (valor, unidade, data, fonte, status)
 docs/           design, privacidade, roadmap e a pesquisa que embasou o jogo
-scripts/        verificações de CI (dados, tamanho)
+scripts/        verificações de CI (dados, tamanho) e o recorte dos sprites
+infrastructure/ Terraform do Cloudflare (configurações de zona, redirecionamento)
 ```
 
 ### Dados com proveniência

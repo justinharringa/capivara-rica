@@ -1,0 +1,26 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "helpers:pinGitHubActionDigests", ":pinDevDependencies"],
+  "timezone": "America/Los_Angeles",
+  "schedule": ["before 6am on monday"],
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "description": "Group all npm devDependency updates into one PR.",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["devDependencies"],
+      "groupName": "npm dev dependencies"
+    },
+    {
+      "description": "GitHub Actions digests and versions together.",
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions"
+    },
+    {
+      "description": "The Cloudflare Terraform provider moves fast; keep it on its own PR.",
+      "matchManagers": ["terraform"],
+      "matchDepNames": ["cloudflare/cloudflare"],
+      "groupName": "cloudflare terraform provider"
+    }
+  ]
+}

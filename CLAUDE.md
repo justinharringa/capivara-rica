@@ -22,6 +22,18 @@ number is in `docs/research/`.
 `npm run size`. All five must pass before pushing. `npm run data:check -- --release` is the
 release gate and fails while any parameter is `memory`/`placeholder`.
 
+## Infrastructure
+The site is Cloudflare Workers static assets: `wrangler.jsonc` owns the Worker, the asset
+directory and the custom domains (wrangler creates their DNS records). Zone settings and the
+typo-domain redirect are Terraform in `infrastructure/terraform/cloudflare/` (provider v5
+schema; validate with `terraform validate` before pushing). `.github/workflows/deploy.yml`
+runs on pushes to main only, as one job inside the `production` GitHub Environment (restricted
+to main, required reviewer = the owner, so each push needs one approval): Terraform apply, then
+`wrangler deploy`. Pull requests never get Cloudflare credentials; the job stops early with a
+clear message if any secret is missing. Third-party actions are pinned to commit
+SHAs (Renovate keeps them current); keep it that way in a public repo. Never create a Worker, a
+Pages project or DNS records by hand; Cloudflare's dashboard calls Pages "legacy".
+
 ## Verifying in a browser
 Playwright and Chromium are available in the cloud sandbox. `window.__game` exposes the store
 for automated play-throughs; the drivers used so far live outside the repo (scratchpad).

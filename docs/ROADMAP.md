@@ -6,6 +6,7 @@
 - [x] PWA offline, sem coleta de dados, orçamento de tamanho em CI
 
 ## v0.2: números e balanceamento
+- [ ] Mover os multiplicadores de reserva (2× Black Friday, 1,5× moto em `src/engine/events.ts`) para parâmetros nomeados
 - [ ] Zerar `placeholder`/`memory` em `data/br/2026-11.json` (P0 do relatório: mínimo da fatura,
       IOF, taxas de setembro/2026 no BCB, Pix vs 12x real, Tesouro Selic, poupança/TR)
 - [ ] Custos de curso técnico/cursinho; renda por escolaridade (IBGE SIDRA)
@@ -19,7 +20,7 @@
 - [ ] Acessibilidade WCAG 2.2 AA auditada (axe), Lighthouse CI
 
 ## v1.0: lançamento
-- [ ] Domínio, Cloudflare Pages, política de privacidade publicada
+- [x] Domínio, Cloudflare Workers static assets (`wrangler.jsonc` + Terraform em `infrastructure/terraform/cloudflare/`), política de privacidade publicada
 - [ ] Revisão jurídica rápida (ECA Digital, LGPD art. 14) do fluxo final
 - [ ] Teste com 10 jogadores de 12 a 20 anos; medir tempo de partida e compreensão
 
