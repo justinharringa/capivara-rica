@@ -14,7 +14,8 @@
     "test:watch": "vitest",
     "data:check": "node --experimental-strip-types scripts/check-data.ts",
     "data:check:release": "node --experimental-strip-types scripts/check-data.ts --release",
-    "size": "node --experimental-strip-types scripts/check-size.ts"
+    "size": "node --experimental-strip-types scripts/check-size.ts",
+    "save:fixture": "WRITE_SAVE_FIXTURE=1 vitest run src/engine/migrate.test.ts"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "7.3.1",

@@ -1,28 +1,58 @@
 import { get, set, del } from 'idb-keyval';
 import type { GameState } from '$engine/state';
+import { migrateSave } from '$engine/migrate';
 
-const KEY = 'capivara-rica:save:v2';
-/** The GameState shape this build reads. A save from another version is discarded, never migrated. */
-const VERSION = 2;
+/**
+ * One key for all versions: the version lives inside the save and src/engine/migrate.ts brings
+ * it up to date. The two legacy keys carried the version in their name and are read once, moved
+ * to the current key, then deleted.
+ */
+const KEY = 'capivara-rica:save';
+const LEGACY_KEYS = ['capivara-rica:save:v2', 'capivara-rica:save:v1'];
 /** Persistent-storage is requested once per page load; browsers treat repeat requests as noise. */
 let persistRequested = false;
 
-export async function loadSave(): Promise<GameState | null> {
+async function readKey(key: string): Promise<unknown> {
   try {
-    const s = (await get<GameState>(KEY)) ?? null;
-    if (s) return current(s);
+    const s = await get<unknown>(key);
+    if (s) return s;
   } catch {
     /* IndexedDB unavailable (private mode, old browser) */
   }
   try {
-    const raw = localStorage.getItem(KEY);
-    return raw ? current(JSON.parse(raw) as GameState) : null;
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as unknown) : null;
   } catch {
     return null;
   }
 }
 
-const current = (s: GameState): GameState | null => (s.version === VERSION ? s : null);
+async function removeKey(key: string): Promise<void> {
+  try {
+    await del(key);
+  } catch {
+    /* ignore */
+  }
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    /* ignore */
+  }
+}
+
+export async function loadSave(): Promise<GameState | null> {
+  const current = migrateSave(await readKey(KEY));
+  if (current) return current;
+  for (const legacy of LEGACY_KEYS) {
+    const s = migrateSave(await readKey(legacy));
+    await removeKey(legacy);
+    if (s) {
+      await writeSave(s);
+      return s;
+    }
+  }
+  return null;
+}
 
 export async function writeSave(s: GameState): Promise<void> {
   try {
@@ -46,14 +76,5 @@ export async function writeSave(s: GameState): Promise<void> {
 }
 
 export async function clearSave(): Promise<void> {
-  try {
-    await del(KEY);
-  } catch {
-    /* ignore */
-  }
-  try {
-    localStorage.removeItem(KEY);
-  } catch {
-    /* ignore */
-  }
+  await removeKey(KEY);
 }

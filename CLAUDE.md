@@ -16,6 +16,13 @@ number is in `docs/research/`.
 - Credit must never read as a power-up. Costs are shown in reais, with the 100% legal cap modelled.
 - The UI store (`src/lib/game.svelte.ts`) clones the engine object after each mutation. Always
   clone the object the engine just mutated, never `this.state`.
+- **Saved games survive updates.** Any change to `GameState` (a field added, renamed or removed)
+  bumps `CURRENT_SAVE_VERSION` in `src/engine/migrate.ts`, adds a step there that turns the
+  previous shape into the new one (fill defaults, rename), and runs `npm run save:fixture` to
+  write `src/engine/fixtures/save-v<N>.json`. Older fixtures are never regenerated. The
+  migration test replays every fixture and compares its shape to a fresh game, so a new field
+  without a step fails CI instead of a player's phone. The storage key is unversioned; the
+  version lives inside the save.
 
 ## Commands
 `npm run check` (svelte-check), `npm test` (vitest), `npm run data:check`, `npm run build`,

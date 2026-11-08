@@ -1,0 +1,567 @@
+{
+  "version": 2,
+  "seed": 20261108,
+  "startAge": 10,
+  "month": 30,
+  "ageMonths": 150,
+  "calendarMonth": 6,
+  "cash": 296921,
+  "cofrinho": 0,
+  "peDeMeiaLocked": 0,
+  "inv": {
+    "poupanca": {
+      "balance": 0,
+      "principal": 0,
+      "holdingMonths": 0
+    },
+    "tesouroSelic": {
+      "balance": 0,
+      "principal": 0,
+      "holdingMonths": 0
+    },
+    "cdb": {
+      "balance": 108181,
+      "principal": 104969,
+      "holdingMonths": 5.5632783523518174
+    }
+  },
+  "card": {
+    "has": false,
+    "blocked": false,
+    "limit": 0,
+    "statement": 0,
+    "revolving": 0,
+    "revolvingMonths": 0,
+    "capBase": 0,
+    "capCharges": 0,
+    "monthsUnpaid": 0,
+    "policy": "integral"
+  },
+  "parcelas": [],
+  "loans": [],
+  "standing": {
+    "savePct": 0.2,
+    "saveInto": "cdb",
+    "lanche": "casa",
+    "bets": 0,
+    "lifestyle": "normal"
+  },
+  "career": {
+    "job": "nenhum",
+    "salary": 0,
+    "level": "fundamental",
+    "study": null,
+    "monthsInJob": 0
+  },
+  "living": "pais",
+  "hasPhone": false,
+  "hasMoto": false,
+  "hasBankAccount": true,
+  "publicSchool": true,
+  "wellbeing": 60,
+  "negativadoUntilMonth": null,
+  "macro": {
+    "ipcaAnnual": 0.02,
+    "selicAnnual": 0.06822451474674834,
+    "cdiAnnual": 0.06722451474674834,
+    "priceIndex": 1.0572598678368361,
+    "wageIndex": 1.1106153341993117
+  },
+  "flags": {
+    "ev:presente_vovo": 1,
+    "ev:lanche": 1,
+    "cardMissedThisYear": 0,
+    "ev:aniversario:1": 1,
+    "ev:conta_jovem": 1,
+    "primeiraAplicacao": 1,
+    "primeiraAplicacaoValor": 3110,
+    "ev:primeira_aplicacao": 1
+  },
+  "stats": {
+    "interestEarned": 3212,
+    "interestPaid": 0,
+    "leisureSpent": 0
+  },
+  "lastMonth": {
+    "month": 30,
+    "income": 15549,
+    "costs": 0,
+    "committed": 0,
+    "saved": 3110,
+    "interestEarned": 585,
+    "interestPaid": 0,
+    "betsLost": 0,
+    "cashBefore": 284482,
+    "cashAfter": 296921
+  },
+  "chapterStart": {
+    "ageMonths": 120,
+    "netWorth": 0,
+    "interestEarned": 0,
+    "interestPaid": 0
+  },
+  "rng": {
+    "macro": 2314445231,
+    "events": 2118285970,
+    "shocks": 340270569,
+    "career": 819360026,
+    "misc": 2149159782
+  },
+  "history": [
+    {
+      "month": 0,
+      "ageMonths": 120,
+      "netWorth": 0,
+      "cash": 0,
+      "invested": 0,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 1,
+      "ageMonths": 121,
+      "netWorth": 20000,
+      "cash": 8000,
+      "invested": 12000,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 2,
+      "ageMonths": 122,
+      "netWorth": 30000,
+      "cash": 16000,
+      "invested": 14000,
+      "debt": 0,
+      "wellbeing": 59
+    },
+    {
+      "month": 3,
+      "ageMonths": 123,
+      "netWorth": 40000,
+      "cash": 24000,
+      "invested": 16000,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 4,
+      "ageMonths": 124,
+      "netWorth": 50000,
+      "cash": 32000,
+      "invested": 18000,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 5,
+      "ageMonths": 125,
+      "netWorth": 60000,
+      "cash": 40000,
+      "invested": 20000,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 6,
+      "ageMonths": 126,
+      "netWorth": 70000,
+      "cash": 48000,
+      "invested": 22000,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 7,
+      "ageMonths": 127,
+      "netWorth": 80000,
+      "cash": 56000,
+      "invested": 24000,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 8,
+      "ageMonths": 128,
+      "netWorth": 90000,
+      "cash": 64000,
+      "invested": 26000,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 9,
+      "ageMonths": 129,
+      "netWorth": 100000,
+      "cash": 72000,
+      "invested": 28000,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 10,
+      "ageMonths": 130,
+      "netWorth": 110000,
+      "cash": 80000,
+      "invested": 30000,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 11,
+      "ageMonths": 131,
+      "netWorth": 120000,
+      "cash": 88000,
+      "invested": 32000,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 12,
+      "ageMonths": 132,
+      "netWorth": 132693,
+      "cash": 98154,
+      "invested": 34539,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 13,
+      "ageMonths": 133,
+      "netWorth": 166117,
+      "cash": 108308,
+      "invested": 57809,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 14,
+      "ageMonths": 134,
+      "netWorth": 178810,
+      "cash": 118462,
+      "invested": 60348,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 15,
+      "ageMonths": 135,
+      "netWorth": 191503,
+      "cash": 128616,
+      "invested": 62887,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 16,
+      "ageMonths": 136,
+      "netWorth": 204196,
+      "cash": 138770,
+      "invested": 65426,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 17,
+      "ageMonths": 137,
+      "netWorth": 216889,
+      "cash": 148924,
+      "invested": 67965,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 18,
+      "ageMonths": 138,
+      "netWorth": 229582,
+      "cash": 159078,
+      "invested": 70504,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 19,
+      "ageMonths": 139,
+      "netWorth": 242275,
+      "cash": 169232,
+      "invested": 73043,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 20,
+      "ageMonths": 140,
+      "netWorth": 254968,
+      "cash": 179386,
+      "invested": 75582,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 21,
+      "ageMonths": 141,
+      "netWorth": 267661,
+      "cash": 189540,
+      "invested": 78121,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 22,
+      "ageMonths": 142,
+      "netWorth": 280354,
+      "cash": 199694,
+      "invested": 80660,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 23,
+      "ageMonths": 143,
+      "netWorth": 293047,
+      "cash": 209848,
+      "invested": 83199,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 24,
+      "ageMonths": 144,
+      "netWorth": 308596,
+      "cash": 222287,
+      "invested": 86309,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 25,
+      "ageMonths": 145,
+      "netWorth": 324631,
+      "cash": 234726,
+      "invested": 89905,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 26,
+      "ageMonths": 146,
+      "netWorth": 340686,
+      "cash": 247165,
+      "invested": 93521,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 27,
+      "ageMonths": 147,
+      "netWorth": 356760,
+      "cash": 259604,
+      "invested": 97156,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 28,
+      "ageMonths": 148,
+      "netWorth": 372854,
+      "cash": 272043,
+      "invested": 100811,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 29,
+      "ageMonths": 149,
+      "netWorth": 388968,
+      "cash": 284482,
+      "invested": 104486,
+      "debt": 0,
+      "wellbeing": 60
+    },
+    {
+      "month": 30,
+      "ageMonths": 150,
+      "netWorth": 405102,
+      "cash": 296921,
+      "invested": 108181,
+      "debt": 0,
+      "wellbeing": 60
+    }
+  ],
+  "log": [
+    {
+      "month": 0,
+      "ageMonths": 120,
+      "kind": "event",
+      "key": "ev:presente_vovo",
+      "vars": {
+        "valor": 10000
+      }
+    },
+    {
+      "month": 0,
+      "ageMonths": 120,
+      "kind": "choice",
+      "key": "ch:presente_vovo:guardar",
+      "vars": {
+        "valor": 10000
+      }
+    },
+    {
+      "month": 1,
+      "ageMonths": 121,
+      "kind": "event",
+      "key": "ev:lanche",
+      "vars": {
+        "cantina": 8000,
+        "mesada": 10000
+      }
+    },
+    {
+      "month": 1,
+      "ageMonths": 121,
+      "kind": "choice",
+      "key": "ch:lanche:casa",
+      "vars": {
+        "cantina": 8000,
+        "mesada": 10000
+      }
+    },
+    {
+      "month": 5,
+      "ageMonths": 125,
+      "kind": "event",
+      "key": "ev:diamantes",
+      "vars": {
+        "preco": 3000
+      }
+    },
+    {
+      "month": 5,
+      "ageMonths": 125,
+      "kind": "choice",
+      "key": "ch:diamantes:nao",
+      "vars": {
+        "preco": 3000
+      }
+    },
+    {
+      "month": 12,
+      "ageMonths": 132,
+      "kind": "macro",
+      "key": "ano_novo",
+      "vars": {
+        "ipca": "3.7",
+        "selic": "11.30"
+      }
+    },
+    {
+      "month": 12,
+      "ageMonths": 132,
+      "kind": "event",
+      "key": "ev:aniversario",
+      "vars": {
+        "valor": 20731,
+        "idade": 11
+      }
+    },
+    {
+      "month": 12,
+      "ageMonths": 132,
+      "kind": "choice",
+      "key": "ch:aniversario:guardar",
+      "vars": {
+        "valor": 20731,
+        "idade": 11
+      }
+    },
+    {
+      "month": 18,
+      "ageMonths": 138,
+      "kind": "event",
+      "key": "ev:diamantes",
+      "vars": {
+        "preco": 3110
+      }
+    },
+    {
+      "month": 18,
+      "ageMonths": 138,
+      "kind": "choice",
+      "key": "ch:diamantes:nao",
+      "vars": {
+        "preco": 3110
+      }
+    },
+    {
+      "month": 22,
+      "ageMonths": 142,
+      "kind": "event",
+      "key": "ev:diamantes",
+      "vars": {
+        "preco": 3110
+      }
+    },
+    {
+      "month": 22,
+      "ageMonths": 142,
+      "kind": "choice",
+      "key": "ch:diamantes:nao",
+      "vars": {
+        "preco": 3110
+      }
+    },
+    {
+      "month": 24,
+      "ageMonths": 144,
+      "kind": "macro",
+      "key": "ano_novo",
+      "vars": {
+        "ipca": "2.0",
+        "selic": "6.82"
+      }
+    },
+    {
+      "month": 24,
+      "ageMonths": 144,
+      "kind": "event",
+      "key": "ev:conta_jovem",
+      "vars": {}
+    },
+    {
+      "month": 24,
+      "ageMonths": 144,
+      "kind": "choice",
+      "key": "ch:conta_jovem:abrir",
+      "vars": {}
+    },
+    {
+      "month": 25,
+      "ageMonths": 145,
+      "kind": "event",
+      "key": "ev:primeira_aplicacao",
+      "vars": {
+        "mensal": 3110,
+        "dezAnos": 527267,
+        "depositado": 373200,
+        "onde": "cdb"
+      }
+    },
+    {
+      "month": 25,
+      "ageMonths": 145,
+      "kind": "choice",
+      "key": "ch:primeira_aplicacao:ver",
+      "vars": {
+        "mensal": 3110,
+        "dezAnos": 527267,
+        "depositado": 373200,
+        "onde": "cdb"
+      }
+    }
+  ],
+  "pending": null,
+  "ended": false,
+  "stopsCount": 8,
+  "lastRandomStopMonth": 22
+}
