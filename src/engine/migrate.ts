@@ -13,7 +13,7 @@ import { netWorth, rebuildStop } from './sim';
  * rename what was renamed, and never throw on a save it recognises. Steps get the live params
  * so they can recompute derived data (a pending stop's vars) under the new rules.
  */
-export const CURRENT_SAVE_VERSION = 2;
+export const CURRENT_SAVE_VERSION = 3;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Loose = Record<string, any>;
@@ -30,7 +30,8 @@ const MIGRATIONS: Record<number, (s: Loose, p: Params) => Loose> = {
     s.lastMonth ??= null;
     s.chapterStart ??= {
       ageMonths: s.ageMonths,
-      netWorth: netWorth(s as GameState),
+      // netWorth() reads fields later versions add (fgts, v3); evaluate it on the v3 shape.
+      netWorth: netWorth({ fgts: 0, ...s } as GameState),
       interestEarned: 0,
       interestPaid: 0,
     };
@@ -39,6 +40,24 @@ const MIGRATIONS: Record<number, (s: Loose, p: Params) => Loose> = {
     // A stop built by the old engine may lack vars the new texts use ({item}, {teto}). Rebuild
     // it from the current state; an event that no longer exists leaves the month to re-roll.
     if (s.pending?.eventId) s.pending = rebuildStop(s as GameState, p, String(s.pending.eventId));
+    return s;
+  },
+  // v2 -> v3 (v0.2, 2026-11-08): the FGTS balance and the action log. FGTS is estimated from the
+  // current job's tenure (deposits before a job change are lost, which understates it). The
+  // action log is rebuilt from the diary's choice entries; standing-order edits and money moves
+  // were not recorded, so a costed-decisions review stays unavailable for such a game (the
+  // replay check in review.ts notices the mismatch and the end screen hides the section).
+  2: (s, p) => {
+    s.version = 3;
+    const job = String(s.career?.job ?? 'nenhum');
+    const rate = job === 'aprendiz' ? p.fgtsRateApprentice : job === 'atendente' || job === 'tecnico' || job === 'superior' ? p.fgtsRate : 0;
+    s.fgts ??= Math.round(Number(s.career?.salary ?? 0) * rate * Number(s.career?.monthsInJob ?? 0));
+    s.actions ??= (s.log as Array<{ key: string; month: number }>)
+      .filter((e) => e.key.startsWith('ch:'))
+      .map((e) => {
+        const [, eventId, choiceId] = e.key.split(':');
+        return { kind: 'choice', month: e.month, eventId, choiceId };
+      });
     return s;
   },
 };

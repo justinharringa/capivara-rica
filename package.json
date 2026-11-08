@@ -15,14 +15,17 @@
     "data:check": "node --experimental-strip-types scripts/check-data.ts",
     "data:check:release": "node --experimental-strip-types scripts/check-data.ts --release",
     "size": "node --experimental-strip-types scripts/check-size.ts",
-    "save:fixture": "WRITE_SAVE_FIXTURE=1 vitest run src/engine/migrate.test.ts"
+    "save:fixture": "WRITE_SAVE_FIXTURE=1 vitest run src/engine/migrate.test.ts",
+    "ceilings": "node --experimental-strip-types scripts/check-ceilings.ts --self-test && node --experimental-strip-types scripts/check-ceilings.ts"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "7.3.1",
     "@types/node": "26.6.6",
+    "@types/semver": "7.7.1",
+    "semver": "7.7.3",
     "svelte": "5.57.3",
     "svelte-check": "4.7.8",
-    "typescript": "5.9.3",
+    "typescript": "6.0.3",
     "vite": "8.3.6",
     "vite-plugin-pwa": "2.0.0",
     "vitest": "5.1.0"

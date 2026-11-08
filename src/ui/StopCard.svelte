@@ -2,7 +2,7 @@
   import { game } from '$lib/game.svelte';
   import { events, t, ui } from '$lib/content';
   import type { Stop } from '$engine/state';
-  import { formatBRL } from '$engine/money';
+  import { formatBRL, parseReais } from '$engine/money';
   import Chart from './Chart.svelte';
 
   let { stop }: { stop: Stop } = $props();
@@ -31,7 +31,7 @@
   {:else}
     {#if isGuess}
       <p class="reveal">
-        Seu palpite: <strong>{formatBRL(Math.round(Number(guess.replace(/\D/g, '')) * 100) || 0)}</strong>.
+        Seu palpite: <strong>{formatBRL(Math.max(0, parseReais(guess)))}</strong>.
         Resultado: <strong>{formatBRL(Number(stop.vars.dezAnos))}</strong>, dos quais {formatBRL(Number(stop.vars.depositado))} foram depósitos.
       </p>
     {/if}

@@ -143,7 +143,23 @@
     "ghostSince": "A Capivara joga a partir da atualização, aos {idade} anos. Antes disso, a vida foi a sua.",
     "ghostSinceShort": "desde os {idade} anos",
     "statsSince": "Contando desde a atualização ({idade} anos).",
-    "newerSave": "Há um jogo salvo de uma versão mais nova do app. Recarregue a página para atualizar e continuar."
+    "newerSave": "Há um jogo salvo de uma versão mais nova do app. Recarregue a página para atualizar e continuar.",
+    "fgts": "FGTS",
+    "shareImage": "Compartilhar imagem",
+    "sharedImage": "Imagem salva!",
+    "codaTitle": "E aos 40?",
+    "codaBody": "Se você continuar guardando {mensal} por mês em {onde}, com o que já tem, quanto acha que terá aos 40? Chuta antes de ver.",
+    "codaGuess": "Seu palpite (em reais)",
+    "codaReveal": "Revelar",
+    "codaResult": "Aos 40: {aos40}. Você teria depositado {depositado} nesses 10 anos; o resto é juro.",
+    "codaCapi": "Dez anos é onde o juro composto para de ser teoria.",
+    "reviewTitle": "As decisões que mais custaram",
+    "reviewDesc": "A mesma vida, com a escolha da Capivara em um único momento. A diferença no patrimônio aos 30 é o preço daquela decisão.",
+    "reviewYou": "Você",
+    "reviewGhost": "A Capivara",
+    "reviewCost": "Custou {valor}",
+    "reviewNone": "Nenhuma decisão sua custou mais do que a da Capivara. Ela está impressionada.",
+    "reviewUnavailable": "Esta partida começou antes da atualização, então não dá para recontar as decisões."
   },
   "log": {
     "ano_novo": "Novo ano: inflação de {ipca}% e Selic em {selic}%.",
@@ -164,7 +180,8 @@
     "negativado_renegociou": "Dívida renegociada. Nome limpo em 5 dias úteis; cartão bloqueado por 1 ano.",
     "nome_limpo": "Nome limpo de novo.",
     "deposito": "Você guardou {valor} em {onde}.",
-    "resgate": "Resgatou {bruto} de {onde}: {liquido} na conta, {imposto} de imposto."
+    "resgate": "Resgatou {bruto} de {onde}: {liquido} na conta, {imposto} de imposto.",
+    "ingles_concluido": "Curso de inglês concluído: o salário subiu."
   },
   "help": {
     "netWorth": "Tudo que é seu menos tudo que você deve: na conta + guardado − dívidas. É o placar do jogo.",
@@ -180,6 +197,7 @@
     "saveInto": "Cofrinho rende zero. Poupança rende pouco e não paga imposto. Tesouro Selic e CDB rendem a Selic/CDI, com imposto sobre o ganho no resgate.",
     "lifestyle": "Rolê, roupa, transporte: um gasto todo mês pra quem tem salário. Folgado custa mais e deixa você mais feliz; econômico, o contrário.",
     "cardPolicy": "Pagar tudo custa zero. Pagar o mínimo joga o resto no rotativo, uns 15% ao mês. Parcelar custa menos, mas ainda é juro.",
-    "lanche": "Comprar na cantina custa todo dia letivo; levar de casa não custa nada e pesa um pouco no bem-estar."
+    "lanche": "Comprar na cantina custa todo dia letivo; levar de casa não custa nada e pesa um pouco no bem-estar.",
+    "fgts": "Os 8% que o patrão deposita todo mês numa conta no seu nome (2% para aprendiz). Fica travado: só sai se você for demitido sem justa causa, com 40% a mais. Conta no patrimônio."
   }
 }

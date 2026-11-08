@@ -9,9 +9,9 @@
       "value": 162100,
       "unit": "centavos/month",
       "asOf": "2026-01",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
-      "status": "secondary",
-      "note": "R$ 1.621 for 2026 (press coverage of the decree; confirm on planalto.gov.br)"
+      "source": "https://www2.camara.leg.br/legin/fed/decret/2025/decreto-12797-23-dezembro-2025-798569-publicacaooriginal-177587-pe.html",
+      "status": "verified",
+      "note": "Decreto 12.797 of 23/12/2025, art. 1: R$ 1.621,00, daily R$ 54,04, hourly R$ 7,37, in force 01/01/2026. Sao Paulo state floor is R$ 1.874,36 from 01/06/2026 (Lei estadual 18.471/2026, per search results; not opened), used only by categories without a federal piso. [notes: docs/research/notes/verification-2026-11/education.md]"
     },
     "inssRateBand1": {
       "value": 0.075,
@@ -25,25 +25,25 @@
       "value": 0.06,
       "unit": "rate of gross salary",
       "asOf": "2026-01",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
-      "status": "memory",
-      "note": "Employee share capped at 6% of base salary (CLT rule not re-checked)"
+      "source": "https://legis.senado.leg.br/norma/517887/publicacao/15646209",
+      "status": "verified",
+      "note": "Decreto 95.247/1987 art. 9 (Senate legislation portal): the beneficiary pays 'a parcela equivalente a 6% de seu salário básico ou vencimento' and the employer pays the excess. Same rule in Lei 7.418/1985 (art. 4, parágrafo único; Planalto blocked the fetch). Search results say the decree was revoked by Decreto 10.854/2021, whose art. 114 repeats the 6% (not opened). The base is salário básico, excluding adicionais. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "cardRotativoMonthly": {
-      "value": 0.153,
+      "value": 0.1529,
       "unit": "rate/month",
       "asOf": "2026-09",
-      "source": "docs/research/notes/consumer_credit.md",
+      "source": "https://www.opovo.com.br/noticias/economia/2026/10/29/juro-medio-do-rotativo-do-cartao-de-credito-sobe-a-4517-ao-ano-em-setembro-diz-bc.html",
       "status": "secondary",
-      "note": "BCB average 451.7% a.a. for individuals, Sep 2026, converted to monthly"
+      "note": "BCB average 451,7% a.a. for rotativo, Sep 2026 (published 29 Oct 2026, Agência Estado). (1+4,517)^(1/12)-1 = 15,29%/month. BCB page itself could not be rendered. [notes: docs/research/notes/verification-2026-11/credit.md]"
     },
     "cardParceladoMonthly": {
-      "value": 0.094,
+      "value": 0.0937,
       "unit": "rate/month",
       "asOf": "2026-09",
-      "source": "docs/research/notes/consumer_credit.md",
+      "source": "https://www.opovo.com.br/noticias/economia/2026/10/29/juro-medio-do-rotativo-do-cartao-de-credito-sobe-a-4517-ao-ano-em-setembro-diz-bc.html",
       "status": "secondary",
-      "note": "BCB average 193.0% a.a. for fatura parcelada, converted to monthly"
+      "note": "BCB average 193,0% a.a. for parcelado, Sep 2026. (2,93)^(1/12)-1 = 9,37%/month. [notes: docs/research/notes/verification-2026-11/credit.md]"
     },
     "cardCapMultiple": {
       "value": 1.0,
@@ -56,42 +56,42 @@
     "cardMinimumPaymentPct": {
       "value": 0.15,
       "unit": "rate of statement",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/credit_rule_details.md",
-      "status": "placeholder",
-      "note": "The mandatory 15% minimum was revoked (2017-18); issuers set their own. Confirm current practice."
+      "asOf": "2024-01",
+      "source": "https://www.mobills.com.br/blog/cartao-de-credito/pagamento-minimo-do-cartao-de-credito/",
+      "status": "secondary",
+      "note": "Mobills (4 Jan 2024) describes the issuer minimum as 15% of the statement plus 100% of interest, IOF, late fees and withdrawals. Nubank's help page (nubank.com.br/ajuda-e-seguranca/rotativo-e-parcelamento) shows R$ 130 on a R$ 725 bill (17.9%, charges included) without stating a rule. No bank page found stating its own percentage; 15% is the representative share. [notes: docs/research/notes/verification-2026-11/credit.md]"
     },
     "cardFirstLimit": {
       "value": 50000,
       "unit": "centavos",
       "asOf": "2026-11",
-      "source": "docs/research/notes/credit_rule_details.md",
-      "status": "placeholder",
-      "note": "Typical first limit for a young adult with no history; not found in research"
+      "source": "docs/research/notes/verification-2026-11/credit.md",
+      "status": "secondary",
+      "note": "Design choice: a first card at R$ 500. Nubank publishes no initial limit; its deposit-backed route goes up to R$ 5.000 (notes). Searched Nubank, Itau, Bradesco pages and press, 2026-11."
     },
     "chequeEspecialMonthly": {
       "value": 0.08,
       "unit": "rate/month",
-      "asOf": "2020-01-06",
-      "source": "docs/research/notes/credit_rule_details.md",
-      "status": "verified",
-      "note": "Legal cap, CMN Res. 4.765/2019"
+      "asOf": "2026-09",
+      "source": "https://paiquerefm.com.br/estadao/juro-medio-no-credito-livre-sobe-a-490-em-setembro-mostra-bc-cheque-especial-vai-a-139/",
+      "status": "secondary",
+      "note": "Kept as the legal cap (CMN Res. 4.765/2019, 8%/month; cap text not re-opened, PDF unreadable). BCB Sep 2026 average is 139,0% a.a. = 7,53%/month (Estadão via Paiquerê FM, 29 Oct 2026), just under the cap. Use 0.0753 if the game should show the average rather than the ceiling. [notes: docs/research/notes/verification-2026-11/credit.md]"
     },
     "personalLoanMonthly": {
-      "value": 0.064,
+      "value": 0.0642,
       "unit": "rate/month",
       "asOf": "2026-09",
-      "source": "docs/research/notes/consumer_credit.md",
+      "source": "https://paiquerefm.com.br/estadao/juro-medio-no-credito-livre-sobe-a-490-em-setembro-mostra-bc-cheque-especial-vai-a-139/",
       "status": "secondary",
-      "note": "BCB average 110.9% a.a.; Procon-SP found 8.66% a.m. at big banks (conflict noted)"
+      "note": "BCB average 110,9% a.a. for non-consigned personal credit, Sep 2026 (Aug 110,4%). (2,109)^(1/12)-1 = 6,42%/month. Procon-SP's 8,66% a.m. at big banks (earlier note) not re-verified. [notes: docs/research/notes/verification-2026-11/credit.md]"
     },
     "consignadoMonthly": {
-      "value": 0.034,
+      "value": 0.0375,
       "unit": "rate/month",
-      "asOf": "2025-06",
-      "source": "docs/research/notes/consumer_credit.md",
+      "asOf": "2026-09",
+      "source": "https://www.jornaldocomercio.com/economia/2026/10/1268731-concessoes-do-consignado-privado-cairam-77-em-setembro-ante-agosto-mostra-bc.html",
       "status": "secondary",
-      "note": "CLT consignado 3.3-3.6% a.m."
+      "note": "BCB average for consignado privado (CLT) 55,5% a.a. in Sep 2026 (Aug 56,3%). (1,555)^(1/12)-1 = 3,75%/month; consistent with 3,79%/month reported for June 2026. Old value 3,4% was from mid-2025. [notes: docs/research/notes/verification-2026-11/credit.md]"
     },
     "motoFinanceMonthly": {
       "value": 0.0157,
@@ -112,24 +112,25 @@
       "value": 0.1375,
       "unit": "rate/year",
       "asOf": "2026-11-04",
-      "source": "docs/research/notes/saving_investing.md",
+      "source": "https://atlaspublico.com.br/bcb/noticias/copom-mantem-selic-em-13-75pct-ao-ano-por-unanimidade-e-ve-99107",
       "status": "secondary",
-      "note": "Copom held 13.75% on 4 Nov 2026 (press; confirm on bcb.gov.br)"
+      "note": "Copom 282nd meeting, 4 Nov 2026: Selic held at 13,75% a.a., unanimous (communiqué reproduced by Atlas Publico; Rankia confirms and says target in force since 16 Sep). bcb.gov.br pages did not render, so not verified. [notes: docs/research/notes/verification-2026-11/credit.md]"
     },
     "cdiAnnual": {
       "value": 0.1365,
       "unit": "rate/year",
-      "asOf": "2026-09",
-      "source": "docs/research/notes/saving_investing.md",
-      "status": "secondary"
+      "asOf": "2026-11",
+      "source": "https://rankia.com.br/proxima-reuniao-copom/",
+      "status": "secondary",
+      "note": "Rankia: CDI 'perto de 13,65% a.a.' after the Nov 2026 hold. CDI trades about 0,10 pp under Selic. [notes: docs/research/notes/verification-2026-11/credit.md]"
     },
     "poupancaMonthly": {
-      "value": 0.0067,
+      "value": 0.0066,
       "unit": "rate/month",
-      "asOf": "2026-05",
-      "source": "docs/research/notes/credit_rule_details.md",
+      "asOf": "2026-11",
+      "source": "https://rankia.com.br/poupanca-outubro-2026-quanto-rende/",
       "status": "secondary",
-      "note": "0.5% + TR; May 2026 monthly 0.6695%"
+      "note": "Rankia: credit of 0,6624% on 1 Nov 2026 (0,5% + TR of 0,1616% for 1 Oct to 1 Nov, BCB TR). Rule 0,5%+TR holds while Selic > 8,5%. Rounded from 0,006624. [notes: docs/research/notes/verification-2026-11/credit.md]"
     },
     "tesouroCustodyAnnual": {
       "value": 0.002,
@@ -195,10 +196,10 @@
     "ipcaExpected": {
       "value": 0.0522,
       "unit": "rate/year",
-      "asOf": "2026",
-      "source": "docs/research/notes/saving_investing.md",
+      "asOf": "2026-10-30",
+      "source": "https://paraibabusiness.com.br/focus-eleva-ipca-de-2027-a-476-acima-do-teto-da-meta-diz-bc/",
       "status": "secondary",
-      "note": "Focus expectation for 2026"
+      "note": "Focus bulletin of 2 Nov 2026 (data to 30 Oct): IPCA 2026 median 5,22%, 2027 4,76% (above the 4,5% ceiling), Selic end-2026 13,50%, end-2027 12,50%. Value for 2026 unchanged; 2027 is 0.0476 if needed. [notes: docs/research/notes/verification-2026-11/credit.md]"
     },
     "inflationTarget": {
       "value": 0.03,
@@ -211,33 +212,34 @@
     "mesadaMonthly": {
       "value": 10000,
       "unit": "centavos/month",
-      "asOf": "2024-10",
-      "source": "docs/research/notes/tween_teen_money_life.md",
+      "asOf": "2023-10",
+      "source": "https://www.serasa.com.br/imprensa/mesada-aos-filhos/",
       "status": "secondary",
-      "note": "Serasa/Opinion Box 2023-24: most mesadas up to R$ 100 and mainly for the school lanche; the game raises it R$ 20 per year of age (inference)"
+      "note": "Serasa/Opinion Box (Oct 2023): 74% of paying parents give up to R$ 100 and 53% up to R$ 60; sample size not published. SPC Brasil is cited in search snippets at an average of about R$ 123 (page not opened). The 2024 wave (61% up to R$ 100) is in docs/research/notes/tween_teen_money_life.md and was not re-opened here. R$ 100 is the documented ceiling for most payers. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "lanchePrice": {
-      "value": 400,
+      "value": 900,
       "unit": "centavos/school day",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/tween_teen_money_life.md",
-      "status": "placeholder",
-      "note": "School cantina lanche per day; no source found. R$ 4 keeps 20 days inside a R$ 100 mesada"
+      "asOf": "2026-04",
+      "source": "https://www.ufmg.br/dlo/arquivo/dfc/Contratos/013_2025_LCA/013_2025_01apost.pdf",
+      "status": "secondary",
+      "note": "No São Paulo school-cantina list was found. Proxy: the UFMG engineering-school cantina contract price list readjusted 23/04/2026 has pão de queijo R$ 3,05, coxinha R$ 5,44, juice box R$ 4,46, soda can R$ 5,44, so salgado plus drink is R$ 7,51 to R$ 10,90; R$ 9 sits in that range. Raised from R$ 4: 20 days at R$ 9 is R$ 180, above a R$ 100 mesada, which is the intended dilemma. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "schoolDaysPerMonth": {
       "value": 20,
       "unit": "days",
       "asOf": "2026",
-      "source": "docs/research/notes/tween_teen_money_life.md",
-      "status": "memory"
+      "source": "https://legis.senado.leg.br/sdleg-getter/documento?dm=3641047",
+      "status": "verified",
+      "note": "LDB (Lei 9.394/1996) art. 24, I: minimum 800 hours over at least 200 days of effective school work, excluding final exams. 200 days over about 10 school months is 20 days per month. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "jovemAprendizPay4h": {
       "value": 73700,
       "unit": "centavos/month",
       "asOf": "2026-01",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "source": "https://www2.camara.leg.br/legin/fed/decret/2025/decreto-12797-23-dezembro-2025-798569-publicacaooriginal-177587-pe.html",
       "status": "secondary",
-      "note": "4h/day apprentice at the hourly minimum"
+      "note": "Decreto 12.797/2025 sets the hourly minimum at R$ 7,37; apprentice pay is at least the hourly minimum (CLT art. 428 par. 2; Decreto 9.579/2018 regulates the contract; neither opened). R$ 7,37 x 100h/month (4h x 5 days x 20 weeks, Genyo method) = R$ 737. Brief's 22-day formula gives R$ 648,56; with DSR (Caltrab) ~R$ 761. [notes: docs/research/notes/verification-2026-11/education.md]"
     },
     "peDeMeiaMonthly": {
       "value": 20000,
@@ -259,158 +261,161 @@
       "value": 92251,
       "unit": "centavos/month",
       "asOf": "2026-09",
-      "source": "https://www.dieese.org.br/analisecestabasica/",
+      "source": "https://www.dieese.org.br/analisecestabasica/2026/202609cestabasica.pdf",
       "status": "verified",
-      "note": "DIEESE cesta básica São Paulo, Sep 2026 bulletin read in full"
+      "note": "DIEESE bulletin dated 9 Oct 2026, read as text: São Paulo R$ 922,51 in September (+2,43% on August), the most expensive capital. The October bulletin (202610cestabasica.pdf) returned 404 on 8 Nov 2026, so September is the latest. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "busFareSP": {
       "value": 530,
       "unit": "centavos/ride",
-      "asOf": "2026",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
-      "status": "secondary"
+      "asOf": "2026-01",
+      "source": "https://diariodotransporte.com.br/2026/01/05/confira-as-tarifas-com-reajuste-dos-transportes-na-grande-sao-paulo-nesta-segunda-05-e-o-ultimo-dia-para-carregar-o-bilhete-unico-para-escapar-do-aumento-por-seis-meses/",
+      "status": "secondary",
+      "note": "SPTrans municipal bus basic fare rose from R$ 5,00 to R$ 5,30 on 06/01/2026 (Diário do Transporte). SPTrans' own page was not opened. No later change was found. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "rentKitnetSP": {
-      "value": 120000,
+      "value": 150000,
       "unit": "centavos/month",
       "asOf": "2026-11",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
-      "status": "placeholder",
-      "note": "Inference from R$ 65,78/m2 average; no kitnet-specific source"
+      "source": "https://www.quintoandar.com.br/alugar/imovel/aclimacao-sao-paulo-sp-brasil/kitnet",
+      "status": "secondary",
+      "note": "QuintoAndar kitnet/studio neighbourhood averages in São Paulo (listing-based, not an official survey): Sé R$ 1.520, Mooca R$ 1.800, Liberdade R$ 1.840, Aclimação R$ 2.125, Vila Mariana R$ 2.750. FipeZAP April 2026: R$ 64,20/m2 in São Paulo, so a 30 m2 one-bedroom is R$ 1.926 (viva.com.br/dinheiro/maior-demanda-por-aluguel-na-cidade-de-sao-paulo-encarece-compactos.html). R$ 1.500 is the cheapest central average; peripheral units are cheaper but unsourced. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "phonePlan": {
-      "value": 5000,
+      "value": 3000,
       "unit": "centavos/month",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/tech_legal_domains.md",
-      "status": "placeholder",
-      "note": "Prepaid data plan; not researched"
+      "asOf": "2026-09",
+      "source": "https://melhorplano.net/planos-de-celular/plano-pre-pago/melhores-planos-pre-pagos",
+      "status": "secondary",
+      "note": "Comparator page dated 21/09/2026: typical prepaid at R$ 30 per 30 days (Claro Prezão 21GB, Vivo Pré 25GB, TIM Pré Xip 16GB). Controle starts at R$ 49,90 to R$ 59,90 (melhorplano.net/planos-de-celular/plano-controle, updated 06/11/2026). Operator price pages were not opened. Lowered from R$ 50 because the key describes a prepaid plan. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "entryPhonePrice": {
-      "value": 136600,
+      "value": 99900,
       "unit": "centavos",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/tween_teen_money_life.md",
+      "asOf": "2026-09",
+      "source": "https://www.techtudo.com.br/listas/2026/09/melhor-celular-ate-r-1500-para-comprar-em-setembro-de-2026-edqualcomprarmb.ghtml",
       "status": "secondary",
-      "note": "Redmi Note 15 about R$ 1.366; Galaxy A17 from R$ 849"
+      "note": "TechTudo, 11/09/2026: Galaxy A17 128GB R$ 999 on Amazon (offer card; text says R$ 849) and R$ 1.081,52 on Magalu; Moto G35 256GB R$ 899 to R$ 1.199. Value is the Amazon A17 offer-card price. The old R$ 1.366 was the Redmi Note 15, which is mid-range, not entry. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "pixDiscountTypical": {
       "value": 0.05,
       "unit": "rate",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/consumer_credit.md",
-      "status": "placeholder",
-      "note": "Real Pix-vs-12x price gaps not measured; 5% is the à-vista break-even for 12x"
+      "asOf": "2024-07",
+      "source": "https://www.seudinheiro.com/2024/empresas/descontos-de-encher-os-olhos-por-que-magalu-mglu3-casas-bahia-bhia3-e-outras-varejistas-oferecem-precos-ate-20-mais-baixos-para-pagamento-via-pix-mcss",
+      "status": "secondary",
+      "note": "GMattos survey (July 2024, Seu Dinheiro 12 Sep 2024): 58% of retailers gave Pix advantages; 3-5% across all products at many stores, 10-15% on some groups, up to 20% on some items. Coupon guide for Magalu (cupomonline.com.br/cupom-magazine-luiza-pix/) says 5-15%. 5% is the typical store-wide figure. [notes: docs/research/notes/verification-2026-11/credit.md]"
     },
     "motoPrice": {
       "value": 1735000,
       "unit": "centavos",
-      "asOf": "2026",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "asOf": "2026-01",
+      "source": "https://garagem360.com.br/?p=300428",
       "status": "secondary",
-      "note": "Honda CG 160 Start 2026 list price"
+      "note": "Honda's own site returned 403. Garagem360 (16/01/2026) reports a suggested price of R$ 15.780 for the CG 160 Start 2026 excluding freight, and says dealer prices run R$ 2.000 to R$ 3.000 higher. Other outlets cite R$ 16.770 and R$ 17.350 (the figure kept from the repo notes, from A Revista, which now redirects to a 404). R$ 17.350 sits between suggested price and dealer price. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "privateTuitionMonthly": {
       "value": 83500,
       "unit": "centavos/month",
       "asOf": "2026",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "source": "https://abmes.org.br/noticias/mensalidades-da-graduacao-privada-registram-queda-real-em-2026-e-revelam-novo-ciclo-competitivo-5200",
       "status": "secondary",
-      "note": "Average in-person private tuition"
+      "note": "Hoper study via ABMES: median presencial private fee actually charged in 2026 is R$ 835 (net of discounts). Medicina is the outlier (median R$ 11,4 mil per the repo note). [notes: docs/research/notes/verification-2026-11/education.md]"
     },
     "eadTuitionMonthly": {
       "value": 21400,
       "unit": "centavos/month",
       "asOf": "2026",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "source": "https://abmes.org.br/noticias/mensalidades-da-graduacao-privada-registram-queda-real-em-2026-e-revelam-novo-ciclo-competitivo-5200",
       "status": "secondary",
-      "note": "Average distance-learning tuition"
+      "note": "Hoper study via ABMES: median EAD fee actually charged in 2026 is R$ 214 (net of discounts). Semesp's average is higher (R$ 317 in 1st semester 2025, different method). [notes: docs/research/notes/verification-2026-11/education.md]"
     },
     "tecnicoTuitionMonthly": {
-      "value": 30000,
+      "value": 45000,
       "unit": "centavos/month",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
-      "status": "placeholder",
-      "note": "SENAI/SENAC course costs were not found; many public tracks are free"
+      "asOf": "2026-09",
+      "source": "https://querobolsa.com.br/revista/quanto-custa-um-curso-tecnico-em-enfermagem",
+      "status": "secondary",
+      "note": "Quero Bolsa (09/09/2026): private presencial técnico R$ 300-600/month, EaD ~R$ 400, course ~2 years; value is the R$ 450 midpoint. ETEC/IF are free; SENAC SP advertises fixed installments (page not readable here, so no price taken). Not an SP-specific price list. [notes: docs/research/notes/verification-2026-11/education.md]"
     },
     "cursinhoMonthly": {
-      "value": 40000,
+      "value": 80000,
       "unit": "centavos/month",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
-      "status": "placeholder"
+      "asOf": "2025-01",
+      "source": "https://vestibulares.estrategia.com/portal/enem-e-vestibulares/quanto-custa-um-curso-pre-vestibular",
+      "status": "secondary",
+      "note": "Estrategia Vestibulares (published 30/12/2024, updated 06/01/2025): a complete presencial pre-vestibular costs R$ 800-3.000 (unclear whether monthly or total); value is the low end as a monthly. Online 12-month plans are R$ 70-100/month. No Anglo/Etapa/Objetivo/Poliedro 2026 price page was found, so this is weak. [notes: docs/research/notes/verification-2026-11/education.md]"
     },
     "salaryAuxAdmin": {
-      "value": 220000,
+      "value": 209900,
       "unit": "centavos/month",
-      "asOf": "2026",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
-      "status": "secondary"
+      "asOf": "2026-11",
+      "source": "https://www.salario.com.br/profissao/assistente-administrativo-cbo-411010/",
+      "status": "secondary",
+      "note": "Salario.com.br (updated 05/11/2026, CAGED 12 months): auxiliar administrativo listed at R$ 2.099 average; assistente administrativo R$ 2.476. The auxiliar page itself reports R$ 2.079-2.099 (page figures differ slightly). Was R$ 2.200. [notes: docs/research/notes/verification-2026-11/education.md]"
     },
     "salaryTecnicoEnfermagem": {
-      "value": 332500,
+      "value": 256000,
       "unit": "centavos/month",
-      "asOf": "2026",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "asOf": "2026-11",
+      "source": "https://www.salario.com.br/profissao/tecnico-de-enfermagem-cbo-322205/",
       "status": "secondary",
-      "note": "Legal floor"
+      "note": "Salario.com.br (updated 05/11/2026, CAGED CLT base pay): average R$ 2.559,99, median R$ 2.423. The old value R$ 3.325 is the legal piso (Lei 14.434/2022), which real hiring does not follow; game designer must decide which to use. [notes: docs/research/notes/verification-2026-11/education.md]"
     },
     "salaryDevJunior": {
-      "value": 346300,
+      "value": 345900,
       "unit": "centavos/month",
-      "asOf": "2026",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "asOf": "2026-11",
+      "source": "https://www.salario.com.br/profissao/programador-de-sistemas-de-informacao-cbo-317110/",
       "status": "secondary",
-      "note": "Glassdoor average; Robert Half median R$ 6.850"
+      "note": "Salario.com.br (05/11/2026, CAGED): programador piso R$ 3.459, median R$ 4.631, average R$ 6.104 (junior breakdown is paywalled). The entry-level proxy is the piso, which is close to the old Glassdoor R$ 3.463. Top firms pay much more (Robert Half p50 R$ 6.850 per repo note). [notes: docs/research/notes/verification-2026-11/education.md]"
     },
     "salaryEnfermeiro": {
-      "value": 475000,
+      "value": 449300,
       "unit": "centavos/month",
-      "asOf": "2026",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "asOf": "2026-11",
+      "source": "https://www.salario.com.br/profissao/enfermeiro-cbo-223505/",
       "status": "secondary",
-      "note": "Legal floor"
+      "note": "Salario.com.br (updated 05/11/2026, CAGED Oct 2025-Sep 2026): average R$ 4.493,35, reference piso R$ 3.684,45 at 38h/week. Legal national piso is R$ 4.750 (Lei 14.434/2022), the old value; not universally applied. [notes: docs/research/notes/verification-2026-11/education.md]"
     },
     "salaryProfessor": {
       "value": 513063,
       "unit": "centavos/month",
-      "asOf": "2026",
+      "asOf": "2026-01",
       "source": "docs/research/notes/careers_wages_cost_of_living.md",
       "status": "secondary",
-      "note": "40h national floor"
+      "note": "Kept: national piso for public basic-education teachers, R$ 5.130,63 for 40h (MEC Portaria 82/2026, per Conexao TO cited in the repo note; not re-opened here). Private CLT hiring is much lower: Salario.com.br shows Professor I Ensino Fundamental ~R$ 3.354 at 30h (search result, not opened). [notes: docs/research/notes/verification-2026-11/education.md]"
     },
     "salaryIfood": {
-      "value": 240000,
+      "value": 336000,
       "unit": "centavos/month",
-      "asOf": "2026",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "asOf": "2026-05",
+      "source": "https://www.serasa.com.br/blog/quanto-ganha-um-entregador-do-ifood/",
       "status": "secondary",
-      "note": "Gross, before fuel and maintenance; R$ 1,9-3 mil range"
+      "note": "Serasa (27/05/2026) citing iFood: gross R$ 28/hour worked in 2024; iFood says more than R$ 2.500/month at ~4h/day; Serasa's example of 6h x 20 days = R$ 3.360 gross (R$ 28 x 6 x 20, an estimate). Gross only: fuel, maintenance and insurance not deducted (Cebrap ~R$ 700/month maintenance per repo note). Was R$ 2.400; designer may keep that as the net-ish figure. [notes: docs/research/notes/verification-2026-11/education.md]"
     },
     "medioPremium": {
       "value": 0.15,
       "unit": "rate",
-      "asOf": "2025",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "asOf": "2022",
+      "source": "https://repositorio.ipea.gov.br/bitstream/11058/11532/2/TD_2804_Sumex.pdf",
       "status": "secondary",
-      "note": "Controlled estimate 11-20% for completing ensino médio"
+      "note": "IPEA TD 2804 (Oferta de escolas e retorno do ensino medio): completing ensino medio is associated with a wage return of 11% to 20% depending on instrument. 0.15 is a game design choice inside that range. Raw IBGE gap by education could not be extracted. [notes: docs/research/notes/verification-2026-11/education.md]"
     },
     "tecnicoPremium": {
       "value": 0.23,
       "unit": "rate",
-      "asOf": "2025",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "asOf": "2022",
+      "source": "https://repositorio.ipea.gov.br/bitstream/11058/11817/2/TD_2859_Sumex.pdf",
       "status": "secondary",
-      "note": "Controlled estimate 21-25% for technical courses"
+      "note": "IPEA TD 2859 (Retorno da educacao tecnica): wage premium of 21,3% to 24,9% for workers in technical occupations (RAIS longitudinal, 2007-2018 data). 0.23 is a design choice inside the range; smaller for 18-year-olds. [notes: docs/research/notes/verification-2026-11/education.md]"
     },
     "degreePremium": {
       "value": 0.25,
       "unit": "rate",
       "asOf": "2025",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "source": "https://www.mackenzie.br/ceat/menu/noticias/arquivo/n/a/i/no-brasil-graduados-tem-renda-126-maior-que-os-trabalhadores-com-ensino-medio-aponta-pesquisa-do-ibge",
       "status": "secondary",
-      "note": "Controlled estimate 25%+; raw averages 126-156%"
+      "note": "Design choice: a conservative causal premium (Insper 2018 dissertation, cited in the repo note, finds >25%; not re-opened). Raw PNAD gap is far larger: graduates earn 126% more than ensino medio (Mackenzie/IBGE headline); IBGE 2025 puts superior completo at R$ 6.947 (Bahia Noticias) but the medio figure was not found. [notes: docs/research/notes/verification-2026-11/education.md]"
     },
     "comprometimentoYellow": {
       "value": 0.3,
@@ -429,28 +434,28 @@
       "note": "BCB alert threshold for Pix credit (Res. 601-603/2026)"
     },
     "phoneTheftAnnualProb": {
-      "value": 0.03,
+      "value": 0.014,
       "unit": "probability/year",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
-      "status": "placeholder",
-      "note": "Inference from 161.666 phones lost in São Paulo city in 2025"
+      "asOf": "2025",
+      "source": "https://www.acessa.com/noticias/2026/01/307708-estado-de-sp-tem-queda-de-59-no-numero-de-celulares-roubados-ou-furtados-media-de-697-por-dia.html",
+      "status": "secondary",
+      "note": "SSP: 161.666 phones robbed or stolen in São Paulo city in 2025 (254.416 statewide). City population 11.904.961 (IBGE 2025 estimate, via abcdoabc.com.br) gives 1.36% per person; statewide 254.416 / 46.081.801 = 0.55%. Counts are police reports (undercount) and can include repeat victims and non-residents, so 1.4% for the city is an approximation. Was 3%. [notes: docs/research/notes/verification-2026-11/credit.md]"
     },
     "betsExpectedLoss": {
-      "value": 0.6,
+      "value": 0.35,
       "unit": "share of stake lost per month",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/tween_teen_money_life.md",
-      "status": "placeholder",
-      "note": "Share of a month's stake lost on average with repeated play; narrated, never animated. Not sourced."
+      "asOf": "2024-06",
+      "source": "https://oantagonista.com.br/brasil/brasileiros-perderam-quase-240-bilhoes-em-apostas-esportivas/",
+      "status": "secondary",
+      "note": "Itaú study (Jul 2023 to Jun 2024, via O Antagonista): deposits R$ 68,2 bn, withdrawals R$ 44,3 bn, net loss R$ 23,9 bn = 35% of deposits ('R$ 1 lost per R$ 3'). Comsefaz (Agência Brasil/O Povo, 6 Aug 2026): R$ 62,5 bn lost in 2025, R$ 4,7 bn/month, using BCB Pix data; it gives no deposit-loss share. Fortune Tiger RTP is reported as 96,81% by affiliate and press sites, not confirmed by PG Soft. The game applies the 35% as the share lost; it is a yearly aggregate used as a monthly proxy, so treat as a design simplification. Was 60%. [notes: docs/research/notes/verification-2026-11/credit.md]"
     },
     "healthPlanYoung": {
-      "value": 14500,
+      "value": 19761,
       "unit": "centavos/month",
-      "asOf": "2026",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
+      "asOf": "2026-10",
+      "source": "https://www.companyhero.com/blog/planos-empresariais-tabela-de-precos",
       "status": "secondary",
-      "note": "Cheapest quotes for ages 19-23"
+      "note": "Company Hero simulator (checked 21/10/2026), Sao Paulo, age 24-28: cheapest R$ 197,61 per person for a 1-life MEI plan, R$ 149,63 for plans with 3+ lives. These are coletivo/empresarial starting prices; individual plans are rarely sold (Bradesco sells none). Was R$ 145 (ages 19-23). [notes: docs/research/notes/verification-2026-11/education.md]"
     },
     "negativacaoYears": {
       "value": 5,
@@ -464,57 +469,57 @@
       "value": 40000,
       "unit": "centavos/month",
       "asOf": "2026-11",
-      "source": "docs/research/notes/tween_teen_money_life.md",
-      "status": "placeholder",
-      "note": "Typical 'ajuda em casa' from a young adult living with parents; not sourced"
+      "source": "https://brasil61.com/noticias/economia-oito-em-cada-dez-jovens-ajudam-no-sustento-da-casa-de-acordo-com-spc-cofe170013",
+      "status": "secondary",
+      "note": "Design choice. SPC Brasil/CNDL (article of 13/02/2017): 83% of 18-30 year-olds help pay household expenses; 29% cover part and 27% are the main provider. No amount in reais was found in any source. R$ 400 is about 25% of the 2026 minimum wage of R$ 1.621. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "motoRunningCost": {
-      "value": 25000,
+      "value": 57000,
       "unit": "centavos/month",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
-      "status": "placeholder",
-      "note": "Fuel, maintenance, IPVA and insurance for a 160cc motorcycle; not sourced"
+      "asOf": "2026-01",
+      "source": "https://garagem360.com.br/?p=301259",
+      "status": "secondary",
+      "note": "Garagem360 (21/01/2026), about 1.000 km a month, 35-45 km/l, gasoline about R$ 6,00: fuel R$ 150-180, insurance R$ 110-135 (R$ 1.300-1.600 a year), IPVA and licensing R$ 50-55, maintenance R$ 200-260; total R$ 510-630, midpoint R$ 570. At about 400 km a month the same inputs give roughly R$ 300. Raised from R$ 250 assuming delivery-type use. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "overdraftFloor": {
       "value": 50000,
       "unit": "centavos",
       "asOf": "2026-11",
-      "source": "docs/research/notes/credit_rule_details.md",
-      "status": "placeholder",
-      "note": "Minimum cheque especial limit the game grants; the R$ 500 free-of-fee tranche is the only anchor found"
+      "source": "docs/research/notes/verification-2026-11/credit.md",
+      "status": "secondary",
+      "note": "Design choice: the game caps cheque especial at one month of income or R$ 500, whichever is larger. No bank publishes a minimum pre-approved limit; searched 2026-11."
     },
     "usedPhonePrice": {
-      "value": 50000,
+      "value": 80000,
       "unit": "centavos",
       "asOf": "2026-11",
-      "source": "docs/research/notes/tween_teen_money_life.md",
-      "status": "placeholder",
-      "note": "Second-hand entry Android; not sourced"
+      "source": "https://www.extra.com.br/usado-samsung-galaxy-a54-5g-128gb-preto-bom-trocafone/p/1582810588",
+      "status": "secondary",
+      "note": "Used Galaxy A54 5G (2023 mid-range): Trocafone refurbished about R$ 908 to R$ 1.153 on Magalu and R$ 1.037 (Pix) on Casas Bahia/Extra; OLX private ads about R$ 800 to R$ 1.200; Mercado Livre R$ 850 and up. Listing pages return 403 to the fetch tool, so prices come from search-result snippets and are not page-verified. R$ 800 is the private-listing low end. Note this is close to a new Galaxy A17. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "giftGrandma": {
       "value": 10000,
       "unit": "centavos",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/tween_teen_money_life.md",
-      "status": "placeholder",
-      "note": "Opening birthday gift at age 10"
+      "asOf": "2026-10",
+      "source": "https://mercadoeconsumo.com.br/06/10/2024/noticias-varejo/dia-das-criancas-deve-movimentar-r-18-bilhoes-em-compras-volume-128-maior-que-2023/amp/",
+      "status": "secondary",
+      "note": "Design choice. No survey of cash gifts from grandparents exists. Reference range: Datafolha/Abecs average planned Dia das Crianças gift R$ 231 (2024); the 2025 and 2026 editions are reported at R$ 219 and R$ 225 in search snippets; a gift guide's bands for ages 10-12 run R$ 30 to R$ 150. R$ 100 sits inside that range. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "giftBirthdayUnit": {
       "value": 10000,
       "unit": "centavos",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/tween_teen_money_life.md",
-      "status": "placeholder",
-      "note": "Birthday gifts are 1-2 units of this"
+      "asOf": "2026-10",
+      "source": "https://www.guardardinheiro.com.br/blog/lista-presentes-dia-das-criancas-2026-idade-preco",
+      "status": "secondary",
+      "note": "Design choice. One unit is R$ 100, so a gift is R$ 100 to R$ 200. Reference: the top band for ages 10-12 in the gift guide is R$ 70 to R$ 150 (the guide's own suggestions); Datafolha/Abecs average R$ 231 (2024). [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "mesadaYearlyStep": {
-      "value": 2000,
+      "value": 1000,
       "unit": "centavos/year of age",
       "asOf": "2026-11",
-      "source": "docs/research/notes/tween_teen_money_life.md",
-      "status": "placeholder",
-      "note": "Inference: mesada grows with age; no survey breaks amounts down by age"
+      "source": "https://www.serasa.com.br/imprensa/mesada-aos-filhos/",
+      "status": "secondary",
+      "note": "Design choice. No survey gives mesada by age (Serasa 2023 gives only the share of payers: 54% at 6-11, 45% at 15-18). The repo notes' inference is R$ 50-100 at 10-14 and R$ 100-150 at 15-17. From R$ 100 at 10, R$ 10 per year gives R$ 150 at 15 and R$ 170 at 17. The old R$ 20 per year reached R$ 240 at 17, above any sourced figure. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "gameDiamondsPrice": {
       "value": 3000,
@@ -528,9 +533,9 @@
       "value": 15000,
       "unit": "centavos",
       "asOf": "2026-11",
-      "source": "docs/research/notes/tween_teen_money_life.md",
-      "status": "placeholder",
-      "note": "One week of informal teen work; not sourced"
+      "source": "https://www.salario.com.br/profissao/panfleteiro-cbo-519905/",
+      "status": "secondary",
+      "note": "Design choice backed by computation. Salario.com.br (Nov 2026): panfleteiro CLT base R$ 1.862,80 to R$ 2.756 a month, average R$ 9,72 per hour, so about 15 hours a week is R$ 146. Day rates seen: freelance garçom R$ 120 for 18h-01h in Campinas (bne.com.br/vaga-de-emprego-na-area-alimentos-em-campinas-sp/garcom/4654395, undated); Recife leafleting R$ 70 per 4h shift and São Paulo babá about R$ 27 per hour appear only in search snippets. No São Paulo teen-specific source exists, and minors under 16 cannot legally work. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "securedCardMinSavings": {
       "value": 10000,
@@ -544,9 +549,9 @@
       "value": 100000,
       "unit": "centavos",
       "asOf": "2025-09",
-      "source": "docs/research/notes/credit_rule_details.md",
-      "status": "placeholder",
-      "note": "Cap the game applies to the secured card. Nubank publishes none (limit = Caixinha balance); R$ 1.000 keeps a 16-year-old's first card small"
+      "source": "https://blog.nubank.com.br/cartao-de-credito-menor-de-18-anos/",
+      "status": "secondary",
+      "note": "Game design choice. Real rule (Nubank, ages 16-17): limit equals the Caixinha balance, no published maximum or minimum, unpaid bills are settled from the Caixinha. Nubank's deposit-backed limit route tops out at R$ 5.000 (Mobills 2023), so R$ 1.000 sits inside the R$ 0 to R$ 5.000 real range. [notes: docs/research/notes/verification-2026-11/credit.md]"
     },
     "betsStake": {
       "value": 5000,
@@ -559,130 +564,130 @@
     "promotionBonus": {
       "value": 20000,
       "unit": "centavos",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
-      "status": "placeholder",
-      "note": "Cost of celebrating a promotion; not sourced"
+      "asOf": "2025-12",
+      "source": "https://timesbrasil.com.br/brasil/economia-brasileira/quanto-os-bares-e-restaurantes-de-sp-esperam-faturar-ate-o-final-do-ano-veja-pesquisa-do-setor/",
+      "status": "secondary",
+      "note": "Design choice. Abrasel-SP expects an average ticket of R$ 120 per person for end-of-year events in São Paulo bars and restaurants (article of 13/12/2025). A São Paulo full lunch averaged R$ 59,67 in the 2024 ABBT/Mosaiclab survey. R$ 200 is about four people at R$ 50, below the festive peak. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "emergencyMinCost": {
       "value": 60000,
       "unit": "centavos",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
-      "status": "placeholder",
-      "note": "Private emergency visit plus exams, low end; not sourced"
+      "asOf": "2024-07",
+      "source": "https://riosaude.com/quanto-custa-uma-consulta-no-ps-do-einstein/",
+      "status": "secondary",
+      "note": "Einstein PS consultation R$ 600 to R$ 1.000 (broker article, 6 Jul 2024, repeating the hospital's own FAQ, which returned 403 here). Exams are billed separately and not priced in the source. [notes: docs/research/notes/verification-2026-11/credit.md]"
     },
     "emergencyMaxCost": {
       "value": 150000,
       "unit": "centavos",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
-      "status": "placeholder",
-      "note": "High end; not sourced"
+      "asOf": "2026-08",
+      "source": "https://www.ikaros.com.br/blog/tabela-de-precos-hospital-albert-einstein-particular-x-plano",
+      "status": "secondary",
+      "note": "Design choice at the low end of a wide range. Ikaros (Aug 2026) estimates an entry fee of R$ 1.500 to R$ 3.500 at high-complexity SP hospitals, exams and medication billed on top; it is a market estimate, not an official Einstein price. Consider raising if the game should reflect Einstein-class cost. [notes: docs/research/notes/verification-2026-11/credit.md]"
     },
     "blackFridayPixDiscount": {
       "value": 0.1,
       "unit": "rate",
       "asOf": "2026-11",
-      "source": "docs/research/notes/consumer_credit.md",
-      "status": "placeholder",
-      "note": "Pix discount on the Black Friday item; real gaps not measured"
+      "source": "https://www.cupomonline.com.br/cupom-magazine-luiza-pix/",
+      "status": "secondary",
+      "note": "Design choice inside the observed range: Magalu Pix discount 5-15% depending on product and promotion (coupon site, 2026); GMattos 2024 found 10-15% on selected groups. No 2026 retailer page quoting a Black Friday Pix percentage was found. [notes: docs/research/notes/verification-2026-11/credit.md]"
     },
     "blackFridayMinCash": {
       "value": 100000,
       "unit": "centavos",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/consumer_credit.md",
-      "status": "placeholder",
-      "note": "Liquid money needed for the offer to appear without a card"
+      "asOf": "2026-08",
+      "source": "https://mercadoeconsumo.com.br/07/10/2026/noticias-varejo/black-friday-2026-consumidor-antecipa-decisao-e-shopping-ganha-forca-na-conversao-aponta-helloo/",
+      "status": "secondary",
+      "note": "Design choice. Helloo (Aug 2026, n=600): 66% expect to spend over R$ 500 on Black Friday. A Stefanini ticket of R$ 790,71 per order appears only in search snippets. R$ 1.000 sits above both and about equals the entry phone (R$ 999), the likely big-ticket offer; the game should keep it at or above the cheapest offer's price. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "familyPixAmount": {
       "value": 20000,
       "unit": "centavos",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/tween_teen_money_life.md",
-      "status": "placeholder",
-      "note": "Typical family loan request; not sourced"
+      "asOf": "2025-09",
+      "source": "https://forbes.com.br/forbes-money/2025/09/adeptos-ao-pix-para-troca-de-mensagens-publico-menor-de-idade-podera-ter-cartao-de-credito-proprio-no-nubank/",
+      "status": "secondary",
+      "note": "Design choice. Nubank study via Forbes (29 Sep 2025): 84% of under-18 users use Pix for transfers and 64% of young clients send R$ 20 or less. That describes teen-to-teen transfers, not a loan from family; R$ 200 is a deliberately larger 'family loan' above the usual R$ 20 transfer. No survey of family loan size found. [notes: docs/research/notes/verification-2026-11/credit.md]"
     },
     "consignadoAmount": {
-      "value": 500000,
+      "value": 600000,
       "unit": "centavos",
-      "asOf": "2025-06",
-      "source": "docs/research/notes/consumer_credit.md",
-      "status": "placeholder",
-      "note": "Typical CLT consignado ticket; not sourced"
+      "asOf": "2025-04",
+      "source": "https://meutudo.com.br/blog/noticias/2025/04/04/valor-medio-do-consignado-clt-e-r-6-240-por-trabalhador-saiba-mais/",
+      "status": "secondary",
+      "note": "MTE data (early Apr 2025): average R$ 6.240,57 per worker, installment R$ 349,20, 18 months; margin up to 35% of net income. Computation for a minimum-wage worker (R$ 1.621, Decreto 12.797/2025): net about R$ 1.500, 35% margin about R$ 525/month, which at 3.75%/month supports about R$ 6.800 over 18 months. Changed from R$ 5.000 to R$ 6.000 (game value rounds the average). [notes: docs/research/notes/verification-2026-11/credit.md]"
     },
     "bfPriceTv": {
-      "value": 250000,
+      "value": 198200,
       "unit": "centavos",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/consumer_credit.md",
-      "status": "placeholder",
-      "note": "50-inch 4K TV, typical Black Friday price; inherits the old blackFridayPrice placeholder"
+      "asOf": "2025-12",
+      "source": "https://canaltech.com.br/tv/tv-de-50-da-samsung-sai-por-menos-de-r-2-mil-em-queima-do-mercado-livre/",
+      "status": "secondary",
+      "note": "Samsung Crystal UHD U8600F 50 pol 4K, R$ 1.982 no Pix (Mercado Livre, Canaltech 29/12/2025); same article: LG 50UA85 R$ 2.019, TCL 50P7K QLED R$ 2.089. Cheaper outlier ignored: Hisense 50Q6QV R$ 1.189 on 27/11/2025 (Promobit). Range for mainstream brands R$ 1.900-2.100. [notes: docs/research/notes/verification-2026-11/blackfriday.md]"
     },
     "bfPriceCelular": {
-      "value": 350000,
+      "value": 530000,
       "unit": "centavos",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/consumer_credit.md",
-      "status": "placeholder",
-      "note": "Flagship-ish phone on Black Friday; not sourced"
+      "asOf": "2025-11",
+      "source": "https://canaltech.com.br/smartphone/quanto-vale-a-pena-pagar-no-iphone-17-na-black-friday-2026/",
+      "status": "secondary",
+      "note": "iPhone 16 256 GB averaged R$ 5.300 in the weeks around Black Friday 2025 (R$ 4.800 on 27/11, R$ 4.700 on 29/11 one-off), per Canaltech 18/10/2026. iPhone 17 256 GB sells at R$ 5.400-5.800 in Oct 2026, so the value also fits the current base iPhone. [notes: docs/research/notes/verification-2026-11/blackfriday.md]"
     },
     "bfPriceVideogame": {
-      "value": 380000,
+      "value": 270000,
       "unit": "centavos",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/consumer_credit.md",
-      "status": "placeholder",
-      "note": "Current-generation console on Black Friday; not sourced"
+      "asOf": "2025-11",
+      "source": "https://www.tecmundo.com.br/voxel/502883-o-jogo-virou-ps5-ja-esta-mais-barato-que-o-xbox-series-s-no-brasil.htm",
+      "status": "secondary",
+      "note": "PS5 Slim Digital appeared at about R$ 2.700 during Black Friday 2025 (TecMundo, 25-28/11/2025). Promobit's best of the week was R$ 2.299 (Magalu bundle, 27/11) and disc model R$ 2.749. Prices are higher in late 2026 (Promobit PS5 page lists R$ 2.879 for the Digital), so BF 2026 may come in above this. [notes: docs/research/notes/verification-2026-11/blackfriday.md]"
     },
     "bfPriceFone": {
-      "value": 120000,
+      "value": 130000,
       "unit": "centavos",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/consumer_credit.md",
-      "status": "placeholder",
-      "note": "Wireless noise-cancelling headphones; not sourced"
+      "asOf": "2025-10",
+      "source": "https://canaltech.com.br/fone-de-ouvido/fone-de-ouvido-na-black-friday-5-modelos-para-comprar-de-olhos-fechados/",
+      "status": "secondary",
+      "note": "Apple AirPods Pro 2 sold for about R$ 1.500 in Oct 2025 and Canaltech calls R$ 200-300 off a good Black Friday deal, so about R$ 1.200-1.300. This is an editorial target, not an observed BF price. No Brazilian BF price found for Sony WH-1000XM5. AirPods Pro 3 list R$ 2.699 (TecMundo 10/10/2025). [notes: docs/research/notes/verification-2026-11/blackfriday.md]"
     },
     "bfPriceTenis": {
-      "value": 60000,
+      "value": 56500,
       "unit": "centavos",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/tween_teen_money_life.md",
-      "status": "placeholder",
-      "note": "Hype sneaker; clothes/accessories tie with eating out as the top teen spend category (Kidscorp 2025-26, unverified)"
+      "asOf": "2024-11",
+      "source": "https://www.melhorescartoes.com.br/black-friday-nike-cupom-extra-nov24.html",
+      "status": "secondary",
+      "note": "Nike's own store in Black Friday 2024 (27/11/2024), with the EXTRA15 coupon at Pix: SB Dunk Low Pro R$ 565,24, Dunk Low Twist R$ 565,24, Women's Dunk Low SE R$ 541,02. No dated BF 2025 Dunk/Samba/AJ1 price found; a Promobit Nike offer (ended, undated) shows Dunk Low Retro Premium R$ 559,99 from R$ 1.099,99. Real range roughly R$ 540-1.100. [notes: docs/research/notes/verification-2026-11/blackfriday.md]"
     },
     "bfPriceNotebook": {
-      "value": 300000,
+      "value": 258499,
       "unit": "centavos",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/consumer_credit.md",
-      "status": "placeholder",
-      "note": "Entry notebook; not sourced"
+      "asOf": "2025-11",
+      "source": "https://www.promobit.com.br/blog/notebook-black-friday/",
+      "status": "secondary",
+      "note": "Dell Inspiron 15 (Core i5-1334U, 8 GB, SSD 512 GB) at R$ 2.584,99 on 26/11/2025; Lenovo IdeaPad Slim 3 (Ryzen 7, 8 GB, 512 GB) R$ 2.421 on 27/11/2025 (Promobit, BF week 24-30/11/2025). Same Dell costs R$ 3.389,05 in the last 30 days of Oct-Nov 2026. [notes: docs/research/notes/verification-2026-11/blackfriday.md]"
     },
     "bfPriceAirfryer": {
-      "value": 50000,
+      "value": 17200,
       "unit": "centavos",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/consumer_credit.md",
-      "status": "placeholder",
-      "note": "Air fryer, the perennial Black Friday item; not sourced"
+      "asOf": "2025-11",
+      "source": "https://www.promobit.com.br/blog/air-fryer-black-friday/",
+      "status": "secondary",
+      "note": "Lowest prices of BF week 24-30/11/2025 on Promobit: Elgin Quad Fry 4,2 L R$ 127,92; Mondial AFN-40 4 L R$ 149 (28/11); Midea Widemax 4,5 L R$ 172. Picked the middle one. Mondial AFN-40 was R$ 189,75 in the 30 days before the page was published (Nov 2026). [notes: docs/research/notes/verification-2026-11/blackfriday.md]"
     },
     "leisureTeenMonthly": {
       "value": 35000,
       "unit": "centavos/month",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/tween_teen_money_life.md",
-      "status": "placeholder",
-      "note": "Discretionary spend (rolê, roupa, transporte, comida fora) of a teen with a salary, about half an apprentice wage. No BRL figure found; the notes only rank categories"
+      "asOf": "2026-01",
+      "source": "https://cdn.correiodoestado.com.br/upload/dn_arquivo/2026/02/serasa-completo-custos-de-vida-jan2026-v5.pdf",
+      "status": "secondary",
+      "note": "Design choice. Serasa Custos de Vida (fieldwork 22/12/2025-06/01/2026, n=6.063, among respondents who have the expense): national average lazer R$ 340 a month, São Paulo R$ 390, eating out R$ 250 national and R$ 310 SP. No teen breakdown. R$ 350 is the national lazer average; a teen's roupa and rolê share is assumed similar. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "leisureAdultMonthly": {
       "value": 40000,
       "unit": "centavos/month",
-      "asOf": "2026-11",
-      "source": "docs/research/notes/careers_wages_cost_of_living.md",
-      "status": "placeholder",
-      "note": "Discretionary spend (lazer, roupa, streaming, barbearia) of a young adult. POF shares not yet pulled"
+      "asOf": "2026-01",
+      "source": "https://cdn.correiodoestado.com.br/upload/dn_arquivo/2026/02/serasa-completo-custos-de-vida-jan2026-v5.pdf",
+      "status": "secondary",
+      "note": "Serasa Custos de Vida Jan 2026 (n=6.063): lazer R$ 390 in São Paulo (R$ 340 national), personal-care services R$ 150 national, eating out R$ 310 SP. R$ 400 equals the SP lazer average alone, so lazer, roupa and barbearia together are a conservative game figure. IBGE POF 2017-2018 (Tabela 5, opened): vestuário 4,3% and recreação e cultura 2,6% of mean monthly family consumption of R$ 3.764,51, about R$ 162 and R$ 98 in 2018 reais, as a cross-check. [notes: docs/research/notes/verification-2026-11/household.md]"
     },
     "lifestyleEconomicoFactor": {
       "value": 0.5,
@@ -715,6 +720,142 @@
       "source": "docs/DESIGN.md",
       "status": "secondary",
       "note": "Buying the moto à vista is only offered when liquid savings cover 1.5x the price"
+    },
+    "childMonthlyCost": {
+      "value": 140000,
+      "unit": "centavos/month",
+      "asOf": "2026-04",
+      "source": "https://sum.money/br/custo-filho/",
+      "status": "secondary",
+      "note": "sum.money (updated April 2026, citing IBGE/SPC/FGV): lower-income family with public school and SUS spends R$ 1.200-1.600/month on a child; midpoint R$ 1.400. Component breakdown not given. Diapers R$ 150-420/month and formula ~R$ 400/month appear in other search results (not opened). [notes: docs/research/notes/verification-2026-11/education.md]"
+    },
+    "usedCarPrice": {
+      "value": 4000000,
+      "unit": "centavos",
+      "asOf": "2026-10",
+      "source": "https://consultadeplaca.net/blog/tabela-fipe-mobi",
+      "status": "secondary",
+      "note": "FIPE for a 2018 Fiat Mobi (8 years old), reference October 2026: R$ 37.588 to R$ 45.613 by version; a median near R$ 39.845 is reported. Rounded to R$ 40.000. FIPE read via an aggregator; Gol and HB20 not checked (HB20 2018 is R$ 63-68k). [notes: docs/research/notes/verification-2026-11/education.md]"
+    },
+    "carFinanceMonthly": {
+      "value": 0.0196,
+      "unit": "rate/month",
+      "asOf": "2026-09",
+      "source": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.25471/dados/ultimos/6?formato=json",
+      "status": "verified",
+      "note": "BCB SGS API (opened): monthly series returns 1,96% (Sep 2026), 1,97% (Aug), 1,98% (Jul). Matches SGS 20749 (annual rate for aquisicao de veiculos, PF) of 26,18% a.a. in Sep 2026 = 1,96%/month compounded. This is the average for all vehicle credit, not used-car only. [notes: docs/research/notes/verification-2026-11/education.md]"
+    },
+    "carFinanceMonths": {
+      "value": 48,
+      "unit": "months",
+      "asOf": "2026-08",
+      "source": "https://garagem360.com.br/?p=321743",
+      "status": "secondary",
+      "note": "Design choice: 48 months (the brief's 48-or-60). Garagem360 simulates a 48-month Tabela Price loan at the BCB average rate (26,42% a.a. in Aug 2026); it does not state a typical term, and no BCB term series was read. [notes: docs/research/notes/verification-2026-11/education.md]"
+    },
+    "carRunningCost": {
+      "value": 100000,
+      "unit": "centavos/month",
+      "asOf": "2026-04",
+      "source": "https://canaltech.com.br/carros/quanto-custa-manter-um-carro-em-2026-fizemos-as-contas-por-categoria/",
+      "status": "secondary",
+      "note": "Canaltech (04/04/2026), entry hatch at 1.200 km/month: fuel R$ 500 + insurance R$ 150 + IPVA R$ 220 + maintenance R$ 200 = R$ 1.070. Adjusted for a R$ 40k car: IPVA SP 4% = R$ 133/month, giving ~R$ 983, rounded to R$ 1.000. Vrum (03/08/2026) cites R$ 1.632 for a popular car including protection and washing (upper bound). IPVA rate is from search results, not opened. [notes: docs/research/notes/verification-2026-11/education.md]"
+    },
+    "weddingCostSimple": {
+      "value": 500000,
+      "unit": "centavos",
+      "asOf": "2026",
+      "source": "https://meutudo.com.br/blog/casamento-civil-como-funciona/",
+      "status": "secondary",
+      "note": "Only the civil part is sourced: Sao Paulo cartorio R$ 539,53 (Meu Tudo, 2026 table). The small celebration (~R$ 4.500 for a family lunch) is a game design assumption with no source; total R$ 5.000. Weak. [notes: docs/research/notes/verification-2026-11/education.md]"
+    },
+    "weddingCostParty": {
+      "value": 2800000,
+      "unit": "centavos",
+      "asOf": "2025",
+      "source": "https://www.casamentos.com.br/artigos/como-sobreviver-organizacao-casamento-tradicoes-curiosidades-informe-setor-nupcial-brasil--c11071",
+      "status": "secondary",
+      "note": "Casamentos.com.br (2025 report, couples married 2024): Sao Paulo average R$ 54.947 for ~124 guests = ~R$ 443/guest; at 65 guests ~R$ 28,8k. Zankyou via Neon: SP economico R$ 40 mil per 100 guests (~R$ 400/guest, ~R$ 26k at 65). Value R$ 28.000 computed. [notes: docs/research/notes/verification-2026-11/education.md]"
+    },
+    "tripCost": {
+      "value": 300000,
+      "unit": "centavos",
+      "asOf": "2026-07",
+      "source": "https://www.itatiaia.com.br/turismo/viagens-corporativas-movimentam-r-102-bilhoes-no-primeiro-semestre-de-2026/",
+      "status": "secondary",
+      "note": "Computed: Anac average fare R$ 660 (Jun 2026; R$ 703 in Jul per Panrotas) x 2 legs = ~R$ 1.360, plus 4 nights at the Fohb national average daily rate R$ 421 (Jun 2026) = R$ 1.684; total ~R$ 3.040, rounded R$ 3.000. Food and local transport excluded. No Decolar/Hurb data found. [notes: docs/research/notes/verification-2026-11/education.md]"
+    },
+    "englishCourseMonthly": {
+      "value": 40000,
+      "unit": "centavos/month",
+      "asOf": "2026-09",
+      "source": "https://compareescolas.com.br/wizard/",
+      "status": "secondary",
+      "note": "Wizard (30/09/2026): from R$ 277/month up to R$ 742 by unit, promo 12 x R$ 279. Fisk SP (page dated 2024, 2026 range R$ 250-400): R$ 283/month plus material R$ 725/semester (~R$ 121/month). Value R$ 400 = fee + material. Catraca Livre (22/01/2026) gives R$ 200-600 for presencial group classes. [notes: docs/research/notes/verification-2026-11/education.md]"
+    },
+    "englishPremium": {
+      "value": 0.25,
+      "unit": "rate",
+      "asOf": "2017",
+      "source": "https://www.educamaisbrasil.com.br/educacao/noticias/ter-dominio-do-ingles-favorece-boa-colocacao-no-mercado-de-trabalho",
+      "status": "secondary",
+      "note": "Catho salary survey (published 25/07/2017, 13.000+ respondents): English adds 20% for analysts, 32% for specialists, 56% for management. 0.25 sits between analyst and specialist. Old data; newer Catho editions cite 'up to' 52-72% (search results, not opened). No Robert Half percentage found. [notes: docs/research/notes/verification-2026-11/education.md]"
+    },
+    "fgtsRate": {
+      "value": 0.08,
+      "unit": "rate of gross salary",
+      "asOf": "2026",
+      "source": "https://www.gov.br/pgfn/pt-br/assuntos/divida-ativa-da-uniao/divida-ativa-do-fgts/breve-historico-do-fgts",
+      "status": "verified",
+      "note": "Lei 8.036/1990 art. 15: employer deposits 8% of the remuneration paid or due (PGFN page opened). Apprentices get 2% (search result, unverified), so the game should use 0.02 for the aprendiz job. [notes: docs/research/notes/verification-2026-11/education.md]"
+    },
+    "fgtsRateApprentice": {
+      "value": 0.02,
+      "unit": "rate of gross salary",
+      "asOf": "2026-11",
+      "source": "https://www.planalto.gov.br/ccivil_03/leis/l8036consol.htm",
+      "status": "verified",
+      "note": "Lei 8.036/1990 art. 15 §7: 2% for apprentices"
+    },
+    "fgtsFineRate": {
+      "value": 0.4,
+      "unit": "rate of the FGTS balance",
+      "asOf": "2026",
+      "source": "https://www.gov.br/pgfn/pt-br/assuntos/divida-ativa-da-uniao/divida-ativa-do-fgts/breve-historico-do-fgts",
+      "status": "verified",
+      "note": "Fine on dismissal without cause is 40% of the FGTS balance (Lei 8.036/1990 art. 18 par. 1; raised from 10% by CF/88 ADCT art. 10, I, per PGFN page). It is 20% for culpa reciproca or forca maior. Paid on the whole balance, not on salary. [notes: docs/research/notes/verification-2026-11/education.md]"
+    },
+    "seguroDesempregoMonthsMin": {
+      "value": 3,
+      "unit": "months",
+      "asOf": "2026",
+      "source": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador/seguro-desemprego/seguro-desemprego-formal",
+      "status": "verified",
+      "note": "MTE page: 3 parcelas for 9-11 months worked (2nd request) or 6-11 months (3rd+); a first request needs 12+ months and gets no 3-parcela tier. Lei 7.998/1990 art. 4 sets the 3-5 range. [notes: docs/research/notes/verification-2026-11/education.md]"
+    },
+    "seguroDesempregoMonthsMax": {
+      "value": 5,
+      "unit": "months",
+      "asOf": "2026",
+      "source": "https://www.gov.br/trabalho-e-emprego/pt-br/servicos/trabalhador/seguro-desemprego/seguro-desemprego-formal",
+      "status": "verified",
+      "note": "MTE page: 4 parcelas for 12-23 months worked, 5 for 24 months or more, within the last 36 months. Game rule: 3 if 6-11 months, 4 if 12-23, 5 if 24+ (simplification of the first-request rule). [notes: docs/research/notes/verification-2026-11/education.md]"
+    },
+    "seguroDesempregoMax": {
+      "value": 251865,
+      "unit": "centavos/month",
+      "asOf": "2026-01",
+      "source": "https://borainvestir.b3.com.br/noticias/seguro-desemprego-veja-novos-valores-em-2026-teto-e-regra-de-calculo/",
+      "status": "secondary",
+      "note": "B3 Bora Investir, relaying the MTE table from 11/01/2026: ceiling R$ 2.518,65 (was R$ 2.424,11 in 2025); 80% of average pay up to R$ 2.222,17, then R$ 1.777,74 + 50% of the excess, capped above R$ 3.703,99. The MTE page itself still shows the 2024 table. Some sites quote R$ 2.587,47 (conflict). [notes: docs/research/notes/verification-2026-11/education.md]"
+    },
+    "layoffAnnualProb": {
+      "value": 0.08,
+      "unit": "probability/year",
+      "asOf": "2026-11",
+      "source": "docs/DESIGN.md",
+      "status": "secondary",
+      "note": "Design knob: chance per year that a CLT job ends without just cause. CAGED turnover is far higher; the game keeps it rare so a layoff is an event, not noise"
     }
   }
 }

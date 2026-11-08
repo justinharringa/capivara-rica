@@ -191,8 +191,16 @@ export interface Stop {
   vars: Record<string, string | number>;
 }
 
+/** Everything the player did, in order, so a life can be replayed and a decision costed. */
+export type Action =
+  | { kind: 'choice'; month: number; eventId: string; choiceId: string }
+  | { kind: 'standing'; month: number; patch: Partial<Standing> }
+  | { kind: 'cardPolicy'; month: number; policy: CardPolicy }
+  | { kind: 'deposit'; month: number; amount: Centavos }
+  | { kind: 'withdraw'; month: number; target: SaveTarget; amount: Centavos };
+
 export interface GameState {
-  version: 2;
+  version: 3;
   seed: number;
   startAge: StartAge;
   /** Months since the game started. */
@@ -204,6 +212,8 @@ export interface GameState {
   cash: Centavos;
   /** Money under the mattress: no interest, no IR, no access to Pix. */
   cofrinho: Centavos;
+  /** FGTS: the employer's 8% deposits, locked until a dismissal without just cause (then +40%). */
+  fgts: Centavos;
   /** Pé-de-Meia annual deposits, locked until age 18. */
   peDeMeiaLocked: Centavos;
   inv: Investments;
@@ -225,6 +235,7 @@ export interface GameState {
   stats: Stats;
   lastMonth: MonthSummary | null;
   chapterStart: ChapterStart;
+  actions: Action[];
   rng: RngState;
   history: HistoryPoint[];
   log: LogEntry[];

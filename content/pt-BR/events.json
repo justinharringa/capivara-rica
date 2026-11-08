@@ -268,6 +268,10 @@
     "body": "Um conhecido indicou você: atendente com carteira assinada a {clt} bruto, ou entregador de app, uns {ifood} bruto sem direitos.",
     "capi": "Sem renda não tem juro composto. Tem só juro.",
     "choices": {
+      "nivel": {
+        "label": "Vaga de {cargo}",
+        "detail": "{nivelSalario} bruto por mês, no seu nível"
+      },
       "clt": {
         "label": "Atendente, CLT",
         "detail": "{clt} bruto por mês"
@@ -517,6 +521,127 @@
       "ver": {
         "label": "Ver o resultado",
         "detail": "{dezAnos} em 10 anos"
+      }
+    }
+  },
+  "demissao": {
+    "title": "Demitido",
+    "body": "A empresa cortou sua vaga. Sem justa causa: você recebe o FGTS que o patrão depositou ({fgts}) mais a multa de 40% ({multa}), {total} no total, e {meses} parcelas de seguro-desemprego de {parcela}.",
+    "capi": "O FGTS é o dinheiro que você guardou sem perceber. Agora ele apareceu. Não deixa ele sumir do mesmo jeito.",
+    "choices": {
+      "guardar": {
+        "label": "Guardar a rescisão",
+        "detail": "{total} vai pra onde você guarda; você vive do seguro"
+      },
+      "conta": {
+        "label": "Deixar na conta",
+        "detail": "{total} na conta corrente, à mão"
+      }
+    }
+  },
+  "filho": {
+    "title": "Vem bebê",
+    "body": "Vocês estão pensando em ter um filho. Fraldas, leite, roupa, consultas: uns {custo} por mês, por muitos anos. Creche particular sobe isso pra {creche}.",
+    "capi": "Filho não é gasto, é vida. Mas o gasto existe, e entra no orçamento antes de o bebê chegar.",
+    "choices": {
+      "publica": {
+        "label": "Creche pública e a família",
+        "detail": "{custo} por mês"
+      },
+      "particular": {
+        "label": "Creche particular",
+        "detail": "{creche} por mês"
+      },
+      "depois": {
+        "label": "Esperar mais um pouco",
+        "detail": "A conversa volta daqui a uns dois anos"
+      }
+    }
+  },
+  "carro": {
+    "title": "Um carro usado",
+    "body": "Um popular de uns 8 anos custa {preco}. Financiado em {meses}x sai {parcela} por mês, {total} no total. Manter custa uns {custo} por mês, com ou sem parcela.",
+    "capi": "Carro é a única compra que custa dinheiro parado na garagem. Faz a conta do mês inteiro, não só da parcela.",
+    "choices": {
+      "financiar": {
+        "label": "Financiar em {meses}x",
+        "detail": "{parcela} por mês mais {custo} de manutenção; só se couber na renda"
+      },
+      "avista": {
+        "label": "Comprar à vista",
+        "detail": "{preco} agora, depois só a manutenção"
+      },
+      "sem_carro": {
+        "label": "Continuar sem carro",
+        "detail": "Ônibus, app e a moto que você tem ou não tem"
+      }
+    }
+  },
+  "morar_junto": {
+    "title": "Morar junto",
+    "body": "Vocês decidiram morar juntos. Dividindo, o aluguel fica em {aluguel} pra cada um. Só o civil custa {civil}. Festa pra 60 pessoas, {festa}, ou {parcela} em 12x.",
+    "capi": "Casamento que começa com 12 parcelas começa com 12 brigas marcadas no calendário.",
+    "choices": {
+      "civil": {
+        "label": "Só o civil e um almoço",
+        "detail": "{civil} à vista"
+      },
+      "festa": {
+        "label": "Festa em 12x no cartão",
+        "detail": "{parcela} por mês durante um ano"
+      },
+      "depois": {
+        "label": "Ainda não",
+        "detail": "Cada um na sua casa por enquanto"
+      }
+    }
+  },
+  "plano_saude": {
+    "title": "Plano de saúde",
+    "body": "Um plano individual custa {mensal} por mês. Sem plano, um pronto-socorro particular pode custar até {ps} de uma vez. O SUS atende de graça, com fila.",
+    "capi": "Plano de saúde é seguro: você paga pra não precisar usar. O que a reserva não cobre, ele cobre.",
+    "choices": {
+      "contratar": {
+        "label": "Contratar o plano",
+        "detail": "{mensal} por mês; emergência vira coparticipação"
+      },
+      "sus": {
+        "label": "Ficar no SUS",
+        "detail": "Zero por mês; emergência sai da reserva"
+      }
+    }
+  },
+  "viagem": {
+    "title": "Viagem com a galera",
+    "body": "Passagem e quatro noites: {preco}. Dá pra parcelar em 10x de {parcela} no cartão.",
+    "capi": "Viagem parcelada é lembrança boa paga com dinheiro de meses que ainda não chegaram.",
+    "choices": {
+      "avista": {
+        "label": "Pagar à vista",
+        "detail": "{preco} da reserva, que aguenta"
+      },
+      "parcelar": {
+        "label": "10x no cartão",
+        "detail": "{parcela} por mês até o ano que vem"
+      },
+      "ficar": {
+        "label": "Ficar dessa vez",
+        "detail": "A galera posta as fotos"
+      }
+    }
+  },
+  "curso_ingles": {
+    "title": "Curso de inglês",
+    "body": "Um ano de curso custa {mensal} por mês. Quem fala inglês ganha, em média, {premio}% a mais. Hoje você ganha {salario}.",
+    "capi": "Curso que aumenta o salário é a parcela que se paga sozinha. Depois de um ano, todo mês.",
+    "choices": {
+      "fazer": {
+        "label": "Fazer o curso",
+        "detail": "{mensal} por mês por 12 meses"
+      },
+      "nao": {
+        "label": "Agora não",
+        "detail": "O salário continua igual"
       }
     }
   },

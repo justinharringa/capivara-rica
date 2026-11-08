@@ -113,6 +113,23 @@ export const PARAM_KEYS = [
   'lifestyleFolgadoFactor',
   'reserveMultipleBigPurchase',
   'reserveMultipleMoto',
+  'childMonthlyCost',
+  'usedCarPrice',
+  'carFinanceMonthly',
+  'carFinanceMonths',
+  'carRunningCost',
+  'weddingCostSimple',
+  'weddingCostParty',
+  'tripCost',
+  'englishCourseMonthly',
+  'englishPremium',
+  'fgtsRate',
+  'fgtsRateApprentice',
+  'fgtsFineRate',
+  'seguroDesempregoMonthsMin',
+  'seguroDesempregoMonthsMax',
+  'seguroDesempregoMax',
+  'layoffAnnualProb',
 ] as const;
 
 export type ParamKey = (typeof PARAM_KEYS)[number];

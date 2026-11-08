@@ -32,6 +32,7 @@ function normalize(s: GameState): unknown {
     pending: null,
     negativadoUntilMonth: null,
     flags: {},
+    actions: [],
     career: { ...s.career, study: null },
     // Log vars are free-form per event; the entry's own fields still count.
     log: s.log.map((e) => ({ ...e, vars: {} })),
@@ -110,6 +111,16 @@ describe('save migrations', () => {
     });
   }
 
+  it('the v2 step estimates FGTS from the job and rebuilds the action log from the diary', () => {
+    const f = fixtures.find((x) => x.name === 'save-v1-gastao-loans.json')!;
+    const raw = f.save as GameState;
+    const s = migrateSave(structuredClone(f.save), p)!;
+    expect(s.version).toBe(3);
+    expect(s.fgts).toBe(Math.round(raw.career.salary * (raw.career.job === 'aprendiz' ? p.fgtsRateApprentice : raw.career.job === 'nenhum' || raw.career.job === 'ifood' ? 0 : p.fgtsRate) * raw.career.monthsInJob));
+    expect(s.actions.length).toBe(raw.log.filter((e) => e.key.startsWith('ch:')).length);
+    expect(s.actions.every((a) => a.kind === 'choice')).toBe(true);
+  });
+
   it('the v1 step fills exactly the documented defaults and records the update month', () => {
     const f = fixtures.find((x) => x.version === 1)!;
     const raw = f.save as GameState;
@@ -118,7 +129,8 @@ describe('save migrations', () => {
     expect(s.stats).toEqual({ interestEarned: 0, interestPaid: 0, leisureSpent: 0 });
     expect(s.lastMonth).toBeNull();
     expect(s.chapterStart.ageMonths).toBe(raw.ageMonths);
-    expect(s.chapterStart.netWorth).toBe(netWorth(s));
+    // The baseline was taken before v3 added FGTS, which the v2 step then estimates.
+    expect(s.chapterStart.netWorth).toBe(netWorth({ ...s, fgts: 0 }));
     expect(s.flags.migratedAtMonth).toBe(raw.month);
   });
 

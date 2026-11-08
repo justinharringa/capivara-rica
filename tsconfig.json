@@ -13,13 +13,12 @@
     "skipLibCheck": true,
     "noEmit": true,
     "types": ["vite/client", "vite-plugin-pwa/client", "node"],
-    "baseUrl": ".",
     "paths": {
-      "$engine/*": ["src/engine/*"],
-      "$ui/*": ["src/ui/*"],
-      "$lib/*": ["src/lib/*"],
-      "$data/*": ["data/*"],
-      "$content/*": ["content/*"]
+      "$engine/*": ["./src/engine/*"],
+      "$ui/*": ["./src/ui/*"],
+      "$lib/*": ["./src/lib/*"],
+      "$data/*": ["./data/*"],
+      "$content/*": ["./content/*"]
     }
   },
   "include": ["src/**/*", "scripts/**/*", "data/**/*.json", "content/**/*.json", "locales/**/*.json", "vite.config.ts"]

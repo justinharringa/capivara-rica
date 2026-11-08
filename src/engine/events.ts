@@ -17,6 +17,8 @@ import {
   saveInto,
   setStanding,
   trySpend,
+  takeJob,
+  canCommit,
   monthlyIncome,
   projectSavings,
   comprometimento,
@@ -67,6 +69,29 @@ export const BF_ITEMS: ReadonlyArray<{ id: string; price: keyof Params }> = [
   { id: 'airfryer', price: 'bfPriceAirfryer' },
 ];
 const BF_INDEX: Record<string, number> = Object.fromEntries(BF_ITEMS.map((it, i) => [it.id, i + 1]));
+
+/** Dismissal without just cause: FGTS and the fine are paid by the chooser; this does the rest. */
+function layOff(s: GameState, v: Vars): void {
+  s.fgts = 0;
+  s.career.job = 'nenhum';
+  s.career.salary = 0;
+  s.career.monthsInJob = 0;
+  s.flags.demissaoMonth = s.month;
+  s.flags.seguroMeses = Number(v.meses);
+  s.flags.seguroValor = Number(v.parcela);
+  bumpWellbeing(s, -8);
+}
+
+/** Leaving the parents' home for a shared flat needs the player's share (half the rent, their food) to fit the income. */
+function canMoveInTogether(s: GameState, p: Params, v: Vars): boolean {
+  return s.living === 'sozinho' || monthlyIncome(s, p) > Number(v.aluguel) + priced(s, p.cestaBasicaSP);
+}
+
+/** Moving in with a partner: the rent is shared from now on; a player still at home moves out. */
+function moveInTogether(s: GameState): void {
+  s.flags.juntos = 1;
+  s.living = 'sozinho';
+}
 /** Remember which object was offered and when; flags hold numbers, so the item is stored by index. */
 function bfSeen(s: GameState, v: Vars): void {
   s.flags.bfMonth = s.month;
@@ -428,20 +453,12 @@ export const EVENTS: EventDef[] = [
       {
         id: 'clt',
         tags: ['capivara'],
-        apply: ({ s, p }) => {
-          s.career.job = 'atendente';
-          s.career.salary = jobSalary(s, p, 'atendente');
-          s.career.monthsInJob = 0;
-          s.hasBankAccount = true;
-        },
+        apply: ({ s, p }) => takeJob(s, p, 'atendente'),
       },
       {
         id: 'ifood',
         apply: ({ s, p }) => {
-          s.career.job = 'ifood';
-          s.career.salary = jobSalary(s, p, 'ifood');
-          s.career.monthsInJob = 0;
-          s.hasBankAccount = true;
+          takeJob(s, p, 'ifood');
           bumpWellbeing(s, -3);
         },
       },
@@ -460,26 +477,26 @@ export const EVENTS: EventDef[] = [
     kind: 'random',
     eligible: ({ s }) => isAdult(s) && s.career.job === 'nenhum',
     monthlyProb: () => 0.08,
-    vars: ({ s, p }) => ({ clt: jobSalary(s, p, 'atendente'), ifood: jobSalary(s, p, 'ifood') }),
+    vars: ({ s, p }) => {
+      // A graduate who lost a job is offered one at their level, not only the counter.
+      const nivel = s.career.level === 'superior' ? 'superior' : s.career.level === 'tecnico' ? 'tecnico' : null;
+      return { clt: jobSalary(s, p, 'atendente'), ifood: jobSalary(s, p, 'ifood'), cargo: nivel ?? 'atendente', nivelSalario: nivel ? jobSalary(s, p, nivel) : 0 };
+    },
     choices: [
       {
-        id: 'clt',
+        id: 'nivel',
         tags: ['capivara'],
-        apply: ({ s, p }) => {
-          s.career.job = 'atendente';
-          s.career.salary = jobSalary(s, p, 'atendente');
-          s.career.monthsInJob = 0;
-          s.hasBankAccount = true;
-        },
+        available: ({ s }) => s.career.level === 'superior' || s.career.level === 'tecnico',
+        apply: ({ s, p }, v) => takeJob(s, p, v.cargo === 'superior' ? 'superior' : 'tecnico'),
+      },
+      {
+        id: 'clt',
+        tags: ['capivara2'],
+        apply: ({ s, p }) => takeJob(s, p, 'atendente'),
       },
       {
         id: 'ifood',
-        apply: ({ s, p }) => {
-          s.career.job = 'ifood';
-          s.career.salary = jobSalary(s, p, 'ifood');
-          s.career.monthsInJob = 0;
-          s.hasBankAccount = true;
-        },
+        apply: ({ s, p }) => takeJob(s, p, 'ifood'),
       },
       { id: 'nao', apply: ({ s }) => bumpWellbeing(s, -2) },
     ],
@@ -639,11 +656,7 @@ export const EVENTS: EventDef[] = [
         tags: ['capivara'],
         apply: ({ s, p }, v) => {
           s.flags.formatura = 0;
-          const job = v.cargo === 'superior' ? 'superior' : 'tecnico';
-          s.career.job = job;
-          s.career.salary = jobSalary(s, p, job);
-          s.career.monthsInJob = 0;
-          s.hasBankAccount = true;
+          takeJob(s, p, v.cargo === 'superior' ? 'superior' : 'tecnico');
           bumpWellbeing(s, 6);
         },
       },
@@ -687,7 +700,9 @@ export const EVENTS: EventDef[] = [
     eligible: ({ s }) => isAdult(s),
     monthlyProb: () => 0.012,
     vars: ({ s, p }) => {
-      const valor = priced(s, randomInt(s.rng, 'shocks', p.emergencyMinCost, p.emergencyMaxCost));
+      const cheio = priced(s, randomInt(s.rng, 'shocks', p.emergencyMinCost, p.emergencyMaxCost));
+      // With a health plan the private ER costs a co-payment, not the bill.
+      const valor = s.flags.planoSaude ? Math.round(cheio * 0.2) : cheio;
       return { valor, parcela: instalment(valor, p.personalLoanMonthly, 12) };
     },
     choices: [
@@ -768,7 +783,7 @@ export const EVENTS: EventDef[] = [
     choices: [
       {
         id: 'financiar',
-        available: ({ s }) => !isNegativado(s),
+        available: ({ s, p }, v) => !isNegativado(s) && canCommit(s, p, Number(v.parcela)),
         apply: ({ s, p }, v) => {
           addLoan(s, 'moto', 'moto 60x', Number(v.preco), p.motoFinanceMonthly, p.motoFinanceMonths);
           s.hasMoto = true;
@@ -890,6 +905,213 @@ export const EVENTS: EventDef[] = [
       return { mensal, dezAnos: projectSavings(s, p, mensal, 120), depositado: mensal * 120, onde: s.standing.saveInto };
     },
     choices: [{ id: 'ver', tags: ['capivara'], apply: () => {} }],
+  },
+  // ---------------------------------------------------------------- 22 to 30
+  {
+    // A CLT job can end. FGTS plus the 40% fine land in the account at once; seguro-desemprego
+    // pays for a few months. The month's slot then re-rolls `vaga` offers as usual.
+    id: 'demissao',
+    kind: 'random',
+    eligible: ({ s }) =>
+      isAdult(s) &&
+      (s.career.job === 'atendente' || s.career.job === 'tecnico' || s.career.job === 'superior') &&
+      s.career.monthsInJob >= 12 &&
+      (!s.flags.demissaoMonth || s.month - s.flags.demissaoMonth >= 36),
+    monthlyProb: ({ p }) => p.layoffAnnualProb / 12,
+    vars: ({ s, p }) => {
+      const multa = Math.round(s.fgts * p.fgtsFineRate);
+      const meses = s.career.monthsInJob >= 24 ? p.seguroDesempregoMonthsMax : p.seguroDesempregoMonthsMin;
+      const parcela = Math.min(priced(s, p.seguroDesempregoMax), Math.max(Math.round(p.minimumWage * s.macro.wageIndex), Math.round(s.career.salary * 0.8)));
+      return { fgts: s.fgts, multa, total: s.fgts + multa, meses, parcela };
+    },
+    choices: [
+      {
+        id: 'guardar',
+        tags: ['capivara'],
+        apply: ({ s }, v) => {
+          layOff(s, v);
+          saveInto(s, Number(v.total));
+        },
+      },
+      {
+        id: 'conta',
+        apply: ({ s }, v) => {
+          layOff(s, v);
+          s.cash += Number(v.total);
+        },
+      },
+    ],
+  },
+  {
+    id: 'filho',
+    kind: 'random',
+    eligible: ({ s }) => at(s, 25) && !s.flags.filhos && (s.career.job !== 'nenhum' || !!s.flags.juntos) && (!s.flags.filhoMonth || s.month - s.flags.filhoMonth >= 24),
+    monthlyProb: () => 0.012,
+    vars: ({ s, p }) => ({ custo: priced(s, p.childMonthlyCost), creche: Math.round(priced(s, p.childMonthlyCost) * 1.5) }),
+    choices: [
+      {
+        id: 'publica',
+        tags: ['capivara'],
+        apply: ({ s }) => {
+          s.flags.filhos = (s.flags.filhos ?? 0) + 1;
+          bumpWellbeing(s, 8);
+        },
+      },
+      {
+        id: 'particular',
+        apply: ({ s }) => {
+          s.flags.filhos = (s.flags.filhos ?? 0) + 1;
+          s.flags.crecheParticular = 1;
+          bumpWellbeing(s, 10);
+        },
+      },
+      {
+        id: 'depois',
+        apply: ({ s }) => {
+          s.flags.filhoMonth = s.month;
+          bumpWellbeing(s, -2);
+        },
+      },
+    ],
+  },
+  {
+    id: 'carro',
+    kind: 'scheduled',
+    once: true,
+    eligible: ({ s }) => at(s, 24) && s.career.job !== 'nenhum' && !s.flags.carro,
+    vars: ({ s, p }) => {
+      const preco = priced(s, p.usedCarPrice);
+      const parcela = instalment(preco, p.carFinanceMonthly, p.carFinanceMonths);
+      return { preco, parcela, meses: p.carFinanceMonths, total: parcela * p.carFinanceMonths, custo: priced(s, p.carRunningCost) };
+    },
+    choices: [
+      {
+        id: 'financiar',
+        available: ({ s, p }, v) => !isNegativado(s) && canCommit(s, p, Number(v.parcela)),
+        apply: ({ s, p }, v) => {
+          addLoan(s, 'carro', 'carro usado', Number(v.preco), p.carFinanceMonthly, p.carFinanceMonths);
+          s.flags.carro = 1;
+          bumpWellbeing(s, 6);
+        },
+      },
+      {
+        id: 'avista',
+        tags: ['capivara2'],
+        available: (c, v) => spendable(c.s, c.p) >= Number(v.preco) * c.p.reserveMultipleBigPurchase,
+        apply: ({ s, p }, v) => {
+          trySpend(s, p, Number(v.preco));
+          s.flags.carro = 1;
+          bumpWellbeing(s, 6);
+        },
+      },
+      { id: 'sem_carro', tags: ['capivara'], apply: () => {} },
+    ],
+  },
+  {
+    id: 'morar_junto',
+    kind: 'random',
+    once: true,
+    eligible: ({ s }) => at(s, 24) && !s.flags.juntos,
+    monthlyProb: () => 0.015,
+    vars: ({ s, p }) => {
+      const festa = priced(s, p.weddingCostParty);
+      return {
+        civil: priced(s, p.weddingCostSimple),
+        festa,
+        parcela: Math.ceil(festa / 12),
+        aluguel: Math.round(priced(s, p.rentKitnetSP) / 2),
+      };
+    },
+    choices: [
+      {
+        id: 'civil',
+        tags: ['capivara'],
+        available: (c, v) => spendable(c.s, c.p) >= Number(v.civil) && canMoveInTogether(c.s, c.p, v),
+        apply: ({ s, p }, v) => {
+          trySpend(s, p, Number(v.civil));
+          moveInTogether(s);
+          bumpWellbeing(s, 8);
+        },
+      },
+      {
+        id: 'festa',
+        available: ({ s, p }, v) => canMoveInTogether(s, p, v) && s.card.has && !s.card.blocked && s.card.statement + s.card.revolving + Number(v.festa) <= s.card.limit,
+        apply: ({ s }, v) => {
+          addParcela(s, 'casamento', 'festa de casamento 12x', Number(v.parcela), 12, true);
+          moveInTogether(s);
+          bumpWellbeing(s, 12);
+        },
+      },
+      { id: 'depois', tags: ['capivara2'], apply: ({ s }) => bumpWellbeing(s, -2) },
+    ],
+  },
+  {
+    id: 'plano_saude',
+    kind: 'scheduled',
+    once: true,
+    eligible: ({ s }) => at(s, 24) && s.career.job !== 'nenhum',
+    vars: ({ s, p }) => ({ mensal: priced(s, p.healthPlanYoung), ps: priced(s, p.emergencyMaxCost) }),
+    choices: [
+      { id: 'contratar', tags: ['capivara'], apply: ({ s }) => (s.flags.planoSaude = 1) },
+      { id: 'sus', apply: () => {} },
+    ],
+  },
+  {
+    id: 'viagem',
+    kind: 'random',
+    eligible: ({ s }) => at(s, 20) && (!s.flags.viagemMonth || s.month - s.flags.viagemMonth >= 24),
+    monthlyProb: () => 0.015,
+    vars: ({ s, p }) => {
+      const preco = priced(s, p.tripCost);
+      return { preco, parcela: Math.ceil(preco / 10) };
+    },
+    choices: [
+      {
+        id: 'avista',
+        tags: ['capivara'],
+        available: (c, v) => spendable(c.s, c.p) >= Number(v.preco) * c.p.reserveMultipleBigPurchase,
+        apply: ({ s, p }, v) => {
+          s.flags.viagemMonth = s.month;
+          trySpend(s, p, Number(v.preco));
+          bumpWellbeing(s, 8);
+        },
+      },
+      {
+        id: 'parcelar',
+        available: ({ s }, v) => s.card.has && !s.card.blocked && s.card.statement + s.card.revolving + Number(v.preco) <= s.card.limit,
+        apply: ({ s }, v) => {
+          s.flags.viagemMonth = s.month;
+          addParcela(s, 'viagem', 'viagem 10x', Number(v.parcela), 10, true);
+          bumpWellbeing(s, 8);
+        },
+      },
+      {
+        id: 'ficar',
+        tags: ['capivara2'],
+        apply: ({ s }) => {
+          s.flags.viagemMonth = s.month;
+          bumpWellbeing(s, -3);
+        },
+      },
+    ],
+  },
+  {
+    id: 'curso_ingles',
+    kind: 'scheduled',
+    once: true,
+    eligible: ({ s }) => at(s, 22) && s.career.job !== 'nenhum' && !s.flags.ingles && !s.flags.inglesAte,
+    vars: ({ s, p }) => ({ mensal: priced(s, p.englishCourseMonthly), premio: Math.round(p.englishPremium * 100), salario: s.career.salary }),
+    choices: [
+      {
+        id: 'fazer',
+        tags: ['capivara'],
+        apply: ({ s }, v) => {
+          addParcela(s, 'ingles', 'curso de inglês', Number(v.mensal), 12, false);
+          s.flags.inglesAte = s.month + 12;
+        },
+      },
+      { id: 'nao', apply: () => {} },
+    ],
   },
   {
     id: 'revisao_anual',

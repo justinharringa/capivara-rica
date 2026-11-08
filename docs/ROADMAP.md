@@ -5,24 +5,30 @@
 - [x] Três entradas (10/14/18), loop mensal, ~60 paradas, fantasma, palpite-antes-de-revelar
 - [x] PWA offline, sem coleta de dados, orçamento de tamanho em CI
 
-## v0.2: números e balanceamento
+## v0.2: números e balanceamento (concluída em 2026-11-08)
 - [x] Mover os multiplicadores de reserva (2× Black Friday, 1,5× moto) para parâmetros nomeados
 - [x] Capítulos com cartão de balanço; Capivara visível desde o início; resultado de cada escolha; linha "mês passado"
 - [x] Estilo de vida (gasto de lazer) para quem tem salário; cartão aos 16 honesto sobre o teto
-- [ ] Verificar os gastos de lazer por idade (POF/IBGE) e os preços da Black Friday
-- [ ] Zerar `placeholder`/`memory` em `data/br/2026-11.json` (P0 do relatório: mínimo da fatura,
-      IOF, taxas de setembro/2026 no BCB, Pix vs 12x real, Tesouro Selic, poupança/TR)
-- [ ] Custos de curso técnico/cursinho; renda por escolaridade (IBGE SIDRA)
+- [x] Verificar os gastos de lazer por idade e os preços da Black Friday (`docs/research/notes/verification-2026-11/`)
+- [x] Zerar `placeholder`/`memory` em `data/br/2026-11.json`: 107 parâmetros, 20 `verified`, 87 `secondary`,
+      taxas do BCB de setembro/2026, Selic do Copom de novembro/2026, Focus de novembro/2026
+      (`npm run data:check -- --release` passa)
+- [x] Custos de curso técnico/cursinho; salários por CAGED 2026 (os pisos legais ficam nas notas)
 - [x] Black Friday a cada 2 anos, com objeto diferente a cada vez
 - [x] ℹ️ em cada indicador e ordem mensal; "Mover dinheiro" (depósito e resgate com o IR na frente)
 - [x] Partidas salvas sobrevivem a atualizações (`src/engine/migrate.ts`, fixtures por versão)
 - [x] "Guardar do que sobra" vai até 100% (o limite de 60% era arbitrário)
-- [ ] Mais eventos para 25-30 anos; variar a Capivara por idade
-- [ ] Coda "e aos 40?" com palpite; as 3 decisões que mais custaram, comparadas ao fantasma
-- [ ] Cartão de resultado em PNG para compartilhar (Web Share API)
+- [x] Mais eventos para 22-30 anos: demissão (FGTS + multa + seguro-desemprego), filho, carro usado,
+      morar junto, plano de saúde, viagem, curso de inglês
+- [x] Coda "e aos 40?" com palpite; as 3 decisões que mais custaram, recontadas com a escolha da
+      Capivara naquele único momento (`src/engine/review.ts`)
+- [x] Cartão de resultado em PNG para compartilhar (Web Share API, com download como alternativa)
+- [ ] Variar a Capivara por idade → v0.3 (precisa de arte nova)
+- [ ] Verificar o que ficou `secondary` fraco: cursinho, preço do casamento civil, prêmio do inglês
+      (Catho 2017), teto do seguro-desemprego 2026
 
 ## v0.3: forma
-- [ ] Arte da Capivara por ilustrador(a) (CC BY), expressões e acessórios por patrimônio
+- [ ] Arte da Capivara por ilustrador(a) (CC BY), expressões e acessórios por patrimônio e por idade
 - [ ] Som opcional, animação do "tique" mensal
 - [ ] Acessibilidade WCAG 2.2 AA auditada (axe), Lighthouse CI
 
