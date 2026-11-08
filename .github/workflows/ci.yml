@@ -1,3 +1,18 @@
+# The one workflow for pull requests and pushes to main.
+#
+#   check ───────────────┐
+#   renovate-validate ───┼──► result ("CI gate")
+#   terraform-validate ──┘
+#
+# `result`, named `CI gate`, is the ONE status check the `main` ruleset requires
+# (docs/rulesets/README.md). Its name is the ruleset's contract: renaming it blocks
+# every PR. It `needs:` every job and runs `if: always()`, so a cancelled run fails
+# the gate instead of skipping it (GitHub counts a skipped required check as passing).
+# No other workflow may trigger on `pull_request` or `push`: deploy.yml runs on
+# pushes to main only, behind the `production` environment's approval.
+#
+# Pull requests never receive Cloudflare credentials. Terraform is validated here
+# with the backend disabled; the plan against the live zone only runs in deploy.yml.
 name: CI
 
 on:
@@ -11,6 +26,7 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -28,3 +44,63 @@ jobs:
           name: dist
           path: dist
           retention-days: 7
+
+  renovate-validate:
+    # A malformed renovate.json fails silently on Renovate's side: dependency
+    # automation just stops. Not cached: `npx --package renovate` resolves the
+    # newest release each run, and Renovate ships several a day.
+    name: renovate.json config validator
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+      - run: npx --yes --package renovate -- renovate-config-validator --strict renovate.json
+
+  terraform-validate:
+    # fmt + validate with the backend disabled, so it needs no credentials and no
+    # R2 state. Until 2026-11-08 Terraform was only validated inside deploy.yml,
+    # i.e. after merge and after approval.
+    name: Terraform fmt + validate (cloudflare)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TF_DIR: infrastructure/terraform/cloudflare
+      TF_IN_AUTOMATION: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_wrapper: false
+      - run: terraform version
+      - run: terraform -chdir=$TF_DIR fmt -check -diff
+      - run: terraform -chdir=$TF_DIR init -backend=false -input=false
+      - run: terraform -chdir=$TF_DIR validate -no-color
+
+  result:
+    # The required status check. See the header comment.
+    name: CI gate
+    needs: [check, renovate-validate, terraform-validate]
+    if: ${{ always() }}
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    steps:
+      - name: Every job passed
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$NEEDS" | jq -r 'to_entries[] | "\(.key)\t\(.value.result)"' \
+            | tee "$RUNNER_TEMP/results.tsv"
+          # Every job is unconditional today, so only `success` passes. `skipped` is
+          # accepted so that a job gated on a path filter later counts as "not
+          # selected" rather than as a failure, as in knuckles.
+          bad=$(awk -F'\t' '$2 != "success" && $2 != "skipped"' "$RUNNER_TEMP/results.tsv")
+          if [ -n "$bad" ]; then
+            echo "::error::Failed, cancelled, or never decided:"
+            printf '%s\n' "$bad"
+            exit 1
+          fi
+          echo "Every job passed."

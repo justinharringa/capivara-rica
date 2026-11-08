@@ -23,7 +23,9 @@ job summary.
    Access Key ID and Secret Access Key.
 4. Create a Cloudflare API token with: Account · Workers Scripts · Edit; Account · Account
    Settings · Read; User · User Details · Read; and on the two zones only: Zone · Zone · Read,
-   Zone · DNS · Edit, Zone · Zone Settings · Edit, Zone · Workers Routes · Edit.
+   Zone · DNS · Edit, Zone · Zone Settings · Edit, Zone · Workers Routes · Edit, Zone · Single
+   Redirect · Edit (the redirect ruleset; without it the apply fails with a 403 on
+   `/rulesets`, found on the first deploy).
 5. In GitHub → Settings → Environments create **`production`** with Deployment branches set
    to *Selected branches* → `main`, and add yourself under *Required reviewers*: every push to
    `main` then waits for one approval before anything touches Cloudflare (the workflow is a
