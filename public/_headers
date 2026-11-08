@@ -1,5 +1,6 @@
-# Served by Cloudflare Pages for every path. The game is a static, client-only site:
-# no third-party scripts, styles, fonts or connections, so the CSP can be strict.
+# Applied by Cloudflare Workers static assets to every path (wrangler.jsonc). The game is a
+# static, client-only site: no third-party scripts, styles, fonts or connections, so the CSP
+# can be strict.
 /*
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
   X-Content-Type-Options: nosniff

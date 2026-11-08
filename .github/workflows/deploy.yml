@@ -24,6 +24,11 @@ concurrency:
 env:
   TF_DIR: infrastructure/terraform/cloudflare
 
+defaults:
+  run:
+    # Explicit bash gives `set -eo pipefail`, so `terraform plan | tee` cannot mask a failure.
+    shell: bash
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
