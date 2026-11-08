@@ -16,6 +16,9 @@ Needs Pillow and numpy.
 Sheets used so far:
   assets/raw/capi-sheet-gemini-2026-11-07.jpg        --names wealth0,wealth1,wealth2,wealth3,-,worried,happy,icon --icons
   assets/raw/capi-sheet-moods-gemini-2026-11-07.jpg  --names -,worried1,worried2,worried3,happy1,-,happy2,happy3 --flip happy3 --canvas 622x573
+  assets/raw/capi-sheet-child-gemini-2026-11-08.jpg  public/capi/child --names wealth0,wealth1,wealth2,wealth3,worried,happy,happy1,happy3 --flip happy3 --canvas 622x573 --width 200
+    (the child is drawn smaller on the same canvas on purpose; it has no worried1-3 or happy2,
+    Capivara.svelte falls back to the calm sprite plus the sweat drop, and to happy1)
 """
 import argparse
 import os

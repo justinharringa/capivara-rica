@@ -1,23 +1,36 @@
 <script lang="ts">
   /**
-   * The mascot. `wealth` 0..3 picks the accessories as the player's net worth grows and
-   * `mood` picks the expression; every combination has its own sprite.
-   * Sprites are cut from the two sheets in assets/raw by scripts/cut-sprites.py (see ASSETS.md).
+   * The mascot. `wealth` 0..3 picks the accessories as the player's net worth grows, `mood`
+   * picks the expression and `age` picks the sheet: the child (backpack, under 14) or the
+   * grown-up. Sprites are cut from the sheets in assets/raw by scripts/cut-sprites.py (see
+   * ASSETS.md); all share one 400 x 368 canvas at the same scale, so the child is smaller.
    * With sunglasses on, the worried face is hard to tell from calm, so the worried mood also
-   * gets a sweat drop drawn over the sprite, in front of the glasses.
+   * gets a sweat drop drawn over the sprite, in front of the glasses. The child sheet has no
+   * worried face with accessories at all: there, the drop on the calm sprite is the worry.
    */
-  let { wealth = 0, mood = 'calm', size = 96 }: { wealth?: number; mood?: 'calm' | 'worried' | 'happy'; size?: number } = $props();
+  let {
+    wealth = 0,
+    mood = 'calm',
+    age = 'adult',
+    size = 96,
+  }: { wealth?: number; mood?: 'calm' | 'worried' | 'happy'; age?: 'child' | 'adult'; size?: number } = $props();
 
   const base = import.meta.env.BASE_URL;
   const level = $derived(Math.max(0, Math.min(3, Math.round(wealth))));
-  // calm → wealth0..3; worried/happy → worried, worried1..3, happy, happy1..3 (accessories kept).
-  const sprite = $derived(mood === 'calm' ? `wealth${level}` : level === 0 ? mood : `${mood}${level}`);
-  // All sprites share one canvas: 400 x 368.
+  // Adult: calm → wealth0..3; worried/happy → worried, worried1..3, happy, happy1..3.
+  // Child: the same, minus worried1..3 (calm sprite + drop) and happy2 (happy1 stands in).
+  const sprite = $derived.by(() => {
+    if (mood === 'calm') return `wealth${level}`;
+    if (level === 0) return mood;
+    if (age === 'child') return mood === 'worried' ? `wealth${level}` : level === 2 ? 'happy1' : `happy${level}`;
+    return `${mood}${level}`;
+  });
+  const dir = $derived(age === 'child' ? 'capi/child/' : 'capi/');
   const height = $derived(Math.round(size * (368 / 400)));
 </script>
 
-<span class="capi" style="width:{size}px;height:{height}px">
-  <img src="{base}capi/{sprite}.webp" width={size} {height} alt="Capivara" decoding="async" />
+<span class="capi" class:child={age === 'child'} style="width:{size}px;height:{height}px">
+  <img src="{base}{dir}{sprite}.webp" width={size} {height} alt="Capivara" decoding="async" />
   {#if mood === 'worried'}
     <svg class="drop" viewBox="0 0 20 28" aria-hidden="true" style="width:{Math.round(size * 0.065)}px">
       <path d="M10 1 C6 9 2 13 2 18.5 A8 8 0 0 0 18 18.5 C18 13 14 9 10 1 Z" fill="#5aa9e6" stroke="#2f6f9e" stroke-width="1.2" />
@@ -45,6 +58,11 @@
     height: auto;
     transform: rotate(14deg);
     animation: drip 1.6s ease-in-out infinite;
+  }
+  /* The child sits lower on the shared canvas and its head is further right. */
+  .child .drop {
+    left: 62%;
+    top: 36%;
   }
   @keyframes drip {
     0%,

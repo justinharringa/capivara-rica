@@ -24,6 +24,8 @@
   const compLabel = $derived(comp >= params.comprometimentoRed ? 'alto' : comp >= params.comprometimentoYellow ? 'atenção' : 'ok');
   const wealth = $derived(nw >= 20000000 ? 3 : nw >= 5000000 ? 2 : nw >= 1000000 ? 1 : 0);
   const mood = $derived(isNegativado(s) || comp >= params.comprometimentoRed ? 'worried' : wealth >= 2 ? 'happy' : 'calm');
+  // The child sheet carries the player to 14; a teen sheet is still to be drawn (ROADMAP v0.3).
+  const age = $derived(s.ageMonths < 14 * 12 ? 'child' : 'adult');
   const ghostNow = $derived(game.ghostNetWorthNow());
   const chapter = $derived(chapterOf(s.ageMonths));
   const chapterFrom = $derived(Math.max(chapter.fromAge, s.startAge) * 12);
@@ -55,7 +57,7 @@
 
 <div class="container">
   <header class="row top">
-    <Capivara size={64} {wealth} {mood} />
+    <Capivara size={64} {wealth} {mood} {age} />
     <div class="who">
       <strong>{ui('age')}: {years} anos{months ? ` e ${months} ${months === 1 ? 'mês' : 'meses'}` : ''}</strong>
       <div class="small muted">

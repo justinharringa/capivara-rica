@@ -23,7 +23,7 @@
 - [x] Coda "e aos 40?" com palpite; as 3 decisões que mais custaram, recontadas com a escolha da
       Capivara naquele único momento (`src/engine/review.ts`)
 - [x] Cartão de resultado em PNG para compartilhar (Web Share API, com download como alternativa)
-- [ ] Variar a Capivara por idade → v0.3 (precisa de arte nova)
+- [x] Variar a Capivara por idade: criança até os 14 (`public/capi/child/`); adolescente ainda usa a arte adulta (falta a folha)
 - [ ] Verificar o que ficou `secondary` fraco: cursinho, preço do casamento civil, prêmio do inglês
       (Catho 2017), teto do seguro-desemprego 2026
 
@@ -34,6 +34,7 @@
 
 ## v1.0: lançamento
 - [x] Domínio, Cloudflare Workers static assets (`wrangler.jsonc` + Terraform em `infrastructure/terraform/cloudflare/`), política de privacidade publicada
+- [x] Endereço de contato `contato@capivararica.com.br` (Cloudflare Email Routing, Terraform) nos rodapés, na privacidade, em SECURITY e no código de conduta
 - [ ] Revisão jurídica rápida (ECA Digital, LGPD art. 14) do fluxo final
 - [ ] Teste com 10 jogadores de 12 a 20 anos; medir tempo de partida e compreensão
 

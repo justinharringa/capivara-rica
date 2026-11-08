@@ -5,7 +5,7 @@ Este projeto é para jovens e para quem ensina jovens. Espera-se de toda pessoa 
 assédio, discriminação ou conteúdo impróprio para menores. Discussões sobre dinheiro são
 pessoais; critique ideias, não pessoas.
 
-Violações podem ser reportadas ao mantenedor pelo e-mail no perfil do GitHub. Reportes são
+Violações podem ser reportadas ao mantenedor em **contato@capivararica.com.br**. Reportes são
 tratados com discrição.
 
 ---
@@ -14,5 +14,5 @@ This project serves young people and their teachers. Everyone taking part is exp
 respectful, patient with beginners, and to keep all content appropriate for minors. No
 harassment or discrimination of any kind. Critique ideas, not people.
 
-Report violations to the maintainer at the e-mail on the GitHub profile. Reports are handled
+Report violations to the maintainer at **contato@capivararica.com.br**. Reports are handled
 discreetly.

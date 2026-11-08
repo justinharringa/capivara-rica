@@ -57,6 +57,7 @@
 
   <p class="small muted">
     Nenhum dado seu sai do seu aparelho. Sem conta, sem anúncios, sem rastreio. Código aberto (MIT) e conteúdo CC BY 4.0.
+    {ui('contact')} <a href="mailto:{ui('contactEmail')}">{ui('contactEmail')}</a>
   </p>
 </div>
 
