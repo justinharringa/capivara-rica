@@ -2,7 +2,7 @@
   "name": "capivara-rica",
   "version": "0.1.0",
   "private": true,
-  "description": "Jogo gratuito, no navegador, que ensina juros compostos, cartão, parcelamento e carreira para jovens brasileiros.",
+  "description": "Jogo gratuito, no navegador, que ensina juros compostos, cart\u00e3o, parcelamento e carreira para jovens brasileiros.",
   "type": "module",
   "license": "MIT",
   "scripts": {
@@ -28,5 +28,9 @@
   },
   "dependencies": {
     "idb-keyval": "^6.3.0"
+  },
+  "overrides": {
+    "glob": "^14.0.4",
+    "minimatch": "^11.0.5"
   }
 }
