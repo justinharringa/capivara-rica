@@ -9,7 +9,7 @@
    * 200 x 184 (they are only ever shown at 64 px); the component sizes by `size`.
    * With sunglasses on, the worried face is hard to tell from calm, so the worried mood also
    * gets a sweat drop drawn over the sprite, in front of the glasses. Every age has the full set
-   * of 12 sprites (calm 0..3, worried 0..3, happy 0..3).
+   * of 12 sprites (calm 0..3, worried 0..3, happy 0..3); see the note on happy2 below.
    */
   let {
     wealth = 0,
@@ -21,7 +21,9 @@
   const base = import.meta.env.BASE_URL;
   const level = $derived(Math.max(0, Math.min(3, Math.round(wealth))));
   // calm → wealth0..3; worried/happy → worried, worried1..3, happy, happy1..3 (accessories kept).
-  const sprite = $derived(mood === 'calm' ? `wealth${level}` : level === 0 ? mood : `${mood}${level}`);
+  // happy2 (chain, no crown) was drawn with a smile too faint to read at 64 px on the child and
+  // teen sheets, so happy1 stands in at level 2 for every age; the chain is the only loss.
+  const sprite = $derived(mood === 'calm' ? `wealth${level}` : level === 0 ? mood : mood === 'happy' && level === 2 ? 'happy1' : `${mood}${level}`);
   const dir = $derived(age === 'adult' ? 'capi/' : `capi/${age}/`);
   const height = $derived(Math.round(size * (368 / 400)));
   // The drop scales with how much of the canvas the figure fills: adult 95%, teen 82%, child 69%.
