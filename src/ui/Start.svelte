@@ -21,6 +21,15 @@
     </div>
   </header>
 
+  <section class="card how" aria-label={ui('howTitle')}>
+    <h2>{ui('howTitle')}</h2>
+    <ol>
+      <li>{ui('how1')}</li>
+      <li>{ui('how2')}</li>
+      <li>{ui('how3')}</li>
+    </ol>
+  </section>
+
   {#if game.newerSave}
     <div class="card"><p class="small">{ui('newerSave')}</p><button class="primary" onclick={() => location.reload()}>Recarregar</button></div>
   {/if}
@@ -61,6 +70,12 @@
   .ages {
     display: grid;
     gap: 8px;
+  }
+  .how ol {
+    margin: 0;
+    padding-left: 20px;
+    display: grid;
+    gap: 6px;
   }
   .age {
     display: flex;
