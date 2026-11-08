@@ -1,26 +1,63 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", "helpers:pinGitHubActionDigests", ":pinDevDependencies"],
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests",
+    ":pinDevDependencies"
+  ],
   "timezone": "America/Los_Angeles",
-  "schedule": ["before 6am on monday"],
-  "labels": ["dependencies"],
+  "schedule": [
+    "before 6am on monday"
+  ],
+  "labels": [
+    "dependencies"
+  ],
   "packageRules": [
     {
       "description": "Group all npm devDependency updates into one PR.",
-      "matchManagers": ["npm"],
-      "matchDepTypes": ["devDependencies"],
+      "matchManagers": [
+        "npm"
+      ],
+      "matchDepTypes": [
+        "devDependencies"
+      ],
       "groupName": "npm dev dependencies"
     },
     {
       "description": "GitHub Actions digests and versions together.",
-      "matchManagers": ["github-actions"],
+      "matchManagers": [
+        "github-actions"
+      ],
       "groupName": "github actions"
     },
     {
       "description": "The Cloudflare Terraform provider moves fast; keep it on its own PR.",
-      "matchManagers": ["terraform"],
-      "matchDepNames": ["cloudflare/cloudflare"],
+      "matchManagers": [
+        "terraform"
+      ],
+      "matchDepNames": [
+        "cloudflare/cloudflare"
+      ],
       "groupName": "cloudflare terraform provider"
+    },
+    {
+      "description": "TypeScript majors (the TS 7 native compiler) wait for a dashboard checkbox: svelte-check must support them first.",
+      "matchDepNames": [
+        "typescript"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Node.js (.nvmrc) and @types/node move together, as one PR.",
+      "matchDepNames": [
+        "node",
+        "@types/node"
+      ],
+      "groupName": "node.js"
     }
-  ]
+  ],
+  "dependencyDashboard": true
 }
