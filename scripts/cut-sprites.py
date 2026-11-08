@@ -25,9 +25,9 @@ Sheets used so far:
     (the child is drawn smaller on the same canvas on purpose; a name list that starts with "-"
     needs the --names= form or argparse reads it as an option)
   assets/raw/capi-sheet-teen-gemini-2026-11-08.jpg         public/capi/teen --names wealth0,wealth1,wealth2,wealth3,worried,happy,happy1,happy3 --flip happy3 --canvas 520x479 --width 200
+  assets/raw/capi-sheet-teen-moods-gemini-2026-11-08.jpg   public/capi/teen --names=-,-,-,happy2,worried1,worried2,worried3,- --canvas 520x479 --width 200
     (Gemini drew the teen at the child's size, so a smaller canvas of the same 622:573 ratio puts
-    it between child and adult; the teen has no worried1-3 or happy2, Capivara.svelte falls back
-    to the calm sprite plus the sweat drop, and to happy1)
+    it between child and adult)
 """
 import argparse
 import os
