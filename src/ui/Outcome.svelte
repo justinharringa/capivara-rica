@@ -6,7 +6,7 @@
   let { outcome }: { outcome: Outcome } = $props();
   const text = $derived(events[outcome.eventId]);
   const chosen = $derived(text?.choices[outcome.choiceId]?.label ?? outcome.choiceId);
-  const ghostLabel = $derived(outcome.ghostChoiceId ? (text?.choices[outcome.ghostChoiceId]?.label ?? outcome.ghostChoiceId) : null);
+  const ghostLabel = $derived(outcome.ghostChoiceId && !outcome.sameAsGhost ? (text?.choices[outcome.ghostChoiceId]?.label ?? outcome.ghostChoiceId) : null);
   const signed = (v: number): string => (v < 0 ? '−' : '+') + formatBRL(Math.abs(v));
   const lines = $derived(
     [
@@ -33,10 +33,12 @@
   {:else}
     <p class="small muted">{ui('outNothing')}</p>
   {/if}
-  <p class="capi-line small">
-    <span aria-hidden="true">🐾</span>
-    {#if ghostLabel}{t(ui('outGhost'), { escolha: t(ghostLabel) })}{:else}{ui('outSame')}{/if}
-  </p>
+  {#if ghostLabel || outcome.sameAsGhost}
+    <p class="capi-line small">
+      <span aria-hidden="true">🐾</span>
+      {#if ghostLabel}{t(ui('outGhost'), { escolha: t(ghostLabel) })}{:else}{ui('outSame')}{/if}
+    </p>
+  {/if}
 </section>
 
 <style>

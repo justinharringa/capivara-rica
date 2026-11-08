@@ -2,8 +2,8 @@ import brJson from '$data/br/2026-11.json';
 import { loadParams, type ParamFile } from '$engine/params';
 import type { GameState, StartAge, Standing, CardPolicy, SaveTarget } from '$engine/state';
 import { newGame, stepMonth, choose, setStanding, setCardPolicy, runWithPolicy, debtTotal, committedMonthly, depositSavings, withdrawSavings } from '$engine/sim';
-import { investedTotal } from '$engine/investments';
-import { capivaraPolicy, chooseByTags } from '$engine/policies';
+import { savedTotal } from '$engine/investments';
+import { capivaraPolicy } from '$engine/policies';
 import { loadSave, writeSave, clearSave } from './save';
 
 export const params = loadParams(brJson as ParamFile);
@@ -17,8 +17,9 @@ export interface Outcome {
   debt: number;
   committed: number;
   wellbeing: number;
-  /** The choice the ghost would have made, when it differs from the player's. */
+  /** The choice the ghost would have made, or null when no offered choice carries its tag. */
   ghostChoiceId: string | null;
+  sameAsGhost: boolean;
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -32,7 +33,7 @@ function randomSeed(): number {
 function snapshot(s: GameState) {
   return {
     cash: s.cash,
-    saved: investedTotal(s) + s.cofrinho + s.peDeMeiaLocked,
+    saved: savedTotal(s),
     debt: debtTotal(s),
     committed: committedMonthly(s, params),
     wellbeing: s.wellbeing,
@@ -124,7 +125,9 @@ export class Game {
     if (!s || !s.pending) return;
     const stop = s.pending;
     const before = snapshot(s);
-    const ghostChoice = chooseByTags(stop, ['capivara', 'capivara2']);
+    // Only a tagged choice is the Capivara's; chooseByTags' first-choice fallback is for the
+    // ghost run, not for attributing an arbitrary option (often the credit one) to it.
+    const ghostChoice = (stop.choices.find((c) => c.tags.includes('capivara')) ?? stop.choices.find((c) => c.tags.includes('capivara2')))?.id ?? null;
     choose(s, params, choiceId);
     const after = snapshot(s);
     this.lastOutcome = {
@@ -135,7 +138,8 @@ export class Game {
       debt: after.debt - before.debt,
       committed: after.committed - before.committed,
       wellbeing: after.wellbeing - before.wellbeing,
-      ghostChoiceId: ghostChoice === choiceId ? null : ghostChoice,
+      ghostChoiceId: ghostChoice,
+      sameAsGhost: ghostChoice === choiceId,
     };
     this.touch(s);
     await this.afterChange();

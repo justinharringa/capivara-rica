@@ -84,6 +84,9 @@ export function redeem(lot: Lot, p: Params, amount: Centavos, taxable: boolean):
 export const investedTotal = (s: GameState): Centavos =>
   s.inv.poupanca.balance + s.inv.tesouroSelic.balance + s.inv.cdb.balance;
 
+/** Everything put away: cofrinho, the three instruments and the locked Pé-de-Meia. The "Guardado" tile. */
+export const savedTotal = (s: GameState): Centavos => investedTotal(s) + s.cofrinho + s.peDeMeiaLocked;
+
 /** Liquid money the player can reach this month, in order of cheapness: cash, cofrinho, then investments. */
 export function liquid(s: GameState): Centavos {
   return Math.max(0, s.cash) + s.cofrinho + investedTotal(s);

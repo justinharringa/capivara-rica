@@ -216,9 +216,15 @@ export function leisureCost(s: GameState, p: Params, lifestyle: Lifestyle = s.st
   return Math.round(priced(s, base) * lifestyleFactor(p, lifestyle));
 }
 
-/** How the lifestyle moves the wellbeing level the player drifts back to (60 by default). */
-export function lifestyleMood(lifestyle: Lifestyle): number {
-  return lifestyle === 'economico' ? -5 : lifestyle === 'folgado' ? 5 : 0;
+/**
+ * How the lifestyle moves the wellbeing level the player drifts back to (60 by default).
+ * Only while the lifestyle actually costs something: a child picking "folgado" pays nothing
+ * and gets nothing.
+ */
+export function lifestyleMood(s: GameState, p: Params): number {
+  if (leisureCost(s, p) <= 0) return 0;
+  const l = s.standing.lifestyle;
+  return l === 'economico' ? -5 : l === 'folgado' ? 5 : 0;
 }
 
 export function monthlyFixedCosts(s: GameState, p: Params): Centavos {
@@ -341,6 +347,8 @@ export function stepMonth(s: GameState, p: Params): void {
     if (x.onCard) s.card.statement += x.amount;
     else s.cash -= x.amount;
     committedPaid += x.amount;
+    // A parcelada fatura carries its interest inside each instalment.
+    summary.interestPaid += x.interest ?? 0;
     x.remaining -= 1;
   }
   s.parcelas = s.parcelas.filter((x) => x.remaining > 0);
@@ -357,10 +365,10 @@ export function stepMonth(s: GameState, p: Params): void {
 
   // 4. The fatura.
   if (s.card.has) {
-    const chargesBefore = s.card.capCharges;
     const r = settleCard(s, p);
-    // capCharges only grows (rotativo accrual, parcelamento interest) until the debt clears.
-    summary.interestPaid += Math.max(0, s.card.capCharges - chargesBefore);
+    // Rotativo interest accrued this month. Parcelamento interest is attributed per
+    // instalment above, not all at once when the balance converts.
+    summary.interestPaid += r.interest;
     if (r.missedMinimum) {
       s.flags.cardMissedThisYear = 1;
       log(s, 'bad', 'fatura_nao_paga', { valor: r.due });
@@ -458,7 +466,7 @@ export function stepMonth(s: GameState, p: Params): void {
   if (s.ageMonths === 18 * 12 && LEVEL_RANK[s.career.level] < LEVEL_RANK.medio) s.career.level = 'medio';
 
   // 10. Wellbeing drifts back toward 60 (shifted by the lifestyle); being negativado weighs on it.
-  const target = 60 + lifestyleMood(s.standing.lifestyle);
+  const target = 60 + lifestyleMood(s, p);
   if (s.wellbeing < target) bumpWellbeing(s, 1);
   else if (s.wellbeing > target) bumpWellbeing(s, -1);
   if (isNegativado(s)) bumpWellbeing(s, -1);
@@ -547,6 +555,9 @@ export function choose(s: GameState, p: Params, choiceId: string): void {
   def.apply({ s, p }, stop.vars);
   log(s, 'choice', `ch:${stop.eventId}:${choiceId}`, { ...stop.vars, ...(offered.vars ?? {}) });
   s.pending = null;
+  // An overlay (the chapter card) must not eat the month's one event slot: the 14th birthday
+  // and the age-22 "sair de casa" offer share its month and were silently skipped.
+  if (ev.passthrough) pickEvent(s, p);
 }
 
 export function setStanding(s: GameState, patch: Partial<Standing>): void {

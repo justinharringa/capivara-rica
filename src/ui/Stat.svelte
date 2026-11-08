@@ -1,8 +1,9 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import { help, ui } from '$lib/content';
+  import { help } from '$lib/content';
+  import Help from './Help.svelte';
 
-  /** A dashboard tile: label, value, and a tappable ℹ️ whose explanation opens under the value. */
+  /** A dashboard tile: label with its ℹ️, value, optional action, and the explanation under the value. */
   let {
     id,
     label,
@@ -16,14 +17,7 @@
 </script>
 
 <div class="stat" class:ghost>
-  <div class="label">
-    {label}
-    {#if text}
-      <button type="button" class="info" aria-expanded={open} aria-controls={`help-${id}`} aria-label={`${ui('helpButton')} ${label}`} onclick={() => (open = !open)}>
-        <span aria-hidden="true">i</span>
-      </button>
-    {/if}
-  </div>
+  <div class="label">{label}<Help {id} {label} bind:open showText={false} /></div>
   <div class="value {valueClass}">{@render children()}</div>
   {#if action}
     <div class="action">{@render action()}</div>
@@ -37,37 +31,6 @@
   .stat.ghost {
     border-left: 3px solid var(--series-ghost);
   }
-  .info {
-    min-height: 0;
-    width: 20px;
-    height: 20px;
-    padding: 0;
-    border-radius: 50%;
-    border: 1px solid var(--ink-3);
-    background: transparent;
-    color: var(--ink-3);
-    font: inherit;
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    vertical-align: middle;
-    margin-left: 4px;
-    position: relative;
-  }
-  /* 44px hit area without 44px of layout. */
-  .info::after {
-    content: '';
-    position: absolute;
-    inset: -12px;
-  }
-  .info[aria-expanded='true'] {
-    background: var(--brand);
-    border-color: var(--brand);
-    color: var(--brand-ink);
-  }
   .action {
     margin-top: 6px;
   }
@@ -79,6 +42,8 @@
   .help {
     margin: 6px 0 0;
     color: var(--ink-2);
+    text-transform: none;
+    letter-spacing: 0;
     line-height: 1.4;
   }
 </style>

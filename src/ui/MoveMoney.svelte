@@ -1,7 +1,7 @@
 <script lang="ts">
   import { game, params } from '$lib/game.svelte';
   import { ui, t } from '$lib/content';
-  import { formatBRL } from '$engine/money';
+  import { formatBRL, parseReais } from '$engine/money';
   import { bucketBalance, previewWithdrawal } from '$engine/sim';
   import type { SaveTarget } from '$engine/state';
 
@@ -20,7 +20,7 @@
     if (funded.length && !funded.includes(from)) from = funded[0]!;
   });
 
-  const amount = $derived(Math.round(Number(amountText.replace(/\./g, '').replace(',', '.')) * 100) || 0);
+  const amount = $derived(Math.max(0, parseReais(amountText)));
   const cashAvailable = $derived(Math.max(0, s.cash));
   const fromAvailable = $derived(bucketBalance(s, from));
   const max = $derived(mode === 'deposit' ? cashAvailable : fromAvailable);

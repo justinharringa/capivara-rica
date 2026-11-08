@@ -3,7 +3,7 @@
   import { ui, strings, events, t } from '$lib/content';
   import { formatBRL } from '$engine/money';
   import { netWorth, monthlyIncome, comprometimento, debtTotal } from '$engine/sim';
-  import { investedTotal } from '$engine/investments';
+  import { savedTotal } from '$engine/investments';
   import { capRoom } from '$engine/card';
   import { isNegativado, chapterOf, CHAPTERS } from '$engine/state';
   import Capivara from './Capivara.svelte';
@@ -73,7 +73,7 @@
     {/if}
     <Stat id="cash" label={ui('cash')} valueClass={s.cash < 0 ? 'bad' : ''}>{formatBRL(s.cash)}</Stat>
     <Stat id="saved" label={ui('saved')}>
-      {formatBRL(investedTotal(s) + s.cofrinho + s.peDeMeiaLocked)}
+      {formatBRL(savedTotal(s))}
       {#snippet action()}
         <button type="button" aria-expanded={moveOpen} aria-controls="move-money" onclick={() => (moveOpen = !moveOpen)}>{ui('move')}</button>
       {/snippet}

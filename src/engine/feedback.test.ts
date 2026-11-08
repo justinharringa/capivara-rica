@@ -221,3 +221,83 @@ describe('moving money by hand', () => {
     expect(s.peDeMeiaLocked).toBe(100000);
   });
 });
+
+describe('review fixes (2026-11-08)', () => {
+  it('the chapter card does not swallow events scheduled for the same month', () => {
+    for (const seed of [1, 2, 3, 4, 5]) {
+      const young = runWithPolicy({ seed, startAge: 10 }, p, capivaraPolicy);
+      expect(young.log.some((e) => e.key === 'ev:aniversario' && e.ageMonths === 14 * 12), `seed ${seed}: 14th birthday`).toBe(true);
+      const adult = runWithPolicy({ seed, startAge: 18 }, p, capivaraPolicy);
+      const offers = adult.log.filter((e) => e.key === 'ev:sair_de_casa').map((e) => e.ageMonths / 12);
+      if (adult.log.some((e) => e.key === 'ev:sair_de_casa' && e.ageMonths === 19 * 12) && offers.length >= 2) {
+        expect(offers, `seed ${seed}: age-22 offer`).toContain(22);
+      }
+    }
+  });
+
+  it('the Black Friday object does not consume the shared misc stream', () => {
+    // Two lives that differ only in whether Black Friday fired must draw the same birthday gifts.
+    const a = newGame({ seed: 3, startAge: 14 }, p);
+    const b = newGame({ seed: 3, startAge: 14 }, p);
+    const ev = EVENTS.find((e) => e.id === 'black_friday')!;
+    for (const s of [a, b]) {
+      s.pending = null;
+      s.ageMonths = 16 * 12 + 10;
+      s.month = 34;
+      s.calendarMonth = 10;
+      s.hasBankAccount = true;
+    }
+    a.card.has = true;
+    a.card.limit = 1000000;
+    expect(ev.eligible({ s: a, p })).toBe(true);
+    const va = ev.vars!({ s: a, p });
+    expect(typeof va.item).toBe('string');
+    expect(a.rng.misc).toBe(b.rng.misc);
+  });
+
+  it('a lifestyle that costs nothing moves wellbeing nowhere', async () => {
+    const { lifestyleMood } = await import('./sim');
+    const child = newGame({ seed: 1, startAge: 10 }, p);
+    setStanding(child, { lifestyle: 'folgado' });
+    expect(lifestyleMood(child, p)).toBe(0);
+    const adult = newGame({ seed: 1, startAge: 18 }, p);
+    setStanding(adult, { lifestyle: 'folgado' });
+    expect(lifestyleMood(adult, p)).toBe(5);
+    setStanding(adult, { lifestyle: 'economico' });
+    expect(lifestyleMood(adult, p)).toBe(-5);
+  });
+
+  it('parcelada fatura interest is attributed per instalment, not all at once', () => {
+    const s = newGame({ seed: 1, startAge: 18 }, p);
+    s.pending = null;
+    s.cash = 10000000;
+    s.hasBankAccount = true;
+    s.card.has = true;
+    s.card.limit = 10000000;
+    s.card.revolving = 100000;
+    s.card.capBase = 100000;
+    s.card.policy = 'parcelar';
+    stepMonth(s, p); // conversion month: the balance becomes 12 instalments
+    const parcela = s.parcelas.find((x) => x.label === 'fatura parcelada')!;
+    expect(parcela).toBeDefined();
+    expect(parcela.interest!).toBeGreaterThan(0);
+    expect(s.lastMonth!.interestPaid).toBe(0);
+    const before = s.stats.interestPaid;
+    while (s.pending) choose(s, p, chooseByTags(s.pending, ['capivara', 'capivara2']));
+    stepMonth(s, p); // first instalment carries one month of interest
+    expect(s.lastMonth!.interestPaid).toBe(parcela.interest);
+    expect(s.stats.interestPaid - before).toBe(parcela.interest);
+  });
+
+  it('parses what people type into a reais field', async () => {
+    const { parseReais } = await import('./money');
+    expect(parseReais('10,50')).toBe(1050);
+    expect(parseReais('10.50')).toBe(1050);
+    expect(parseReais('1.000')).toBe(100000);
+    expect(parseReais('1.000,50')).toBe(100050);
+    expect(parseReais('R$ 2000')).toBe(200000);
+    expect(parseReais('2000')).toBe(200000);
+    expect(parseReais('')).toBe(0);
+    expect(parseReais('abc')).toBe(0);
+  });
+});

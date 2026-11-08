@@ -70,6 +70,7 @@ export function parcelarFatura(s: GameState, p: Params): Parcela | null {
     amount: pmt,
     remaining: CARD_PARCELAMENTO_MONTHS,
     onCard: true,
+    interest: Math.round(totalInterest / CARD_PARCELAMENTO_MONTHS),
   };
   s.parcelas.push(parcela);
   return parcela;

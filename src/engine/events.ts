@@ -3,7 +3,7 @@ import { instalment } from './money';
 import type { Params } from './params';
 import type { GameState } from './state';
 import { isAdult, isTeen, isChild, ageYears, isNegativado } from './state';
-import { random, randomInt } from './rng';
+import { random, randomInt, hash32 } from './rng';
 import { spendable, deposit, investedTotal } from './investments';
 import { chargeCard } from './card';
 import { jobSalary, trackInfo, LEVEL_RANK } from './career';
@@ -24,7 +24,7 @@ import {
   startChapter,
   atChapterBoundary,
 } from './sim';
-import { chapterOf } from './state';
+import { chapterOf, CHAPTERS } from './state';
 
 export interface EventContext {
   s: GameState;
@@ -46,6 +46,8 @@ export interface EventDef {
   kind: 'scheduled' | 'conditional' | 'random';
   once?: boolean;
   yearly?: boolean;
+  /** After this stop resolves, pick again in the same month: the stop is an overlay, not the month's event. */
+  passthrough?: boolean;
   eligible: (c: EventContext) => boolean;
   monthlyProb?: (c: EventContext) => number;
   vars?: (c: EventContext) => Vars;
@@ -53,7 +55,6 @@ export interface EventDef {
 }
 
 const at = (s: GameState, years: number, months = 0): boolean => s.ageMonths >= years * 12 + months;
-const CHAPTERS_TOTAL = 5;
 
 /** Black Friday objects; the id is the key into strings.app.bfItems, the price a param. */
 export const BF_ITEMS: ReadonlyArray<{ id: string; price: keyof Params }> = [
@@ -128,6 +129,7 @@ export const EVENTS: EventDef[] = [
     id: 'capitulo',
     kind: 'scheduled',
     yearly: true,
+    passthrough: true,
     eligible: ({ s }) => atChapterBoundary(s),
     vars: ({ s }) => {
       const c = chapterOf(s.ageMonths);
@@ -135,7 +137,7 @@ export const EVENTS: EventDef[] = [
       const agora = netWorth(s);
       return {
         capitulo: c.n,
-        total: CHAPTERS_TOTAL,
+        total: CHAPTERS.length,
         titulo: c.id,
         anterior: chapterOf(s.ageMonths - 1).id,
         idade: ageYears(s),
@@ -716,7 +718,9 @@ export const EVENTS: EventDef[] = [
       (!s.flags.bfMonth || s.month - s.flags.bfMonth >= 20) &&
       (s.card.has || spendable(s, p) >= priced(s, p.blackFridayMinCash)),
     vars: ({ s, p }) => {
-      let i = randomInt(s.rng, 'misc', 0, BF_ITEMS.length - 1);
+      // Not an rng stream: the ghost may not see this event in the same month (it needs a
+      // card or cash), and a conditional draw would shift the 'misc' luck of both lives apart.
+      let i = hash32(s.seed, s.month + 1) % BF_ITEMS.length;
       if (BF_INDEX[BF_ITEMS[i]!.id] === s.flags.bfLastItem) i = (i + 1) % BF_ITEMS.length;
       const item = BF_ITEMS[i]!;
       const preco = priced(s, p[item.price]);

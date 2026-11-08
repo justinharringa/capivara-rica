@@ -41,6 +41,8 @@ export interface Parcela {
   remaining: number;
   /** True when the instalments are charged to the credit card statement. */
   onCard: boolean;
+  /** Interest inside each instalment, when the instalments carry any (a parcelada fatura). */
+  interest?: Centavos;
 }
 
 export interface Loan {

@@ -1,9 +1,12 @@
 <script lang="ts">
   import { help, ui } from '$lib/content';
 
-  /** A tappable ℹ️ that opens a one-line explanation inline. Hover tooltips do not exist on phones. */
-  let { id, label }: { id: string; label: string } = $props();
-  let open = $state(false);
+  /**
+   * A tappable ℹ️ that opens a one-line explanation inline. Hover tooltips do not exist on
+   * phones. With `showText` false the parent renders the paragraph itself (where it wants it)
+   * and reads `open` through the bindable prop.
+   */
+  let { id, label, open = $bindable(false), showText = true }: { id: string; label: string; open?: boolean; showText?: boolean } = $props();
   const text = $derived(help(id));
 </script>
 
@@ -11,7 +14,7 @@
   <button type="button" class="info" aria-expanded={open} aria-controls={`help-${id}`} aria-label={`${ui('helpButton')} ${label}`} onclick={() => (open = !open)}>
     <span aria-hidden="true">i</span>
   </button>
-  {#if open}
+  {#if open && showText}
     <p id={`help-${id}`} class="help small">{text}</p>
   {/if}
 {/if}
