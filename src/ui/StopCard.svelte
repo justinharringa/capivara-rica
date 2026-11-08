@@ -50,6 +50,9 @@
         <div class="stat"><div class="label">{ui('chapterInterest')}</div><div class="value good">{formatBRL(Number(stop.vars.juros))}</div></div>
         <div class="stat"><div class="label">{ui('chapterInterestPaid')}</div><div class="value" class:bad={Number(stop.vars.jurosPagos) > 0}>{formatBRL(Number(stop.vars.jurosPagos))}</div></div>
       </div>
+      {#if game.state!.flags.migratedAtMonth !== undefined && game.state!.chapterStart.ageMonths === game.state!.startAge * 12 + game.state!.flags.migratedAtMonth}
+        <p class="small muted">{t(ui('statsSince'), { idade: Math.floor(game.state!.chapterStart.ageMonths / 12) })}</p>
+      {/if}
       {#if ghostHistory.length > 1}
         <Chart {you} ghost={ghostHistory} />
       {/if}

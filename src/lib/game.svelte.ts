@@ -1,10 +1,10 @@
 import brJson from '$data/br/2026-11.json';
 import { loadParams, type ParamFile } from '$engine/params';
 import type { GameState, StartAge, Standing, CardPolicy, SaveTarget } from '$engine/state';
-import { newGame, stepMonth, choose, setStanding, setCardPolicy, runWithPolicy, debtTotal, committedMonthly, depositSavings, withdrawSavings } from '$engine/sim';
+import { newGame, stepMonth, choose, setStanding, setCardPolicy, runWithPolicy, runWithPolicyFrom, debtTotal, committedMonthly, depositSavings, withdrawSavings } from '$engine/sim';
 import { savedTotal } from '$engine/investments';
 import { capivaraPolicy } from '$engine/policies';
-import { loadSave, writeSave, clearSave } from './save';
+import { loadSave, loadGhostFork, writeSave, clearSave } from './save';
 
 export const params = loadParams(brJson as ParamFile);
 
@@ -47,22 +47,36 @@ export class Game {
   lastOutcome = $state.raw<Outcome | null>(null);
   busy = $state(false);
   hasSave = $state(false);
+  /** The stored game comes from a newer build; the page must reload to pick up the new shell. */
+  newerSave = $state(false);
+  /** Age in months from which the Capivara plays, when the game was migrated; null when from birth. */
+  ghostSince = $state<number | null>(null);
 
   async init(): Promise<void> {
-    const s = await loadSave();
-    this.hasSave = !!s && !s.ended;
+    const r = await loadSave(params);
+    this.newerSave = r.newer;
+    this.hasSave = !!r.state && !r.state.ended;
   }
 
   async resume(): Promise<void> {
-    const s = await loadSave();
-    if (!s) return;
-    this.state = s;
+    const r = await loadSave(params);
+    this.newerSave = r.newer;
+    if (!r.state) return;
+    this.state = r.state;
     this.lastOutcome = null;
-    this.ghost = this.buildGhost(s);
+    const fork = await loadGhostFork(params);
+    if (fork && fork.seed === r.state.seed) {
+      this.ghost = runWithPolicyFrom(fork, params, capivaraPolicy);
+      this.ghostSince = fork.ageMonths;
+    } else {
+      this.ghost = this.buildGhost(r.state);
+      this.ghostSince = null;
+    }
   }
 
   start(startAge: StartAge, publicSchool: boolean): void {
     this.lastOutcome = null;
+    this.ghostSince = null;
     this.state = newGame({ seed: randomSeed(), startAge, publicSchool }, params);
     this.ghost = this.buildGhost(this.state);
     void writeSave(this.state);
@@ -195,6 +209,7 @@ export class Game {
     await clearSave();
     this.state = null;
     this.ghost = null;
+    this.ghostSince = null;
     this.lastOutcome = null;
     this.hasSave = false;
   }

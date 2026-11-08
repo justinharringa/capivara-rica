@@ -22,7 +22,7 @@
       <input
         type="range"
         min="0"
-        max="60"
+        max="100"
         step="5"
         value={Math.round(s.standing.savePct * 100)}
         oninput={(e) => game.updateStanding({ savePct: Number((e.target as HTMLInputElement).value) / 100 })}

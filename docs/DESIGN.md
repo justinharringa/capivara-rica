@@ -43,6 +43,8 @@ operacional do que o código implementa hoje e do que falta.
   (rolê, roupa, transporte) que só existe para quem tem salário (aprendiz ou adulto) e desloca
   em ±5 o ponto para onde o bem-estar converge. Sem isso um aprendiz de 16 anos chegava a
   R$ 35 mil sem fazer nada: só o celular custava algo.
+- Partidas salvas sobrevivem a atualizações: o save carrega `version` e `src/engine/migrate.ts`
+  traz qualquer versão lida até a atual (fixtures por versão em `src/engine/fixtures/`).
 - Cartão aos 16 é garantido: o limite é o menor entre o que está investido (qualquer
   instrumento, não só CDB; cofrinho não vale) e um teto, e o texto diz o teto.
 - Black Friday varia o objeto (sete, nunca o mesmo duas vezes seguidas) e vem no máximo a cada

@@ -139,7 +139,11 @@
     "moveLocked": "O Pé-de-Meia ({valor}) fica travado até os 18.",
     "moveNothing": "Nada guardado ainda.",
     "moveOverdraft": "Conta negativa: nada para guardar.",
-    "close": "Fechar"
+    "close": "Fechar",
+    "ghostSince": "A Capivara joga a partir da atualização, aos {idade} anos. Antes disso, a vida foi a sua.",
+    "ghostSinceShort": "desde os {idade} anos",
+    "statsSince": "Contando desde a atualização ({idade} anos).",
+    "newerSave": "Há um jogo salvo de uma versão mais nova do app. Recarregue a página para atualizar e continuar."
   },
   "log": {
     "ano_novo": "Novo ano: inflação de {ipca}% e Selic em {selic}%.",

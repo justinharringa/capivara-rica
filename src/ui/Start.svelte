@@ -21,6 +21,9 @@
     </div>
   </header>
 
+  {#if game.newerSave}
+    <div class="card"><p class="small">{ui('newerSave')}</p><button class="primary" onclick={() => location.reload()}>Recarregar</button></div>
+  {/if}
   {#if game.hasSave}
     <div class="card">
       <button class="primary" onclick={() => game.resume()}>{ui('continue')}</button>

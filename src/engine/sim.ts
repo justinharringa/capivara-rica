@@ -412,13 +412,17 @@ export function stepMonth(s: GameState, p: Params): void {
   //    get bailed out by their parents, with a cost.
   if (s.cash < 0) {
     if (isAdult(s) && s.hasBankAccount) {
-      const juros = interestOn(-s.cash, p.chequeEspecialMonthly);
-      s.cash -= juros;
-      summary.interestPaid += juros;
-      log(s, 'bad', 'cheque_especial', { juros, saldo: -s.cash });
-      // Pull from savings first before letting the overdraft roll.
-      const short = drawDown(s, p, -s.cash + 0);
+      // Savings cover the hole first; only what they cannot cover is an overdraft. Until
+      // 2026-11-08 the interest was charged before the drawdown, so a player with savings and
+      // R$ 0,01 in the account paid cheque especial every month (common at a 100% standing order).
+      const short = drawDown(s, p, -s.cash);
       s.cash = short === 0 ? 0 : -short;
+      if (s.cash < 0) {
+        const juros = interestOn(-s.cash, p.chequeEspecialMonthly);
+        s.cash -= juros;
+        summary.interestPaid += juros;
+        log(s, 'bad', 'cheque_especial', { juros, saldo: -s.cash });
+      }
       const limit = Math.max(income, priced(s, p.overdraftFloor));
       if (s.cash < -limit) {
         s.cash = -limit;
@@ -493,6 +497,12 @@ export function stepMonth(s: GameState, p: Params): void {
 // ---------------------------------------------------------------------------
 // Events
 // ---------------------------------------------------------------------------
+
+/** Rebuild a pending stop's choices and vars from the current state (save migration). */
+export function rebuildStop(s: GameState, p: Params, eventId: string): Stop | null {
+  const ev = EVENTS.find((e) => e.id === eventId);
+  return ev ? buildStop(s, p, ev) : null;
+}
 
 function buildStop(s: GameState, p: Params, ev: EventDef): Stop {
   const ctx: EventContext = { s, p };
@@ -631,7 +641,16 @@ export interface Policy {
 }
 
 export function runWithPolicy(opts: NewGameOptions, p: Params, policy: Policy, maxMonths = 400): GameState {
-  const s = newGame(opts, p);
+  return runWithPolicyFrom(newGame(opts, p), p, policy, maxMonths);
+}
+
+/**
+ * Play a policy from a given state to the end, on a copy. Used for the ghost of a migrated save:
+ * replaying from birth under a newer engine would not be the same life the player lived, so
+ * the Capivara takes over from the moment of the update instead, with the same luck from there.
+ */
+export function runWithPolicyFrom(start: GameState, p: Params, policy: Policy, maxMonths = 400): GameState {
+  const s = structuredClone(start);
   policy.onStart?.(s, p);
   let guard = 0;
   while (!s.ended && guard < maxMonths * 4) {

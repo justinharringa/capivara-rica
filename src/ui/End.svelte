@@ -51,11 +51,14 @@
     <div class="stat"><div class="label">{ui('endInterest')}</div><div class="value good">{formatBRL(s.stats.interestEarned)}</div></div>
     <div class="stat"><div class="label">{ui('endInterestPaid')}</div><div class="value" class:bad={s.stats.interestPaid > 0}>{formatBRL(s.stats.interestPaid)}</div></div>
   </div>
+  {#if s.flags.migratedAtMonth !== undefined}
+    <p class="small muted">{t(ui('statsSince'), { idade: Math.floor((s.startAge * 12 + s.flags.migratedAtMonth) / 12) })}</p>
+  {/if}
 
   {#if g}
     <section class="card">
       <h2>{ui('ghostTitle')}</h2>
-      <p class="muted small">{ui('ghostDesc')}</p>
+      <p class="muted small">{ui('ghostDesc')}{#if game.ghostSince !== null} {t(ui('ghostSince'), { idade: Math.floor(game.ghostSince / 12) })}{/if}</p>
       <Chart you={s.history} ghost={g.history} deflateYou={s.macro.priceIndex} deflateGhost={g.macro.priceIndex} />
       <p class="small" style="margin-top:8px">
         {#if yours >= theirs}
