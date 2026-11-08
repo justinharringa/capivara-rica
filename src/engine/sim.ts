@@ -600,6 +600,10 @@ export function pickEvent(s: GameState, p: Params): void {
   // lives with the same seed see the same luck whatever their scheduled stops did. (Until
   // 2026-11-08 the draw sat after the scheduled loop: one shifted stop moved every later
   // random event, which broke both the ghost comparison and the costed-decisions replay.)
+  // A month that opens with a passthrough stop (grandma's gift, the lunch question, a chapter
+  // card) picks twice and so draws twice. Those months are fixed by age, never by choice, so
+  // every life with the seed draws the same number of times; the fairness test in
+  // feedback.test.ts pins that.
   const roll = random(s.rng, 'events');
   for (const ev of EVENTS) {
     if (ev.kind === 'random') continue;

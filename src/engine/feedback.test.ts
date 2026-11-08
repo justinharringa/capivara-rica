@@ -337,6 +337,8 @@ describe('fairness of the ghost comparison', () => {
         if (s.pending) choose(s, p, capivaraPolicy.choose(s, p, s.pending));
         else stepMonth(s, p);
       }
+      expect(s.ended, `start ${startAge}: the player's life ran to the end`).toBe(true);
+      expect(s.history.length, `start ${startAge}: same number of months`).toBe(ghost.history.length);
       for (let i = 0; i < ghost.history.length; i += 1) {
         expect(s.history[i]!.netWorth, `start ${startAge}, month ${i}`).toBe(ghost.history[i]!.netWorth);
       }

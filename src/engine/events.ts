@@ -180,9 +180,9 @@ export const EVENTS: EventDef[] = [
     id: 'presente_vovo',
     kind: 'scheduled',
     once: true,
-    // Passthrough so the lunch question follows in the same month 0: the default standing order
-    // is the cantina, and charging it for a month before asking put the player R$ 80 behind the
-    // Capivara through no choice of theirs (first playtest, 2026-11-08).
+    // Passthrough, so the lunch question follows in the same month 0. The default standing
+    // order is the cantina; charging a month of it before asking put the player R$ 80 behind
+    // the Capivara through no choice of theirs (first playtest, 2026-11-08).
     passthrough: true,
     eligible: ({ s }) => s.startAge === 10 && s.month === 0,
     vars: ({ s, p }) => ({ valor: priced(s, p.giftGrandma) }),
