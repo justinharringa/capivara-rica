@@ -14,6 +14,9 @@
       IOF, taxas de setembro/2026 no BCB, Pix vs 12x real, Tesouro Selic, poupança/TR)
 - [ ] Custos de curso técnico/cursinho; renda por escolaridade (IBGE SIDRA)
 - [x] Black Friday a cada 2 anos, com objeto diferente a cada vez
+- [x] ℹ️ em cada indicador e ordem mensal; "Mover dinheiro" (depósito e resgate com o IR na frente)
+- [x] Partidas salvas sobrevivem a atualizações (`src/engine/migrate.ts`, fixtures por versão)
+- [x] "Guardar do que sobra" vai até 100% (o limite de 60% era arbitrário)
 - [ ] Mais eventos para 25-30 anos; variar a Capivara por idade
 - [ ] Coda "e aos 40?" com palpite; as 3 decisões que mais custaram, comparadas ao fantasma
 - [ ] Cartão de resultado em PNG para compartilhar (Web Share API)
