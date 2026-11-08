@@ -207,7 +207,10 @@ export const EVENTS: EventDef[] = [
     id: 'lanche',
     kind: 'scheduled',
     once: true,
-    eligible: ({ s }) => isChild(s),
+    // Asked of a child and of a teen alike, in month 0, before the first cantina bill. A start at
+    // 14 used to skip the question and pay the default cantina for four years.
+    passthrough: true,
+    eligible: ({ s }) => !isAdult(s),
     vars: ({ s, p }) => ({ cantina: priced(s, p.lanchePrice * p.schoolDaysPerMonth), mesada: monthlyIncome(s, p) }),
     choices: [
       { id: 'cantina', apply: ({ s }) => setStanding(s, { lanche: 'compra' }) },
