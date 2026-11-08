@@ -3,7 +3,9 @@
    * The mascot. `wealth` 0..3 picks the accessories as the player's net worth grows, `mood`
    * picks the expression and `age` picks the sheet: the child (backpack, under 14) or the
    * grown-up. Sprites are cut from the sheets in assets/raw by scripts/cut-sprites.py (see
-   * ASSETS.md); all share one 400 x 368 canvas at the same scale, so the child is smaller.
+   * ASSETS.md); all share one 622 x 573 source canvas at the same scale, so the child is drawn
+   * smaller. Adult files are exported at 400 x 368, child files at 200 x 184 (the child is only
+   * ever shown at 64 px); the component sizes by `size`, so the export width never matters.
    * With sunglasses on, the worried face is hard to tell from calm, so the worried mood also
    * gets a sweat drop drawn over the sprite, in front of the glasses. The child sheet has no
    * worried face with accessories at all: there, the drop on the calm sprite is the worry.
