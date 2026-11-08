@@ -1,11 +1,17 @@
-/** Enforces the first-load budget from docs/DESIGN.md: 200 KB gzipped JS+CSS, 500 KB total. */
+/**
+ * Enforces the download budget: 200 KB gzipped JS+CSS (what every first load pays) and 650 KB
+ * for the whole dist. The dist total is a ceiling on everything a full game can fetch, not a
+ * first-load figure: the 36 mascot sprites (three age sets, ~370 KB together) load one at a
+ * time, when first shown, and are cached by the service worker. It was 500 KB until the child
+ * and teen sheets landed on 2026-11-08; a further sprite set must fit under 650 or shrink.
+ */
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
 
 const dist = new URL('../dist/', import.meta.url).pathname;
 const BUDGET_GZIP = 200 * 1024;
-const BUDGET_TOTAL = 500 * 1024;
+const BUDGET_TOTAL = 650 * 1024;
 
 function walk(dir: string): string[] {
   return readdirSync(dir).flatMap((f) => {

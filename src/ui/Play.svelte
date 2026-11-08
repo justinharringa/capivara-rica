@@ -24,8 +24,8 @@
   const compLabel = $derived(comp >= params.comprometimentoRed ? 'alto' : comp >= params.comprometimentoYellow ? 'atenção' : 'ok');
   const wealth = $derived(nw >= 20000000 ? 3 : nw >= 5000000 ? 2 : nw >= 1000000 ? 1 : 0);
   const mood = $derived(isNegativado(s) || comp >= params.comprometimentoRed ? 'worried' : wealth >= 2 ? 'happy' : 'calm');
-  // The child sheet carries the player to 14; a teen sheet is still to be drawn (ROADMAP v0.3).
-  const age = $derived(s.ageMonths < 14 * 12 ? 'child' : 'adult');
+  // Three sheets: child to 14, teen to 18, adult after (the game's own isAdult boundary).
+  const age = $derived(s.ageMonths < 14 * 12 ? 'child' : s.ageMonths < 18 * 12 ? 'teen' : 'adult');
   const ghostNow = $derived(game.ghostNetWorthNow());
   const chapter = $derived(chapterOf(s.ageMonths));
   const chapterFrom = $derived(Math.max(chapter.fromAge, s.startAge) * 12);

@@ -23,7 +23,7 @@
 - [x] Coda "e aos 40?" com palpite; as 3 decisões que mais custaram, recontadas com a escolha da
       Capivara naquele único momento (`src/engine/review.ts`)
 - [x] Cartão de resultado em PNG para compartilhar (Web Share API, com download como alternativa)
-- [x] Variar a Capivara por idade: criança até os 14 (`public/capi/child/`); adolescente ainda usa a arte adulta (falta a folha)
+- [x] Variar a Capivara por idade: criança até os 14 (`public/capi/child/`), adolescente até os 18 (`public/capi/teen/`), adulta depois
 - [ ] Verificar o que ficou `secondary` fraco: cursinho, preço do casamento civil, prêmio do inglês
       (Catho 2017), teto do seguro-desemprego 2026
 

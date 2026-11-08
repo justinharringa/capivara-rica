@@ -16,9 +16,14 @@ Needs Pillow and numpy.
 Sheets used so far:
   assets/raw/capi-sheet-gemini-2026-11-07.jpg        --names wealth0,wealth1,wealth2,wealth3,-,worried,happy,icon --icons
   assets/raw/capi-sheet-moods-gemini-2026-11-07.jpg  --names -,worried1,worried2,worried3,happy1,-,happy2,happy3 --flip happy3 --canvas 622x573
-  assets/raw/capi-sheet-child-gemini-2026-11-08.jpg  public/capi/child --names wealth0,wealth1,wealth2,wealth3,worried,happy,happy1,happy3 --flip happy3 --canvas 622x573 --width 200
-    (the child is drawn smaller on the same canvas on purpose; it has no worried1-3 or happy2,
-    Capivara.svelte falls back to the calm sprite plus the sweat drop, and to happy1)
+  assets/raw/capi-sheet-child-gemini-2026-11-08.jpg        public/capi/child --names wealth0,wealth1,wealth2,wealth3,worried,happy,happy1,happy3 --flip happy3 --canvas 622x573 --width 200
+  assets/raw/capi-sheet-child-moods-gemini-2026-11-08.jpg  public/capi/child --names=-,-,-,happy2,worried1,worried2,worried3,- --canvas 622x573 --width 200
+    (the child is drawn smaller on the same canvas on purpose; a name list that starts with "-"
+    needs the --names= form or argparse reads it as an option)
+  assets/raw/capi-sheet-teen-gemini-2026-11-08.jpg         public/capi/teen --names wealth0,wealth1,wealth2,wealth3,worried,happy,happy1,happy3 --flip happy3 --canvas 520x479 --width 200
+    (Gemini drew the teen at the child's size, so a smaller canvas of the same 622:573 ratio puts
+    it between child and adult; the teen has no worried1-3 or happy2, Capivara.svelte falls back
+    to the calm sprite plus the sweat drop, and to happy1)
 """
 import argparse
 import os
