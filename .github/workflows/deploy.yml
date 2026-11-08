@@ -1,23 +1,24 @@
-# Cloudflare: Terraform (plan on PRs, apply on main) then a Workers static-assets deploy.
-# Secrets live in two GitHub Environments: `production` (restricted to the main branch;
-# used by pushes to main, i.e. apply + real deploy) and `preview` (pull requests: plan +
-# preview version). Skipped, with the missing pieces named in the job summary, until the
-# repository variable CLOUDFLARE_ACCOUNT_ID and the secrets CLOUDFLARE_API_TOKEN,
-# R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY exist in the environment being used
-# (see infrastructure/terraform/cloudflare/README.md). Fork PRs get no secrets and skip.
-# Third-party actions are pinned to commit SHAs; Renovate keeps the pins current.
+# Cloudflare: Terraform apply, then a Workers static-assets deploy. Runs only on pushes to
+# main, inside the `production` GitHub Environment (restrict it to the main branch in
+# Settings → Environments; optionally add yourself as a required reviewer so every deploy
+# needs a click). Pull requests never receive Cloudflare credentials: ci.yml checks them and
+# uploads the built site as an artifact. Skipped, with the missing pieces named in the job
+# summary, until the repository variable CLOUDFLARE_ACCOUNT_ID and the environment secrets
+# CLOUDFLARE_API_TOKEN, R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY exist
+# (see infrastructure/terraform/cloudflare/README.md). Third-party actions are pinned to
+# commit SHAs; Renovate keeps the pins current.
 name: Deploy
 
 on:
   push:
     branches: [main]
-  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: deploy-${{ github.ref }}
+  group: deploy-production
   cancel-in-progress: false
 
 env:
@@ -26,10 +27,9 @@ env:
 jobs:
   # Secrets cannot be read in a job-level `if`, so a tiny job checks that the account
   # variable and all three secrets exist and names whatever is missing in the summary.
-  # The deploy jobs run only when everything is present.
   preflight:
     runs-on: ubuntu-latest
-    environment: ${{ github.event_name == 'push' && 'production' || 'preview' }}
+    environment: production
     outputs:
       ready: ${{ steps.check.outputs.ready }}
     steps:
@@ -42,9 +42,9 @@ jobs:
         run: |
           missing=()
           [ -n "$ACCOUNT_ID" ]        || missing+=("repository variable CLOUDFLARE_ACCOUNT_ID")
-          [ "$HAS_CF_TOKEN" = true ]  || missing+=("secret CLOUDFLARE_API_TOKEN")
-          [ "$HAS_R2_KEY" = true ]    || missing+=("secret R2_ACCESS_KEY_ID")
-          [ "$HAS_R2_SECRET" = true ] || missing+=("secret R2_SECRET_ACCESS_KEY")
+          [ "$HAS_CF_TOKEN" = true ]  || missing+=("production secret CLOUDFLARE_API_TOKEN")
+          [ "$HAS_R2_KEY" = true ]    || missing+=("production secret R2_ACCESS_KEY_ID")
+          [ "$HAS_R2_SECRET" = true ] || missing+=("production secret R2_SECRET_ACCESS_KEY")
           if [ ${#missing[@]} -eq 0 ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
             echo '### Cloudflare deploy: configuration complete' >> "$GITHUB_STEP_SUMMARY"
@@ -57,7 +57,7 @@ jobs:
     needs: preflight
     if: needs.preflight.outputs.ready == 'true'
     runs-on: ubuntu-latest
-    environment: ${{ github.event_name == 'push' && 'production' || 'preview' }}
+    environment: production
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
@@ -80,7 +80,6 @@ jobs:
         run: |
           { echo '### Terraform plan'; echo '```'; grep -E '^(Plan:|No changes)' plan.txt || tail -n 5 plan.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - name: Apply
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: terraform -chdir=$TF_DIR apply -input=false -no-color tfplan
 
   deploy:
@@ -88,8 +87,8 @@ jobs:
     if: needs.preflight.outputs.ready == 'true'
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.event_name == 'push' && 'production' || 'preview' }}
-      url: ${{ github.event_name == 'push' && 'https://capivararica.com.br' || '' }}
+      name: production
+      url: https://capivararica.com.br
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -105,22 +104,9 @@ jobs:
         env:
           BASE_PATH: /
       - run: npm run size
-      - name: Deploy to Cloudflare Workers (main)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4.1.3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
-      - name: Upload a preview version (pull request)
-        if: github.event_name == 'pull_request'
-        id: preview
-        uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4.1.3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-          command: versions upload --preview-alias pr-${{ github.event.number }}
-      - name: Preview URL
-        if: github.event_name == 'pull_request'
-        run: |
-          { echo '### Preview'; echo '```'; grep -iE 'workers\.dev' <<< "${{ steps.preview.outputs.command-output }}" || echo 'see job log'; echo '```'; } >> "$GITHUB_STEP_SUMMARY"

@@ -27,10 +27,10 @@ The site is Cloudflare Workers static assets: `wrangler.jsonc` owns the Worker, 
 directory and the custom domains (wrangler creates their DNS records). Zone settings and the
 typo-domain redirect are Terraform in `infrastructure/terraform/cloudflare/` (provider v5
 schema; validate with `terraform validate` before pushing). `.github/workflows/deploy.yml`
-plans on PRs, applies on main, then runs `wrangler deploy` (`versions upload` on PRs). Secrets
-live in the GitHub Environments `production` (main only) and `preview`; the workflow skips
-itself while any of them is missing. Third-party actions are pinned to commit SHAs (Renovate
-keeps them current); keep it that way in a public repo. Never create a Worker, a
+runs on pushes to main only: Terraform apply, then `wrangler deploy`, inside the `production`
+GitHub Environment (restricted to main). Pull requests never get Cloudflare credentials; the
+workflow skips itself while any secret is missing. Third-party actions are pinned to commit
+SHAs (Renovate keeps them current); keep it that way in a public repo. Never create a Worker, a
 Pages project or DNS records by hand; Cloudflare's dashboard calls Pages "legacy".
 
 ## Verifying in a browser
