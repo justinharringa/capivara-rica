@@ -10,6 +10,7 @@
   import StopCard from './StopCard.svelte';
   import Standing from './Standing.svelte';
   import Outcome from './Outcome.svelte';
+  import Stat from './Stat.svelte';
 
   const s = $derived(game.state!);
   const nw = $derived(netWorth(s));
@@ -61,37 +62,27 @@
   </header>
 
   <div class="grid">
-    <div class="stat"><div class="label">{ui('netWorth')}</div><div class="value" class:bad={nw < 0}>{formatBRL(nw)}</div></div>
+    <Stat id="netWorth" label={ui('netWorth')} valueClass={nw < 0 ? 'bad' : ''}>{formatBRL(nw)}</Stat>
     {#if ghostNow !== null}
-      <div class="stat ghost">
-        <div class="label">{ui('ghostNow')}</div>
-        <div class="value">
-          {formatBRL(ghostNow)}
-          <span class="small" class:good={nw >= ghostNow} class:bad={nw < ghostNow}>({signed(nw - ghostNow)})</span>
-        </div>
-      </div>
+      <Stat id="ghostNow" label={ui('ghostNow')} ghost>
+        {formatBRL(ghostNow)}
+        <span class="small" class:good={nw >= ghostNow} class:bad={nw < ghostNow}>({signed(nw - ghostNow)})</span>
+      </Stat>
     {/if}
-    <div class="stat"><div class="label">{ui('cash')}</div><div class="value" class:bad={s.cash < 0}>{formatBRL(s.cash)}</div></div>
-    <div class="stat"><div class="label">{ui('saved')}</div><div class="value">{formatBRL(investedTotal(s) + s.cofrinho + s.peDeMeiaLocked)}</div></div>
-    <div class="stat"><div class="label">{ui('debt')}</div><div class="value" class:bad={debtTotal(s) > 0}>{formatBRL(debtTotal(s))}</div></div>
-    <div class="stat"><div class="label">{ui('income')}</div><div class="value">{formatBRL(income)}</div></div>
-    <div class="stat">
-      <div class="label">{ui('committed')}</div>
-      <div class="value {compClass}">{Math.round(comp * 100)}% <span class="small">({compLabel})</span></div>
-    </div>
-    <div class="stat">
-      <div class="label">{ui('wellbeing')}</div>
-      <div class="value"><meter min="0" max="100" low="30" high="70" optimum="80" value={s.wellbeing}>{s.wellbeing}</meter> {s.wellbeing}</div>
-    </div>
+    <Stat id="cash" label={ui('cash')} valueClass={s.cash < 0 ? 'bad' : ''}>{formatBRL(s.cash)}</Stat>
+    <Stat id="saved" label={ui('saved')}>{formatBRL(investedTotal(s) + s.cofrinho + s.peDeMeiaLocked)}</Stat>
+    <Stat id="debt" label={ui('debt')} valueClass={debtTotal(s) > 0 ? 'bad' : ''}>{formatBRL(debtTotal(s))}</Stat>
+    <Stat id="income" label={ui('income')}>{formatBRL(income)}</Stat>
+    <Stat id="committed" label={ui('committed')} valueClass={compClass}>{Math.round(comp * 100)}% <span class="small">({compLabel})</span></Stat>
+    <Stat id="wellbeing" label={ui('wellbeing')}>
+      <meter min="0" max="100" low="30" high="70" optimum="80" value={s.wellbeing}>{s.wellbeing}</meter> {s.wellbeing}
+    </Stat>
     {#if s.card.has}
-      <div class="stat">
-        <div class="label">{ui('cardInfo')}</div>
-        <div class="value small">
-          {ui('cardLimit')} {formatBRL(s.card.limit)}
-          {#if s.card.revolving > 0}<br /><span class="bad">{ui('cardRevolving')} {formatBRL(s.card.revolving)}</span><br /><span class="muted">{ui('capRoom')}: {formatBRL(capRoom(s, params))}</span>{/if}
-          {#if s.card.blocked}<br /><span class="bad">bloqueado</span>{/if}
-        </div>
-      </div>
+      <Stat id="cardInfo" label={ui('cardInfo')} valueClass="small">
+        {ui('cardLimit')} {formatBRL(s.card.limit)}
+        {#if s.card.revolving > 0}<br /><span class="bad">{ui('cardRevolving')} {formatBRL(s.card.revolving)}</span><br /><span class="muted">{ui('capRoom')}: {formatBRL(capRoom(s, params))}</span>{/if}
+        {#if s.card.blocked}<br /><span class="bad">bloqueado</span>{/if}
+      </Stat>
     {/if}
   </div>
 
@@ -155,9 +146,6 @@
   }
   .grid {
     margin-bottom: 12px;
-  }
-  .stat.ghost {
-    border-left: 3px solid var(--series-ghost);
   }
   .lastmonth {
     margin: -4px 0 12px;

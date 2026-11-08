@@ -20,6 +20,7 @@ export const strings = stringsJson as unknown as {
     bfItems: Dict;
   };
   log: Dict;
+  help: Dict;
 };
 
 /** Vars that are plain numbers, not centavos. Everything else numeric is money. */
@@ -48,3 +49,5 @@ export function t(template: string, vars: Record<string, string | number> = {}):
 }
 
 export const ui = (key: string): string => strings.app[key] ?? key;
+/** The ℹ️ text for a stat tile or a standing-order control, or '' when there is none. */
+export const help = (key: string): string => strings.help[key] ?? '';

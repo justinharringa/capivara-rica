@@ -121,7 +121,8 @@
     "chapterInterest": "Juros recebidos no capítulo",
     "chapterInterestPaid": "Juros pagos no capítulo",
     "endInterest": "Juros recebidos na vida",
-    "endInterestPaid": "Juros pagos na vida"
+    "endInterestPaid": "Juros pagos na vida",
+    "helpButton": "O que é isso?"
   },
   "log": {
     "ano_novo": "Novo ano: inflação de {ipca}% e Selic em {selic}%.",
@@ -141,5 +142,21 @@
     "negativado": "Nome negativado por 5 anos.",
     "negativado_renegociou": "Dívida renegociada. Nome limpo em 5 dias úteis; cartão bloqueado por 1 ano.",
     "nome_limpo": "Nome limpo de novo."
+  },
+  "help": {
+    "netWorth": "Tudo que é seu menos tudo que você deve: na conta + guardado − dívidas. É o placar do jogo.",
+    "cash": "O dinheiro na conta corrente (ou no bolso). Rende zero. É daqui que saem os gastos do mês.",
+    "saved": "Cofrinho + investimentos (poupança, Tesouro Selic, CDB) + o Pé-de-Meia travado. Rende juros todo mês, menos o cofrinho. Se faltar na conta, o jogo resgata daqui sozinho, pagando o imposto.",
+    "debt": "Fatura e rotativo do cartão, as parcelas que ainda faltam, empréstimos e cheque especial.",
+    "income": "O que entra por mês: salário líquido (ou mesada) mais o Pé-de-Meia.",
+    "committed": "Quanto da renda já está prometido a parcelas, empréstimos e o mínimo do cartão. Acima de 30% acende o amarelo; 40%, o vermelho.",
+    "wellbeing": "Como você está. Gastar sobe na hora e cai depois; dívida e nome sujo pesam todo mês.",
+    "ghostNow": "O patrimônio da Capivara jogando a mesma vida, com a mesma sorte, até esta idade. A diferença é só escolha.",
+    "cardInfo": "Limite, saldo no rotativo e quanto de juros a lei ainda deixa cobrar (teto de 100% da dívida).",
+    "savePct": "Do que sobra no fim do mês (renda − gastos − parcelas), esta parte sai da conta e vai pra onde você guarda.",
+    "saveInto": "Cofrinho rende zero. Poupança rende pouco e não paga imposto. Tesouro Selic e CDB rendem a Selic/CDI, com imposto sobre o ganho no resgate.",
+    "lifestyle": "Rolê, roupa, transporte: um gasto todo mês pra quem tem salário. Folgado custa mais e deixa você mais feliz; econômico, o contrário.",
+    "cardPolicy": "Pagar tudo custa zero. Pagar o mínimo joga o resto no rotativo, uns 15% ao mês. Parcelar custa menos, mas ainda é juro.",
+    "lanche": "Comprar na cantina custa todo dia letivo; levar de casa não custa nada e pesa um pouco no bem-estar."
   }
 }

@@ -164,3 +164,12 @@ describe('month summary and stats', () => {
     expect(you.history[i]!.ageMonths).toBe(ghost.history[i]!.ageMonths);
   });
 });
+
+describe('help texts', () => {
+  it('every stat tile and standing-order control has an explanation', () => {
+    const help = (strings as { help: Record<string, string> }).help;
+    for (const k of ['netWorth', 'ghostNow', 'cash', 'saved', 'debt', 'income', 'committed', 'wellbeing', 'cardInfo', 'savePct', 'saveInto', 'lifestyle', 'cardPolicy', 'lanche']) {
+      expect(help[k], `help.${k}`).toBeTruthy();
+    }
+  });
+});
