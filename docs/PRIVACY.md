@@ -17,4 +17,7 @@ Este jogo é dirigido a crianças e adolescentes. Foi desenhado para que a LGPD 
 Digital (Lei 15.211/2025) tenham o mínimo possível sobre o que incidir: a forma mais segura de
 tratar dados de menores é não tratá-los.
 
-Dúvidas: abra uma issue no GitHub.
+Dúvidas: abra uma issue no GitHub ou escreva para **contato@capivararica.com.br**. Esse
+endereço é um encaminhamento (Cloudflare Email Routing) para a caixa de e-mail do mantenedor:
+quem escreve nos envia, por escolha própria, o próprio endereço e o que quiser contar, e nada
+além disso. Usamos essas mensagens só para responder.

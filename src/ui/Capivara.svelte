@@ -1,25 +1,39 @@
 <script lang="ts">
   /**
-   * The mascot. `wealth` 0..3 picks the accessories as the player's net worth grows and
-   * `mood` picks the expression; every combination has its own sprite.
-   * Sprites are cut from the two sheets in assets/raw by scripts/cut-sprites.py (see ASSETS.md).
+   * The mascot. `wealth` 0..3 picks the accessories as the player's net worth grows, `mood`
+   * picks the expression and `age` picks the sheet: child (backpack, under 14), teen
+   * (headphones, 14 to 17) or adult. Sprites are cut from the sheets in assets/raw by
+   * scripts/cut-sprites.py (see ASSETS.md). The adult and child sets share one 622 x 573 source
+   * canvas at the same scale, so the child is drawn smaller; the teen sits on a 520 x 479 canvas,
+   * which puts it between the two. Adult files are exported at 400 x 368, child and teen at
+   * 200 x 184 (they are only ever shown at 64 px); the component sizes by `size`.
    * With sunglasses on, the worried face is hard to tell from calm, so the worried mood also
-   * gets a sweat drop drawn over the sprite, in front of the glasses.
+   * gets a sweat drop drawn over the sprite, in front of the glasses. Every age has the full set
+   * of 12 sprites (calm 0..3, worried 0..3, happy 0..3); see the note on happy2 below.
    */
-  let { wealth = 0, mood = 'calm', size = 96 }: { wealth?: number; mood?: 'calm' | 'worried' | 'happy'; size?: number } = $props();
+  let {
+    wealth = 0,
+    mood = 'calm',
+    age = 'adult',
+    size = 96,
+  }: { wealth?: number; mood?: 'calm' | 'worried' | 'happy'; age?: 'child' | 'teen' | 'adult'; size?: number } = $props();
 
   const base = import.meta.env.BASE_URL;
   const level = $derived(Math.max(0, Math.min(3, Math.round(wealth))));
   // calm → wealth0..3; worried/happy → worried, worried1..3, happy, happy1..3 (accessories kept).
-  const sprite = $derived(mood === 'calm' ? `wealth${level}` : level === 0 ? mood : `${mood}${level}`);
-  // All sprites share one canvas: 400 x 368.
+  // happy2 (chain, no crown) was drawn with a smile too faint to read at 64 px on the child and
+  // teen sheets, so happy1 stands in at level 2 for every age; the chain is the only loss.
+  const sprite = $derived(mood === 'calm' ? `wealth${level}` : level === 0 ? mood : mood === 'happy' && level === 2 ? 'happy1' : `${mood}${level}`);
+  const dir = $derived(age === 'adult' ? 'capi/' : `capi/${age}/`);
   const height = $derived(Math.round(size * (368 / 400)));
+  // The drop scales with how much of the canvas the figure fills: adult 95%, teen 82%, child 69%.
+  const dropWidth = $derived(Math.max(3, Math.round(size * (age === 'adult' ? 0.065 : age === 'teen' ? 0.055 : 0.045))));
 </script>
 
-<span class="capi" style="width:{size}px;height:{height}px">
-  <img src="{base}capi/{sprite}.webp" width={size} {height} alt="Capivara" decoding="async" />
+<span class="capi {age}" style="width:{size}px;height:{height}px">
+  <img src="{base}{dir}{sprite}.webp" width={size} {height} alt="Capivara" decoding="async" />
   {#if mood === 'worried'}
-    <svg class="drop" viewBox="0 0 20 28" aria-hidden="true" style="width:{Math.round(size * 0.065)}px">
+    <svg class="drop" viewBox="0 0 20 28" aria-hidden="true" style="width:{dropWidth}px">
       <path d="M10 1 C6 9 2 13 2 18.5 A8 8 0 0 0 18 18.5 C18 13 14 9 10 1 Z" fill="#5aa9e6" stroke="#2f6f9e" stroke-width="1.2" />
       <path d="M6.5 19 A3.5 3.5 0 0 0 9 22.5" stroke="#ffffff" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.8" />
     </svg>
@@ -45,6 +59,17 @@
     height: auto;
     transform: rotate(14deg);
     animation: drip 1.6s ease-in-out infinite;
+  }
+  /* Measured on the sprites: the sunglasses span x 52-93% / y 16-28% of the canvas on the adult,
+     x 47-88% / y 27-38% on the teen and x 51-81% / y 39-48% on the child. The drop sits on the
+     ear-side end of the glasses in all three. */
+  .teen .drop {
+    left: 53%;
+    top: 32%;
+  }
+  .child .drop {
+    left: 53%;
+    top: 43%;
   }
   @keyframes drip {
     0%,

@@ -21,6 +21,15 @@
     </div>
   </header>
 
+  <section class="card how" aria-label={ui('howTitle')}>
+    <h2>{ui('howTitle')}</h2>
+    <ol>
+      <li>{ui('how1')}</li>
+      <li>{ui('how2')}</li>
+      <li>{ui('how3')}</li>
+    </ol>
+  </section>
+
   {#if game.newerSave}
     <div class="card"><p class="small">{ui('newerSave')}</p><button class="primary" onclick={() => location.reload()}>Recarregar</button></div>
   {/if}
@@ -48,6 +57,7 @@
 
   <p class="small muted">
     Nenhum dado seu sai do seu aparelho. Sem conta, sem anúncios, sem rastreio. Código aberto (MIT) e conteúdo CC BY 4.0.
+    {ui('contact')} <a href="mailto:{ui('contactEmail')}">{ui('contactEmail')}</a>
   </p>
 </div>
 
@@ -61,6 +71,12 @@
   .ages {
     display: grid;
     gap: 8px;
+  }
+  .how ol {
+    margin: 0;
+    padding-left: 20px;
+    display: grid;
+    gap: 6px;
   }
   .age {
     display: flex;

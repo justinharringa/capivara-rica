@@ -159,7 +159,19 @@
     "reviewGhost": "A Capivara",
     "reviewCost": "Custou {valor}",
     "reviewNone": "Nenhuma decisão sua custou mais do que a da Capivara. Ela está impressionada.",
-    "reviewUnavailable": "Esta partida começou antes da atualização, então não dá para recontar as decisões."
+    "reviewUnavailable": "Esta partida começou antes da atualização, então não dá para recontar as decisões.",
+    "howTitle": "Como funciona",
+    "how1": "O objetivo: chegar aos 30 com o maior patrimônio possível, em reais de hoje.",
+    "how2": "Um mês por toque. O jogo só para quando aparece uma decisão.",
+    "how3": "A Capivara joga a mesma vida, com a mesma sorte. Você a vê o tempo todo.",
+    "guideTitle": "Primeiro mês",
+    "guide1": "Patrimônio é o placar: tudo que é seu menos o que você deve.",
+    "guide2": "\"Na conta\" rende zero. \"Guardado\" rende juros todo mês.",
+    "guide3": "Toque no ℹ️ de qualquer número para entender. As ordens mensais ficam mais abaixo.",
+    "guideDismiss": "Entendi",
+    "contact": "Dúvidas ou sugestões:",
+    "contactEmail": "contato@capivararica.com.br",
+    "chapterSaveHint": "Capítulo novo é ponto de salvar: pode fechar e voltar depois."
   },
   "log": {
     "ano_novo": "Novo ano: inflação de {ipca}% e Selic em {selic}%.",

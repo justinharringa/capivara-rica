@@ -64,6 +64,7 @@ mínimo ou a Selic é um PR nos dados, não no código.
 
 Leia [CONTRIBUTING.md](CONTRIBUTING.md). Issues e PRs em português ou inglês são bem-vindos.
 Textos do jogo, novos eventos e traduções são tão importantes quanto código.
+Sem conta no GitHub? Escreva para **contato@capivararica.com.br**.
 
 ## Licenças
 

@@ -14,3 +14,15 @@ variable "alias_zone" {
   type        = string
   default     = "capivarica.com.br"
 }
+
+variable "contact_local_part" {
+  description = "Local part of the public contact address on the primary zone (contato@…)."
+  type        = string
+  default     = "contato"
+}
+
+variable "contact_destination" {
+  description = "Inbox the contact address forwards to. Not a secret: it is visible in the public repo on purpose, and Cloudflare verifies it by e-mail before delivering anything."
+  type        = string
+  default     = "capivararica@harringa.com"
+}

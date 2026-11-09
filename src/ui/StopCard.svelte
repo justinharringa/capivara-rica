@@ -4,6 +4,7 @@
   import type { Stop } from '$engine/state';
   import { formatBRL, parseReais } from '$engine/money';
   import Chart from './Chart.svelte';
+  import { seen, markSeen } from '$lib/seen';
 
   let { stop }: { stop: Stop } = $props();
   const text = $derived(events[stop.eventId]);
@@ -12,6 +13,11 @@
   const you = $derived(isChapter ? game.state!.history : []);
   const ghostHistory = $derived(isChapter ? game.ghostHistorySoFar() : []);
   const signed = (v: number): string => (v < 0 ? '−' : '+') + formatBRL(Math.abs(v));
+  // The first chapter card on this device also says that it is a save point.
+  const firstChapterCard = $derived(isChapter && !seen('chapter'));
+  $effect(() => {
+    if (firstChapterCard) markSeen('chapter');
+  });
   // The guess-then-reveal step: hide the number until the player has committed a guess.
   let guess = $state('');
   let revealed = $state(false);
@@ -56,6 +62,9 @@
       {#if ghostHistory.length > 1}
         <Chart {you} ghost={ghostHistory} />
       {/if}
+      {#if firstChapterCard}
+        <p class="small save-hint">{ui('chapterSaveHint')}</p>
+      {/if}
     {/if}
     <p class="capi-line"><span aria-hidden="true">🐾</span> {t(text?.capi ?? '', stop.vars)}</p>
     <div class="choices">
@@ -82,6 +91,10 @@
   }
   .stat.ghost {
     border-left: 3px solid var(--series-ghost);
+  }
+  .save-hint {
+    color: var(--ink-2);
+    margin: 8px 0 0;
   }
   .capi-line {
     font-style: italic;

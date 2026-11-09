@@ -12,6 +12,7 @@
   import Outcome from './Outcome.svelte';
   import Stat from './Stat.svelte';
   import MoveMoney from './MoveMoney.svelte';
+  import { seen, markSeen } from '$lib/seen';
 
   const s = $derived(game.state!);
   const nw = $derived(netWorth(s));
@@ -23,12 +24,20 @@
   const compLabel = $derived(comp >= params.comprometimentoRed ? 'alto' : comp >= params.comprometimentoYellow ? 'atenção' : 'ok');
   const wealth = $derived(nw >= 20000000 ? 3 : nw >= 5000000 ? 2 : nw >= 1000000 ? 1 : 0);
   const mood = $derived(isNegativado(s) || comp >= params.comprometimentoRed ? 'worried' : wealth >= 2 ? 'happy' : 'calm');
+  // Three sheets: child to 14, teen to 18, adult after (the game's own isAdult boundary).
+  const age = $derived(s.ageMonths < 14 * 12 ? 'child' : s.ageMonths < 18 * 12 ? 'teen' : 'adult');
   const ghostNow = $derived(game.ghostNetWorthNow());
   const chapter = $derived(chapterOf(s.ageMonths));
   const chapterFrom = $derived(Math.max(chapter.fromAge, s.startAge) * 12);
   const chapterPct = $derived(Math.round(((s.ageMonths - chapterFrom) / (chapter.toAge * 12 - chapterFrom)) * 100));
   const lm = $derived(s.lastMonth);
   let moveOpen = $state(false);
+  // One-time guide on the first Play screen of this device; dismissed with one tap.
+  let showGuide = $state(!seen('guide'));
+  function dismissGuide() {
+    markSeen('guide');
+    showGuide = false;
+  }
   // Keyed by the entry's absolute position in the log, which is stable while the log only grows.
   const recent = $derived(s.log.slice(-8).map((e, i, arr) => ({ e, key: s.log.length - arr.length + i })).reverse());
 
@@ -48,7 +57,7 @@
 
 <div class="container">
   <header class="row top">
-    <Capivara size={64} {wealth} {mood} />
+    <Capivara size={64} {wealth} {mood} {age} />
     <div class="who">
       <strong>{ui('age')}: {years} anos{months ? ` e ${months} ${months === 1 ? 'mês' : 'meses'}` : ''}</strong>
       <div class="small muted">
@@ -62,6 +71,18 @@
       </div>
     </div>
   </header>
+
+  {#if showGuide}
+    <section class="card guide" aria-label={ui('guideTitle')}>
+      <h3>{ui('guideTitle')}</h3>
+      <ul class="small">
+        <li>{ui('guide1')}</li>
+        <li>{ui('guide2')}</li>
+        <li>{ui('guide3')}</li>
+      </ul>
+      <button type="button" class="primary" onclick={dismissGuide}>{ui('guideDismiss')}</button>
+    </section>
+  {/if}
 
   <div class="grid">
     <Stat id="netWorth" label={ui('netWorth')} valueClass={nw < 0 ? 'bad' : ''}>{formatBRL(nw)}</Stat>
@@ -162,6 +183,19 @@
   .lastmonth {
     margin: -4px 0 12px;
     line-height: 1.6;
+  }
+  .guide {
+    border-left: 4px solid var(--brand);
+    margin-bottom: 12px;
+  }
+  .guide h3 {
+    margin-bottom: 6px;
+  }
+  .guide ul {
+    margin: 0 0 10px;
+    padding-left: 18px;
+    display: grid;
+    gap: 4px;
   }
   meter {
     width: 70px;
