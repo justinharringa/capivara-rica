@@ -10,10 +10,12 @@
   });
 </script>
 
-{#if !game.state}
-  <Start />
-{:else if game.state.ended}
-  <End />
-{:else}
-  <Play />
-{/if}
+<main>
+  {#if !game.state}
+    <Start />
+  {:else if game.state.ended}
+    <End />
+  {:else}
+    <Play />
+  {/if}
+</main>

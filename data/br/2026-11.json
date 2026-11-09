@@ -340,10 +340,10 @@
     "cursinhoMonthly": {
       "value": 80000,
       "unit": "centavos/month",
-      "asOf": "2025-01",
-      "source": "https://vestibulares.estrategia.com/portal/enem-e-vestibulares/quanto-custa-um-curso-pre-vestibular",
+      "asOf": "2026",
+      "source": "https://www.educamaisbrasil.com.br/pre-vestibular-enem",
       "status": "secondary",
-      "note": "Estrategia Vestibulares (published 30/12/2024, updated 06/01/2025): a complete presencial pre-vestibular costs R$ 800-3.000 (unclear whether monthly or total); value is the low end as a monthly. Online 12-month plans are R$ 70-100/month. No Anglo/Etapa/Objetivo/Poliedro 2026 price page was found, so this is weak. [notes: docs/research/notes/verification-2026-11/education.md]"
+      "note": "Kept at R$ 800. Educa Mais Brasil guide ('Media de valores em 2026', presencial Enem course): 'Mensalidade: entre R$ 400 e R$ 1.200', annual package R$ 4.500-12.000; R$ 800 is the midpoint. Checked against 2026/2027 price lists read 09/11/2026: Cursinho da Poli SP Extensivo seg-sex 'a partir de R$475,40 por mes' (ter-qui R$ 361,58, sabados R$ 303,26), Maximize SP manha R$ 607 x14 (noite R$ 527), Bernoulli BH Extensivo 2026 manha R$ 38.290/year + R$ 4.628 material (~R$ 3.576/month, elite end); Anglo R$ 164-1.203 and Objetivo R$ 900-2.000 are 2023 figures. Anglo, Etapa, Objetivo and Poliedro publish no 2026 price list online. Online is far cheaper: Descomplica Enem 2027 12x R$ 49,90, Estrategia 12x R$ 70-100. [notes: docs/research/notes/verification-2026-11/secondary-pass.md]"
     },
     "salaryAuxAdmin": {
       "value": 209900,
@@ -764,10 +764,10 @@
     "weddingCostSimple": {
       "value": 500000,
       "unit": "centavos",
-      "asOf": "2026",
-      "source": "https://meutudo.com.br/blog/casamento-civil-como-funciona/",
+      "asOf": "2026-01",
+      "source": "https://www.arpensp.org.br/tabela-de-custas/2026",
       "status": "secondary",
-      "note": "Only the civil part is sourced: Sao Paulo cartorio R$ 539,53 (Meu Tudo, 2026 table). The small celebration (~R$ 4.500 for a family lunch) is a game design assumption with no source; total R$ 5.000. Weak. [notes: docs/research/notes/verification-2026-11/education.md]"
+      "note": "Only the civil part is official: ARPEN-SP Tabela V (Registro Civil das Pessoas Naturais) 2026, 'Em vigor a partir de 08/01/2026', item 1 'Lavratura de assento de casamento realizado na sede ... exceto os custos de editais': R$ 480,25 emolumentos + R$ 96,05 Estado = R$ 576,30 (sem ISS; ISS adds 1-5% where levied). Habilitacao for a wedding at another serventia is a separate R$ 392,05. Free for couples who declare poverty (Codigo Civil art. 1.512 par. unico; procedure in CNJ Provimento 221/2026). The ~R$ 4.400 small celebration is still a design assumption with no source, so the R$ 5.000 total stays secondary. [notes: docs/research/notes/verification-2026-11/secondary-pass.md]"
     },
     "weddingCostParty": {
       "value": 2800000,
@@ -796,10 +796,10 @@
     "englishPremium": {
       "value": 0.25,
       "unit": "rate",
-      "asOf": "2017",
-      "source": "https://www.educamaisbrasil.com.br/educacao/noticias/ter-dominio-do-ingles-favorece-boa-colocacao-no-mercado-de-trabalho",
+      "asOf": "2024-12",
+      "source": "https://prnewswire.com/br/comunicados-para-a-imprensa/entre-gerentes-e-diretores-fluencia-em-ingles-pode-elevar-salarios-em-ate-164-302333777.html",
       "status": "secondary",
-      "note": "Catho salary survey (published 25/07/2017, 13.000+ respondents): English adds 20% for analysts, 32% for specialists, 56% for management. 0.25 sits between analyst and specialist. Old data; newer Catho editions cite 'up to' 52-72% (search results, not opened). No Robert Half percentage found. [notes: docs/research/notes/verification-2026-11/education.md]"
+      "note": "Catho survey, 2nd half of 2024, relayed in a Jiveworld press release (17/12/2024): average salary gap of fluent vs non-speakers by level 'Tecnico (49%); Analista (58%); Operacional (133%); Especialista (51%)', 'Supervisores/Coordenadores (78%); e Gerente/Diretor (164%)'. Raw gaps, not causal (confounded with education and employer). 0.25 kept as a conservative premium, about half the technician/analyst gap, same discount logic as degreePremium. Catho's own report page was not found; no Robert Half or IBGE-based percentage exists. [notes: docs/research/notes/verification-2026-11/secondary-pass.md]"
     },
     "fgtsRate": {
       "value": 0.08,
@@ -845,9 +845,9 @@
       "value": 251865,
       "unit": "centavos/month",
       "asOf": "2026-01",
-      "source": "https://borainvestir.b3.com.br/noticias/seguro-desemprego-veja-novos-valores-em-2026-teto-e-regra-de-calculo/",
-      "status": "secondary",
-      "note": "B3 Bora Investir, relaying the MTE table from 11/01/2026: ceiling R$ 2.518,65 (was R$ 2.424,11 in 2025); 80% of average pay up to R$ 2.222,17, then R$ 1.777,74 + 50% of the excess, capped above R$ 3.703,99. The MTE page itself still shows the 2024 table. Some sites quote R$ 2.587,47 (conflict). [notes: docs/research/notes/verification-2026-11/education.md]"
+      "source": "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/janeiro/mte-reajusta-valores-do-beneficio-seguro-desemprego",
+      "status": "verified",
+      "note": "MTE (gov.br, published 12/01/2026): table 'com vigencia a partir de 11 de janeiro de 2026'; 'Acima de R$ 3.703,99 - O valor sera invariavel de R$ 2.518,65'; up to R$ 2.222,17 x 0,8; R$ 2.222,18-3.703,99 = R$ 1.777,74 + 0,5 x excess; floor is the R$ 1.621,00 minimum wage. Basis Lei 7.998/1990 and Resolucao CODEFAT 957/2022, INPC 3,90%. The R$ 2.587,47 seen on some sites is wrong. [notes: docs/research/notes/verification-2026-11/secondary-pass.md]"
     },
     "layoffAnnualProb": {
       "value": 0.08,

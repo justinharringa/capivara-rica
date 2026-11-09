@@ -13,6 +13,8 @@
   import Stat from './Stat.svelte';
   import MoveMoney from './MoveMoney.svelte';
   import { seen, markSeen } from '$lib/seen';
+  import { soundEnabled, setSoundEnabled, playTick } from '$lib/sound';
+  import { untrack } from 'svelte';
 
   const s = $derived(game.state!);
   const nw = $derived(netWorth(s));
@@ -38,6 +40,31 @@
     markSeen('guide');
     showGuide = false;
   }
+  // The monthly tick: the age line and the Capivara nudge for 220 ms each time a month passes
+  // (also while fast-forwarding, so time visibly moves). CSS drops it under reduced motion.
+  let ticking = $state(false);
+  let seenAge: number | null = null;
+  $effect(() => {
+    const age = s.ageMonths;
+    untrack(() => {
+      if (seenAge !== null && age !== seenAge) {
+        ticking = false;
+        requestAnimationFrame(() => (ticking = true));
+      }
+      seenAge = age;
+    });
+  });
+  // Optional click on a single "Próximo mês" tap; off by default, remembered per device.
+  let sound = $state(soundEnabled());
+  function toggleSound() {
+    sound = !sound;
+    setSoundEnabled(sound);
+    if (sound) playTick();
+  }
+  function nextMonth() {
+    if (sound) playTick();
+    void game.advance(false);
+  }
   // Keyed by the entry's absolute position in the log, which is stable while the log only grows.
   const recent = $derived(s.log.slice(-8).map((e, i, arr) => ({ e, key: s.log.length - arr.length + i })).reverse());
 
@@ -57,9 +84,11 @@
 
 <div class="container">
   <header class="row top">
-    <Capivara size={64} {wealth} {mood} {age} />
+    <span class="capi-wrap" class:hop={ticking} onanimationend={() => (ticking = false)}>
+      <Capivara size={64} {wealth} {mood} {age} />
+    </span>
     <div class="who">
-      <strong>{ui('age')}: {years} anos{months ? ` e ${months} ${months === 1 ? 'mês' : 'meses'}` : ''}</strong>
+      <strong class:tick={ticking}>{ui('age')}: {years} anos{months ? ` e ${months} ${months === 1 ? 'mês' : 'meses'}` : ''}</strong>
       <div class="small muted">
         {strings.app.jobs[s.career.job]} · {strings.app.living[s.living]}
         {#if s.career.study} · {ui('studying')}: {s.career.study.label} ({s.career.study.remaining} meses){/if}
@@ -138,9 +167,12 @@
     {#if game.lastOutcome}
       <Outcome outcome={game.lastOutcome} />
     {/if}
-    <div class="card row">
-      <button class="primary" onclick={() => game.advance(false)} disabled={game.busy}>{ui('next')}</button>
+    <div class="card row controls">
+      <button class="primary" onclick={nextMonth} disabled={game.busy}>{ui('next')}</button>
       <button onclick={() => game.advance(true)} disabled={game.busy}>{ui('fast')}</button>
+      <button type="button" class="icon" aria-pressed={sound} aria-label={ui('sound')} title={ui('sound')} onclick={toggleSound}>
+        <span aria-hidden="true">{sound ? '🔊' : '🔇'}</span>
+      </button>
     </div>
   {/if}
 
@@ -163,6 +195,53 @@
   .who {
     min-width: 0;
     flex: 1;
+  }
+  .capi-wrap {
+    display: block;
+    flex: none;
+  }
+  .hop {
+    animation: hop 220ms ease-out;
+  }
+  .tick {
+    display: inline-block;
+    animation: tick 220ms ease-out;
+  }
+  @keyframes hop {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-4px);
+    }
+  }
+  @keyframes tick {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    40% {
+      transform: scale(1.05);
+    }
+  }
+  .controls {
+    flex-wrap: wrap;
+  }
+  .controls .icon {
+    margin-left: auto;
+    padding: 8px 12px;
+    font-size: 18px;
+    line-height: 1;
+  }
+  .controls .icon[aria-pressed='true'] {
+    border-color: var(--brand);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hop,
+    .tick {
+      animation: none;
+    }
   }
   .chapter {
     display: flex;
