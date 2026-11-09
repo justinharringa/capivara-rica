@@ -34,6 +34,23 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      - name: engines.node floor matches .nvmrc
+        # The floor is a promise that the project works on that Node, and CI and the deploy only
+        # run the .nvmrc version, so the two must name the same major or the promise goes
+        # untested. Renovate cannot keep them in step (rangeStrategy cannot be limited to
+        # majors), so this fails a Node-major PR until engines.node is raised in the same PR.
+        run: |
+          node -e '
+          const fs = require("fs");
+          const want = fs.readFileSync(".nvmrc", "utf8").trim().replace(/^v/, "").split(".")[0];
+          const range = (JSON.parse(fs.readFileSync("package.json", "utf8")).engines ?? {}).node ?? "";
+          const floor = (range.match(/^>=\s*v?(\d+)/) ?? [])[1];
+          if (floor !== want) {
+            console.error(`engines.node is "${range}" but .nvmrc is ${want}: CI and the deploy build on Node ${want}, so set engines.node to ">=${want}" (package.json, then npm install --package-lock-only).`);
+            process.exit(1);
+          }
+          console.log(`engines.node ${range} matches .nvmrc ${want}`);
+          '
       - run: npm ci
       - run: npm run check
       - run: npm test

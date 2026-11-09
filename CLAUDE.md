@@ -56,7 +56,7 @@ where a PR check exercises the bump; `rebaseWhen: auto`, never a ruleset with "r
 to be up to date"). `ci.yml` ends in one job named `CI gate` that `needs:` every other job and
 runs `if: always()`; it is the only status check the `main` ruleset requires
 (`docs/rulesets/main.json`, imported by hand, see `docs/rulesets/README.md`). Keep that name.
-No workflow other than `ci.yml` may trigger on `pull_request` or `push`. The merge gate and the
+No workflow other than `ci.yml` may trigger on `pull_request` or `push`. `engines.node` in `package.json` names the same major as `.nvmrc` (CI and the deploy run that version), and a step in the `check` job fails if they differ; on a Node major, raise both in the same PR. The merge gate and the
 deploy gate are different things: a merge to main only queues a `Deploy` run that waits for the
 owner's approval. To triage open Renovate PRs, run `/renovate-triage`
 (`.claude/skills/renovate-triage/SKILL.md`); the Dependency Dashboard is issue #4.

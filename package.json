@@ -5,6 +5,9 @@
   "description": "Jogo gratuito, no navegador, que ensina juros compostos, cartão, parcelamento e carreira para jovens brasileiros.",
   "type": "module",
   "license": "MIT",
+  "engines": {
+    "node": ">=26"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
