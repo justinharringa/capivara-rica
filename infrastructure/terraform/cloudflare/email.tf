@@ -9,9 +9,10 @@
 # link when the address is created; until that link is clicked the rule exists but delivers
 # nothing (`destination_verified` output below).
 
+# No `name`: that field enables routing on a subdomain and the API rejects the apex with
+# "must be a subdomains of <zone>" (422, first deploy on 2026-11-09). Omitting it enables the zone.
 resource "cloudflare_email_routing_dns" "primary" {
   zone_id = local.zones.primary
-  name    = var.primary_zone
 }
 
 resource "cloudflare_email_routing_address" "contact_destination" {
