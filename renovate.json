@@ -75,13 +75,16 @@
       "allowedVersions": "<7"
     },
     {
-      "description": "Node.js (.nvmrc) and @types/node move together, as one PR. Node is what CI and the deploy build run on, so a Node major is a build-environment change and stays manual (majors rule below). Placed after the devDependency rules so it wins for @types/node.",
+      "description": "Node.js (.nvmrc) and @types/node move together, as one PR. Node is what CI and the deploy build run on, so a Node major is a build-environment change and stays manual (majors rule below). Placed after the devDependency rules so it wins for @types/node. engines.node in package.json names the same major as .nvmrc, held there by a step in ci.yml's `check` job rather than by Renovate: `rangeStrategy: bump` would raise the floor on every Node patch, and Renovate rejects rangeStrategy combined with matchUpdateTypes (a config error, which stops Renovate).",
       "matchDepNames": [
         "node",
         "@types/node"
       ],
       "groupName": "node.js",
-      "commitMessageTopic": "Node.js"
+      "commitMessageTopic": "Node.js",
+      "prBodyNotes": [
+        "**On a major, also raise `engines.node` in package.json to the new major** (then `npm install --package-lock-only`). The `check` job fails until the floor matches `.nvmrc`."
+      ]
     },
     {
       "description": "Group GitHub Actions bumps and automerge minor, patch and digest. A SHA pin that still resolves to its version tag is low-risk, and ci.yml exercises checkout, setup-node, upload-artifact and setup-terraform on every PR. Majors fall through to the manual-review rule below.",

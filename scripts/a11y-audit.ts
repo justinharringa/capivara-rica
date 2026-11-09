@@ -4,7 +4,7 @@
  *
  *   VITE_E2E=1 npm run build && npm run a11y
  *
- * Starts `vite preview` itself. Exits 1 on any violation and prints the element and the fix
+ * Starts a Vite preview server itself, in-process, and closes it on the way out. Exits 1 on any violation and prints the element and the fix
  * axe suggests. Screens: start; first month (guide + first stop); help and "Mover dinheiro"
  * open; the outcome card after a choice; the guess form of the first-investment stop; the
  * chapter card at 14; the end screen. Stops are answered with their first choice, which
@@ -14,10 +14,10 @@
  * cloud sandbox preinstalls one at /opt/pw-browsers/chromium). axe covers the automated
  * subset of WCAG; keyboard order, focus visibility and meaning are still checked by hand.
  */
-import { spawn } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { chromium, type Page } from 'playwright';
+import { preview } from 'vite';
 
 const require = createRequire(import.meta.url);
 const AXE = readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8');
@@ -123,14 +123,11 @@ async function run(scheme: 'light' | 'dark'): Promise<void> {
   }
 }
 
-const preview = spawn('npx', ['--no-install', 'vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'ignore' });
+// In-process, not `npx vite preview`: killing an npx child leaves the vite process it started
+// running, and the next run's server then fails to bind (silently, with stdio ignored) while the
+// readiness check is answered by the stale one. strictPort turns a busy port into an error here.
+const server = await preview({ logLevel: 'warn', preview: { port: PORT, strictPort: true, open: false } });
 try {
-  let up = false;
-  for (let i = 0; i < 60 && !up; i++) {
-    up = await fetch(URL).then((r) => r.ok).catch(() => false);
-    if (!up) await new Promise((r) => setTimeout(r, 500));
-  }
-  if (!up) throw new Error(`vite preview did not answer on ${URL}`);
   const hook = await fetch(URL).then((r) => r.text());
   if (!hook.includes('__game') && !process.env.A11Y_SKIP_HOOK_CHECK) {
     // The hook lives in the bundle, not in index.html; only warn, the run itself fails loudly.
@@ -139,7 +136,7 @@ try {
   await run('light');
   await run('dark');
 } finally {
-  preview.kill();
+  await server.close();
 }
 
 if (found.length) {

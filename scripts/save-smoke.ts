@@ -4,7 +4,7 @@
  *
  *   VITE_E2E=1 npm run build && npm run save:smoke
  *
- * Starts `vite preview` itself. The steps, each one a pass/fail:
+ * Starts a Vite preview server itself, in-process, and closes it on the way out. The steps, each one a pass/fail:
  *   1. clear every stored save (IndexedDB and localStorage) and reload
  *   2. start a game, dismiss the guide, and play three months, answering every stop on the way
  *      (the game opens on a stop, and answering one can open the next), so the save holds
@@ -20,8 +20,8 @@
  * Prints one JSON line and exits 1 at the first failed step. Playwright's own Chromium is used
  * unless PW_CHROMIUM_PATH points at another binary (the cloud sandbox preinstalls one).
  */
-import { spawn } from 'node:child_process';
 import { chromium, type Page } from 'playwright';
+import { preview, type PreviewServer } from 'vite';
 
 const PORT = Number(process.env.SAVE_SMOKE_PORT ?? 4174);
 const URL = `http://localhost:${PORT}/`;
@@ -177,20 +177,17 @@ async function run(): Promise<void> {
   }
 }
 
-const preview = spawn('npx', ['--no-install', 'vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'ignore' });
+// In-process, not `npx vite preview`: see the same note in scripts/a11y-audit.ts. A busy port
+// fails here, at 'start vite preview', instead of testing whatever server already holds it.
+let server: PreviewServer | undefined;
 try {
-  let up = false;
-  for (let i = 0; i < 60 && !up; i++) {
-    up = await fetch(URL).then((r) => r.ok).catch(() => false);
-    if (!up) await new Promise((r) => setTimeout(r, 500));
-  }
-  check(up, `vite preview did not answer on ${URL}`);
+  server = await preview({ logLevel: 'warn', preview: { port: PORT, strictPort: true, open: false } });
   await run();
 } catch (e) {
   result.failed = step;
   result.reason = String(e instanceof Error ? e.message : e).split('\n')[0];
 } finally {
-  preview.kill();
+  await server?.close();
 }
 if (pageErrors.length) result.pageErrors = pageErrors;
 console.log(JSON.stringify(result));
