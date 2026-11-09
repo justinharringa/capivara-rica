@@ -1,6 +1,6 @@
 ---
 name: renovate-triage
-description: Triage the open Renovate / dependency PRs for capivara-rica from evidence, not titles. Classify each by merge posture, read the upstream notes, require `CI gate` green on the current head, merge what passes the LOW RISK rubric (squash, pinned to the reviewed head), then verify the push-to-main run and tell the owner which deploy is waiting for approval. Merging here is not a deploy; the `production` environment approval is. Works from a cloud session (GitHub MCP connector plus Playwright). Use when asked to triage, review or clear dependency PRs or the Dependency Dashboard (#4).
+description: Triage the open Renovate / dependency PRs for capivara-rica from evidence, not titles. Classify each by merge posture, read the upstream notes, require `CI gate` green on the current head, merge what passes the LOW RISK rubric (squash, pinned to the reviewed head), then verify the push-to-main run and tell the owner which deploy is waiting for approval. Merging here is not a deploy; the `production` environment approval is. Works from a cloud session (GitHub MCP connector plus Playwright), attended or unattended. Use when asked to triage, review or clear dependency PRs or the Dependency Dashboard (#4), or when the Daily Renovate Triage routine reaches this repo.
 ---
 
 # Renovate Triage: capivara-rica
@@ -31,20 +31,26 @@ PR merged to main ──▶ deploy.yml run WAITS for the owner's approval
 ## What gates a PR, and what does not
 
 `ci.yml` runs on every PR, and the `main` ruleset requires its `CI gate` job
-(`docs/rulesets/README.md`). If the ruleset has not been imported yet, nothing
-on GitHub enforces the checks: **check them yourself either way.**
+(`docs/rulesets/README.md`). The ruleset is imported and active (id 26781158,
+checked 2026-11-09), and the repo allows auto-merge, so Renovate's automerge
+rules do merge on their own. **Check `CI gate` yourself anyway** before any
+merge you make: a ruleset can be switched off in Settings without a trace in
+Git.
 
 | Job | Covers |
 |---|---|
-| `check` | `npm run check` (svelte-check), `npm test` (vitest, incl. the content-coverage test), `npm run data:check`, a production build, `npm run size` (bundle budget) |
+| `check` | `npm run check` (svelte-check), `npm test` (vitest, incl. the content-coverage and save-migration tests), `npm run data:check`, a production build, `npm run size` (bundle budget), `npm run ceilings` (fails once a `renovate.json` ceiling's reason is gone) |
+| `a11y` | Playwright's Chromium plays an E2E build from the start screen to the end screen, auditing every screen with axe in light and dark; then `npm run save:smoke` on the same build (a game saved through idb-keyval survives a reload and resumes unchanged); then Lighthouse score floors on the production build |
 | `renovate-validate` | `renovate-config-validator --strict` on `renovate.json` |
 | `terraform-validate` | `fmt -check` and `validate` with the backend disabled: schema only, no plan |
 | `CI gate` | needs all of the above, `if: always()` |
 
 Not covered by any PR check:
-- **the browser.** No Playwright in CI. The save path (`idb-keyval`, the only
-  runtime dependency), the service worker (`vite-plugin-pwa`) and the PWA
-  manifest are only exercised by a real browser;
+- **saves from an older release.** `npm run save:smoke` proves a save written
+  and read by the *same* build survives a reload, through idb-keyval (it drops
+  the localStorage copy first, because `src/lib/save.ts` writes one and
+  swallows storage errors). Older save shapes are the migration test's job
+  (`src/engine/migrate.test.ts`, in `check`), which runs without a browser;
 - **the Terraform plan against the live zone.** It runs in the deploy, after
   approval;
 - **`cloudflare/wrangler-action`.** It appears only in `deploy.yml`.
@@ -60,9 +66,13 @@ cloud session and `gh api` is for search only.
   Open)
 
 **Do not filter on the `renovate` label.** Security PRs from
-`vulnerabilityAlerts` carry `security` alone. Anything under *Pending
-Approval* is a TypeScript major waiting for its dashboard checkbox: not a PR,
-nothing to do unless the owner says svelte-check supports it.
+`vulnerabilityAlerts` carry `security` alone. There is no *Pending
+Approval* section: `dependencyDashboardApproval` is off. TypeScript 7 produces
+no PR and no Dashboard entry at all, because `renovate.json` holds TypeScript
+below 7 with an `allowedVersions` ceiling. Its lifter is `npm run ceilings` in
+the `check` job, which fails the moment svelte-check's peer range admits
+TypeScript 7. **A red `ceilings` step is that signal, not a fault in the PR it
+appears on:** the owner lifts the ceiling, and every PR stays red until then.
 
 ## Phase 1: Classify
 
@@ -71,7 +81,7 @@ Decide the bucket **before** reading the diff. The bucket sets what you may do.
 | Bucket | Recognise by | Triage does |
 |---|---|---|
 | **Renovate auto-merges** | `npm dev dependencies` minor/patch; `GitHub Actions` minor/patch/digest | Normally merged already. If still open more than a day after `CI gate` went green, find out why (auto-merge not allowed on the repo? ruleset missing? a red job?) and report |
-| **Ask first** | any **major** (`major-update` label: Node.js, Svelte, Vite, vitest, svelte-check, any action); `TypeScript (major)`; `Cloudflare Terraform provider` (applies on merge); `wrangler-action (deploy)`; anything that edits `wrangler.jsonc`, `deploy.yml` or `public/_headers` | Gather the evidence below, then notify. Do not merge |
+| **Ask first** | any **major** (`major-update` label: Node.js, Svelte, Vite, vitest, svelte-check, any action); `Cloudflare Terraform provider` (applies on merge); `wrangler-action (deploy)`; anything that edits `wrangler.jsonc`, `deploy.yml` or `public/_headers` | Gather the evidence below, then notify. Do not merge |
 | **Candidate LOW RISK** | `idb-keyval` minor/patch; `security` PRs on a non-major; a `npm dev dependencies` pin or lock-file PR; an auto-merge PR whose only problem was the merge transport | Apply the rubric |
 
 A Node major deserves one extra line in the notification: `.nvmrc` is read by
@@ -121,11 +131,11 @@ that failed.
 - [ ] One commit, authored by Renovate; no hand edits on the branch
 - [ ] `main`'s latest push run of `CI` is green
       (`actions_list` method `list_workflow_runs`, branch `main`)
-- [ ] **For `idb-keyval` or anything touching the save path:** a Playwright
-      smoke on the PR's build passed. Build it in the sandbox
-      (`npm ci && VITE_E2E=1 npm run build && npx vite preview`), load the
-      page in Chromium, start a game, advance one stop with `window.__game`,
-      reload, and confirm the save is still there
+- [ ] **For `idb-keyval` or anything touching the save path:** the `a11y`
+      job's `Save and reload` step passed on the PR's head (it is part of
+      `CI gate`, so a green gate implies it; open the job to confirm the step
+      ran rather than being skipped). To rerun it in the sandbox:
+      `npm ci && VITE_E2E=1 npm run build && PW_CHROMIUM_PATH=<chromium> npm run save:smoke`
 
 Merge (squash; every Renovate PR here is one commit): `merge_pull_request`
 with `merge_method: "squash"` and `expectedHeadSha: <the head you reviewed>`.
@@ -169,3 +179,91 @@ play-through needs the sandbox build above, not the live site.
 For a deploy that included the Cloudflare provider or `wrangler-action`, also
 read the run's **Terraform plan** summary: a provider-only bump should say
 `No changes`.
+
+## Unattended (routine) mode
+
+The Daily Renovate Triage routine runs this skill with nobody watching, from
+the parent of the repo clones, so neither this file nor `CLAUDE.md` is
+auto-loaded; the routine prompt points here. It has the GitHub connector,
+`gh api` (REST only: `gh` porcelain fails with `GraphQL is not available from
+Claude Code sessions`), the sandbox's preinstalled Playwright and Chromium
+(`/opt/pw-browsers/chromium`), npm, and no owner on hand. Differences from an
+attended run:
+
+- **Auto-merge PRs are not yours.** `npm dev dependencies` minor/patch and
+  `GitHub Actions` minor/patch/digest merge themselves through GitHub native
+  auto-merge once `CI gate` passes. Skip them. Report one only if it is still
+  open more than a day after `CI gate` went green, with the reason (auto-merge
+  not enabled on the PR, the ruleset disabled, a red job).
+- **Merge only *Candidate LOW RISK* PRs that pass every line of Phase 3, one at
+  a time,** with Phase 4a after each.
+- **`idb-keyval` is a normal candidate.** Its save-path line is met by the
+  `a11y` job's `Save and reload` step, which is inside `CI gate`. Never
+  improvise a different browser driver in its place: if that step did not
+  run, hold the PR.
+- **A red `ceilings` step** (see Phase 0) is notified once, on the day it
+  first appears, as the TypeScript ceiling being ready to lift. It holds every
+  PR, including the auto-merge ones, until the owner acts.
+- **Phase 4b runs when there is something new to verify:** a `Deploy` run on
+  `main` that completed `success` in the last 24 hours and whose commits
+  include a Renovate merge. Find the commits by comparing it with the previous
+  successful run:
+
+  ```bash
+  R=justinharringa/capivara-rica
+  gh api "repos/$R/actions/workflows/deploy.yml/runs?branch=main&status=success&per_page=2" \
+    --jq '.workflow_runs[] | "\(.id) \(.head_sha) \(.updated_at)"'
+  gh api repos/$R/compare/<previous-sha>...<newest-sha> \
+    --jq '.commits[] | "\(.author.login // .commit.author.name) \(.commit.message | split("\n")[0])"'
+  ```
+
+  A Renovate merge is a commit authored by `renovate[bot]` (squash-merged, so
+  one commit per PR). The curl checks and the headless load run as written. Report the result; it
+  is notified only on failure.
+- **A failed `Deploy` run is the owner's, not triage's.** The owner approved
+  it and saw it fail. Mention it in the notification only when its commits
+  include a Renovate merge (a provider bump failing `Terraform apply`, a
+  `wrangler-action` bump failing the deploy step), naming the run, the failed
+  step and the PR. Otherwise it goes in the report. On 2026-11-09 run
+  42540865774 failed at `Terraform apply` on #17, a hand-written PR: report
+  only.
+
+**May do:** read anything; build and run the site in the sandbox; run the
+Phase 4b checks against production; merge PRs that pass every line of Phase 3.
+
+**Never:**
+- approve a deployment or a `production` environment review, or re-run,
+  cancel or dispatch `Deploy`: the approval is always the owner's click
+- push commits, push tags, re-run workflows, or comment on, close or edit PRs
+- touch Cloudflare or Terraform state directly
+- tick Dependency Dashboard boxes (`renovate.json` REBASE POLICY: never
+  "rebase all")
+- merge anything Ask first, or anything with `CI gate` red or pending.
+  Never merge on the reasoning "the failure is unrelated"
+
+**Notify (one line per item, inside the routine's single notification), only
+when:**
+1. **A `Deploy` run is waiting for approval because of a merge this run
+   made**: the run, and what it contains (just that PR, or several commits).
+   The owner has to click for the merge to reach players at all.
+2. A PR needs the owner: Ask first, or held because its own
+   change broke a check. Notify on the day it is opened or its head changes
+   (`updated_at` within 24 hours). A PR that is merely still held stays out of
+   the notification.
+3. `main` CI went red after a merge (Phase 4a), with the run ID.
+4. Phase 4b failed on a deploy that carried a Renovate merge.
+5. The `ceilings` step turned red (once, on the first day).
+6. A `security`-labelled PR merged but its `Deploy` run has waited for approval
+   more than 7 days: the fix is not live.
+
+Everything else is silent: auto-merged PRs, merged LOW RISK PRs whose checks
+passed, routine holds, a waiting deploy this run did not cause. Message shape:
+`capivara-rica: <action needed> — #<n> <title>: <one-line evidence>`.
+
+## Known false alarms
+
+| Observation | Why it's fine |
+|---|---|
+| A Cloudflare `beacon.min.js` CSP violation in the console on production | Injected by Cloudflare Web Analytics until it is disabled in the dashboard (Phase 4b). If it disappears, say so: it means the owner turned it off |
+| Renovate PRs closed as "autoclosed" (#7, #8, #13) | Renovate closes a PR whose update was superseded or regrouped; the newer PR carries it |
+| A `Deploy` run that never ran for a merge | `concurrency: deploy-production` keeps only the newest waiting run, so an older waiting run is cancelled when a newer merge queues |
