@@ -24,13 +24,14 @@
       Capivara naquele único momento (`src/engine/review.ts`)
 - [x] Cartão de resultado em PNG para compartilhar (Web Share API, com download como alternativa)
 - [x] Variar a Capivara por idade: criança até os 14 (`public/capi/child/`), adolescente até os 18 (`public/capi/teen/`), adulta depois
-- [ ] Verificar o que ficou `secondary` fraco: cursinho, preço do casamento civil, prêmio do inglês
-      (Catho 2017), teto do seguro-desemprego 2026
+- [x] Verificar o que ficou `secondary` fraco: cursinho, preço do casamento civil, prêmio do inglês
+      (Catho 2017), teto do seguro-desemprego 2026 → `docs/research/notes/verification-2026-11/secondary-pass.md`
+      (teto do seguro-desemprego `verified` na página do MTE; os outros três re-sourceados, valores mantidos, seguem `secondary`)
 
 ## v0.3: forma
 - [ ] Arte da Capivara por ilustrador(a) (CC BY), expressões e acessórios por patrimônio e por idade
-- [ ] Som opcional, animação do "tique" mensal
-- [ ] Acessibilidade WCAG 2.2 AA auditada (axe), Lighthouse CI
+- [x] Som opcional (desligado por padrão, sintetizado, sem arquivo), animação do "tique" mensal (respeita `prefers-reduced-motion`)
+- [x] Acessibilidade WCAG 2.2 AA auditada (axe em toda tela, claro e escuro, `npm run a11y`) e Lighthouse CI com pisos de nota (`lighthouserc.cjs`), os dois no `CI gate`; a parte manual (ordem de foco, leitor de tela) entra no teste com jogadores
 
 ## v1.0: lançamento
 - [x] Domínio, Cloudflare Workers static assets (`wrangler.jsonc` + Terraform em `infrastructure/terraform/cloudflare/`), política de privacidade publicada

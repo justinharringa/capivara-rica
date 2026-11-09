@@ -1,16 +1,18 @@
 :root {
+  /* Text colours meet WCAG AA (4.5:1) on every surface, including --surface-2 tiles; axe on
+     2026-11-09 found --good at 4.08 there. Recheck with the audit if these change. */
   --bg: #f6f1e7;
   --surface: #fffdf8;
   --surface-2: #efe7d8;
   --ink: #1f1b16;
   --ink-2: #5a5247;
-  --ink-3: #8a8072;
+  --ink-3: #6b6254;
   --line: #d9cfbd;
   --brand: #2f6f4e;
   --brand-ink: #ffffff;
-  --accent: #c2410c;
-  --good: #1b7f4b;
-  --warn: #b45309;
+  --accent: #ad3708;
+  --good: #166a3f;
+  --warn: #9a4506;
   --bad: #b91c1c;
   --series-you: #c2410c;
   --series-ghost: #1d4ed8;
@@ -26,11 +28,11 @@
     --surface-2: #2a261f;
     --ink: #f3ede2;
     --ink-2: #c7bdab;
-    --ink-3: #8f8676;
+    --ink-3: #9e9484;
     --line: #3b3529;
     --brand: #4c9a6f;
     --brand-ink: #0c1a12;
-    --accent: #ea580c;
+    --accent: #f97316;
     --good: #4ade80;
     --warn: #fbbf24;
     --bad: #f87171;
@@ -45,11 +47,11 @@
   --surface-2: #2a261f;
   --ink: #f3ede2;
   --ink-2: #c7bdab;
-  --ink-3: #8f8676;
+  --ink-3: #9e9484;
   --line: #3b3529;
   --brand: #4c9a6f;
   --brand-ink: #0c1a12;
-  --accent: #ea580c;
+  --accent: #f97316;
   --good: #4ade80;
   --warn: #fbbf24;
   --bad: #f87171;
