@@ -40,19 +40,25 @@
     markSeen('guide');
     showGuide = false;
   }
-  // The monthly tick: the age line and the Capivara nudge for 220 ms each time a month passes
-  // (also while fast-forwarding, so time visibly moves). CSS drops it under reduced motion.
+  // The monthly tick: the age line and the Capivara nudge for 220 ms when a month passes. A
+  // tick already running is left to finish (fast-forward steps every 25 ms, so restarting it
+  // would only jitter); the next month after it ends starts a new one, a steady beat while
+  // time runs. Cleared by a timer, not by animationend, which never fires when
+  // prefers-reduced-motion removes the animation.
   let ticking = $state(false);
   let seenAge: number | null = null;
+  let tickTimer: ReturnType<typeof setTimeout> | undefined;
   $effect(() => {
     const age = s.ageMonths;
     untrack(() => {
-      if (seenAge !== null && age !== seenAge) {
-        ticking = false;
-        requestAnimationFrame(() => (ticking = true));
+      if (seenAge !== null && age !== seenAge && !ticking) {
+        ticking = true;
+        clearTimeout(tickTimer);
+        tickTimer = setTimeout(() => (ticking = false), 240);
       }
       seenAge = age;
     });
+    return () => clearTimeout(tickTimer);
   });
   // Optional click on a single "Próximo mês" tap; off by default, remembered per device.
   let sound = $state(soundEnabled());
@@ -84,7 +90,7 @@
 
 <div class="container">
   <header class="row top">
-    <span class="capi-wrap" class:hop={ticking} onanimationend={() => (ticking = false)}>
+    <span class="capi-wrap" class:hop={ticking}>
       <Capivara size={64} {wealth} {mood} {age} />
     </span>
     <div class="who">

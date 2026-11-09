@@ -32,7 +32,7 @@ export function playTick(): void {
     const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!AC) return;
     ctx ??= new AC();
-    if (ctx.state === 'suspended') void ctx.resume();
+    if (ctx.state === 'suspended') ctx.resume().catch(() => undefined);
     const t = ctx.currentTime;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();

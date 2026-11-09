@@ -31,7 +31,7 @@ const found: Found[] = [];
 let screens = 0;
 
 async function audit(p: Page, scheme: string, screen: string): Promise<void> {
-  await p.addScriptTag({ content: AXE });
+  if (!(await p.evaluate(() => 'axe' in window))) await p.addScriptTag({ content: AXE });
   const r = (await p.evaluate((tags) => (window as unknown as { axe: { run: (c: Document, o: unknown) => Promise<{ violations: Violation[] }> } }).axe.run(document, { runOnly: { type: 'tag', values: tags } }), TAGS)) as { violations: Violation[] };
   screens++;
   for (const v of r.violations) found.push({ scheme, screen, v });
@@ -123,7 +123,7 @@ async function run(scheme: 'light' | 'dark'): Promise<void> {
   }
 }
 
-const preview = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'ignore' });
+const preview = spawn('npx', ['--no-install', 'vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'ignore' });
 try {
   let up = false;
   for (let i = 0; i < 60 && !up; i++) {
