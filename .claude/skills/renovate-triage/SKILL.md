@@ -40,17 +40,17 @@ Git.
 | Job | Covers |
 |---|---|
 | `check` | `npm run check` (svelte-check), `npm test` (vitest, incl. the content-coverage and save-migration tests), `npm run data:check`, a production build, `npm run size` (bundle budget), `npm run ceilings` (fails once a `renovate.json` ceiling's reason is gone) |
-| `a11y` | Playwright's Chromium plays an E2E build from the start screen to the end screen, auditing every screen with axe in light and dark; then Lighthouse score floors on the production build |
+| `a11y` | Playwright's Chromium plays an E2E build from the start screen to the end screen, auditing every screen with axe in light and dark; then `npm run save:smoke` on the same build (a game saved through idb-keyval survives a reload and resumes unchanged); then Lighthouse score floors on the production build |
 | `renovate-validate` | `renovate-config-validator --strict` on `renovate.json` |
 | `terraform-validate` | `fmt -check` and `validate` with the backend disabled: schema only, no plan |
 | `CI gate` | needs all of the above, `if: always()` |
 
 Not covered by any PR check:
-- **a saved game surviving a reload.** The `a11y` job plays the whole game in
-  a real browser, so the save path (`idb-keyval`, the only runtime dependency)
-  is written to on every PR, but nothing reloads the page and resumes the save.
-  `src/lib/save.ts` swallows storage errors by design, so a broken write would
-  not fail that job either;
+- **saves from an older release.** `npm run save:smoke` proves a save written
+  and read by the *same* build survives a reload, through idb-keyval (it drops
+  the localStorage copy first, because `src/lib/save.ts` writes one and
+  swallows storage errors). Older save shapes are the migration test's job
+  (`src/engine/migrate.test.ts`, in `check`), which runs without a browser;
 - **the Terraform plan against the live zone.** It runs in the deploy, after
   approval;
 - **`cloudflare/wrangler-action`.** It appears only in `deploy.yml`.
@@ -131,11 +131,11 @@ that failed.
 - [ ] One commit, authored by Renovate; no hand edits on the branch
 - [ ] `main`'s latest push run of `CI` is green
       (`actions_list` method `list_workflow_runs`, branch `main`)
-- [ ] **For `idb-keyval` or anything touching the save path:** a Playwright
-      smoke on the PR's build passed. Build it in the sandbox
-      (`npm ci && VITE_E2E=1 npm run build && npx vite preview`), load the
-      page in Chromium, start a game, advance one stop with `window.__game`,
-      reload, and confirm the save is still there
+- [ ] **For `idb-keyval` or anything touching the save path:** the `a11y`
+      job's `Save and reload` step passed on the PR's head (it is part of
+      `CI gate`, so a green gate implies it; open the job to confirm the step
+      ran rather than being skipped). To rerun it in the sandbox:
+      `npm ci && VITE_E2E=1 npm run build && PW_CHROMIUM_PATH=<chromium> npm run save:smoke`
 
 Merge (squash; every Renovate PR here is one commit): `merge_pull_request`
 with `merge_method: "squash"` and `expectedHeadSha: <the head you reviewed>`.
@@ -197,10 +197,10 @@ attended run:
   not enabled on the PR, the ruleset disabled, a red job).
 - **Merge only *Candidate LOW RISK* PRs that pass every line of Phase 3, one at
   a time,** with Phase 4a after each.
-- **`idb-keyval` waits for an attended run.** Its rubric line needs a
-  save-and-reload play-through that no script in the repo performs yet, and an
-  improvised driver is not evidence. Hold it, and notify with the notes you
-  read, so the owner can run the smoke or merge it by hand.
+- **`idb-keyval` is a normal candidate.** Its save-path line is met by the
+  `a11y` job's `Save and reload` step, which is inside `CI gate`. Never
+  improvise a different browser driver in its place: if that step did not
+  run, hold the PR.
 - **A red `ceilings` step** (see Phase 0) is notified once, on the day it
   first appears, as the TypeScript ceiling being ready to lift. It holds every
   PR, including the auto-merge ones, until the owner acts.
@@ -238,15 +238,15 @@ Phase 4b checks against production; merge PRs that pass every line of Phase 3.
 - touch Cloudflare or Terraform state directly
 - tick Dependency Dashboard boxes (`renovate.json` REBASE POLICY: never
   "rebase all")
-- merge anything Ask first, anything with `CI gate` red or pending, or
-  `idb-keyval`. Never merge on the reasoning "the failure is unrelated"
+- merge anything Ask first, or anything with `CI gate` red or pending.
+  Never merge on the reasoning "the failure is unrelated"
 
 **Notify (one line per item, inside the routine's single notification), only
 when:**
 1. **A `Deploy` run is waiting for approval because of a merge this run
    made**: the run, and what it contains (just that PR, or several commits).
    The owner has to click for the merge to reach players at all.
-2. A PR needs the owner: Ask first, `idb-keyval`, or held because its own
+2. A PR needs the owner: Ask first, or held because its own
    change broke a check. Notify on the day it is opened or its head changes
    (`updated_at` within 24 hours). A PR that is merely still held stays out of
    the notification.

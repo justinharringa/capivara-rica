@@ -30,7 +30,9 @@ number is in `docs/research/`.
 release gate and fails while any parameter is `memory`/`placeholder`.
 Accessibility, in CI and runnable locally with a Chromium: `VITE_E2E=1 npm run build && npm run a11y`
 (axe, WCAG 2.x A + AA, every screen, light and dark, through `window.__game`) and
-`npm run build && npm run lighthouse` (score floors in `lighthouserc.cjs`). In the cloud sandbox
+`npm run build && npm run lighthouse` (score floors in `lighthouserc.cjs`). After the same E2E build,
+`npm run save:smoke` plays three months, checks the save landed in IndexedDB, drops the
+localStorage copy, reloads and resumes, and fails unless the resumed game equals the saved one. In the cloud sandbox
 set `PW_CHROMIUM_PATH` and `CHROME_PATH` to the preinstalled browser binary. axe covers only the
 automated subset of WCAG; keyboard order and focus visibility are checked by hand. Text colour
 tokens in `src/app.css` were chosen to pass 4.5:1 on `--surface-2`, the tightest background.
