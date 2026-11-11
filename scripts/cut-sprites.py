@@ -10,7 +10,9 @@ rendered it). Cells are named left to right, top to bottom; "-" skips a cell.
 Figures are found by their own pixels (runs of non-background columns inside runs of
 non-background rows), not by dividing the sheet into equal cells: Gemini does not centre
 figures in equal cells, and a nose that crosses the grid line was being cut off (child
-sheet, 2026-11-08). --grid-cut restores the equal-cell crop the adult sheets were cut with.
+sheet, 2026-11-08; an audit on 2026-11-11 found the left-column figure of every sheet
+crossing by 10-12 px, and the adult set was re-cut). --grid-cut keeps the old equal-cell
+crop for comparison only.
 --canvas fixes the source-pixel canvas every sprite is placed on, so sprites cut from
 different sheets come out at the same scale. Both sheets so far use 622x573.
 --icons also writes icon-512.png, icon-192.png and favicon.png from the cell named "icon".
@@ -18,8 +20,8 @@ different sheets come out at the same scale. Both sheets so far use 622x573.
 Needs Pillow and numpy.
 
 Sheets used so far:
-  assets/raw/capi-sheet-gemini-2026-11-07.jpg        --names wealth0,wealth1,wealth2,wealth3,-,worried,happy,icon --icons --grid-cut
-  assets/raw/capi-sheet-moods-gemini-2026-11-07.jpg  --names=-,worried1,worried2,worried3,happy1,-,happy2,happy3 --flip happy3 --canvas 622x573 --grid-cut
+  assets/raw/capi-sheet-gemini-2026-11-07.jpg        public/capi --names wealth0,wealth1,wealth2,wealth3,-,worried,happy,icon --canvas 622x573 (--icons once, 2026-11-07)
+  assets/raw/capi-sheet-moods-gemini-2026-11-07.jpg  public/capi --names=-,worried1,worried2,worried3,happy1,-,happy2,happy3 --flip happy3 --canvas 622x573
   assets/raw/capi-sheet-child-gemini-2026-11-08.jpg        public/capi/child --names wealth0,wealth1,wealth2,wealth3,worried,happy,happy1,happy3 --flip happy3 --canvas 622x573 --width 200
   assets/raw/capi-sheet-child-moods-gemini-2026-11-08.jpg  public/capi/child --names=-,-,-,happy2,worried1,worried2,worried3,- --canvas 622x573 --width 200
     (the child is drawn smaller on the same canvas on purpose; a name list that starts with "-"
