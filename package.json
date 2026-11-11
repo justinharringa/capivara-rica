@@ -35,7 +35,7 @@
     "svelte": "5.57.3",
     "svelte-check": "4.7.8",
     "typescript": "6.0.3",
-    "vite": "8.3.7",
+    "vite": "8.3.8",
     "vite-plugin-pwa": "2.0.0",
     "vitest": "5.1.0"
   },
