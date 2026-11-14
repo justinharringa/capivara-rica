@@ -26,7 +26,7 @@ number is in `docs/research/`.
 
 ## Commands
 `npm run check` (svelte-check), `npm test` (vitest), `npm run data:check`, `npm run build`,
-`npm run size`. All five must pass before pushing. `npm run data:check -- --release` is the
+`npm run size`. All five must pass before pushing, and so must `npm run ceilings` (CI's `check` job runs it; a red one means a version ceiling's reason is gone, see the triage skill). `npm run data:check -- --release` is the
 release gate and fails while any parameter is `memory`/`placeholder`.
 Accessibility, in CI and runnable locally with a Chromium: `VITE_E2E=1 npm run build && npm run a11y`
 (axe, WCAG 2.x A + AA, every screen, light and dark, through `window.__game`) and
