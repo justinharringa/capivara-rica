@@ -1,7 +1,6 @@
 # Cloudflare: Terraform apply, then a Workers static-assets deploy, on pushes to main only.
-# One job, so the `production` GitHub Environment's required-reviewer rule asks for exactly
-# one approval per push (Settings → Environments → production: deployment branches = main,
-# required reviewers = you). Pull requests never receive Cloudflare credentials: ci.yml checks
+# One job, in the `production` GitHub Environment (Settings → Environments → production:
+# deployment branches = main, no required reviewer, so a push deploys without an approval). Pull requests never receive Cloudflare credentials: ci.yml checks
 # them and uploads the built site as an artifact. The job stops with a clear message if the
 # repository variable CLOUDFLARE_ACCOUNT_ID or any of the environment secrets
 # CLOUDFLARE_API_TOKEN, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY is missing

@@ -43,8 +43,8 @@ directory and the custom domains (wrangler creates their DNS records). Zone sett
 typo-domain redirect are Terraform in `infrastructure/terraform/cloudflare/` (provider v5
 schema; validate with `terraform validate` before pushing). `.github/workflows/deploy.yml`
 runs on pushes to main only, as one job inside the `production` GitHub Environment (restricted
-to main, required reviewer = the owner, so each push needs one approval): Terraform apply, then
-`wrangler deploy`. Pull requests never get Cloudflare credentials; the job stops early with a
+to main, **no required reviewer**: a merge to main deploys within about a minute, with no approval
+step; observed 2026-11-14, run 43601627219): Terraform apply, then `wrangler deploy`. Pull requests never get Cloudflare credentials; the job stops early with a
 clear message if any secret is missing. Third-party actions are pinned to commit
 SHAs (Renovate keeps them current); keep it that way in a public repo. Never create a Worker, a
 Pages project or DNS records by hand; Cloudflare's dashboard calls Pages "legacy".
@@ -56,9 +56,9 @@ where a PR check exercises the bump; `rebaseWhen: auto`, never a ruleset with "r
 to be up to date"). `ci.yml` ends in one job named `CI gate` that `needs:` every other job and
 runs `if: always()`; it is the only status check the `main` ruleset requires
 (`docs/rulesets/main.json`, imported by hand, see `docs/rulesets/README.md`). Keep that name.
-No workflow other than `ci.yml` may trigger on `pull_request` or `push`. `engines.node` in `package.json` names the same major as `.nvmrc` (CI and the deploy run that version), and a step in the `check` job fails if they differ; on a Node major, raise both in the same PR. The merge gate and the
-deploy gate are different things: a merge to main only queues a `Deploy` run that waits for the
-owner's approval. To triage open Renovate PRs, run `/renovate-triage`
+No workflow other than `ci.yml` may trigger on `pull_request` or `push`. `engines.node` in `package.json` names the same major as `.nvmrc` (CI and the deploy run that version), and a step in the `check` job fails if they differ; on a Node major, raise both in the same PR. The merge gate is
+the only gate: a merge to main starts a `Deploy` run that applies Terraform and deploys the Worker
+without waiting for anyone, so treat every merge as a production deploy. To triage open Renovate PRs, run `/renovate-triage`
 (`.claude/skills/renovate-triage/SKILL.md`); the Dependency Dashboard is issue #4.
 
 ## Verifying in a browser

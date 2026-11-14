@@ -1,6 +1,6 @@
 ---
 name: renovate-triage
-description: Triage the open Renovate / dependency PRs for capivara-rica from evidence, not titles. Classify each by merge posture, read the upstream notes, require `CI gate` green on the current head, merge what passes the LOW RISK rubric (squash, pinned to the reviewed head), then verify the push-to-main run and tell the owner which deploy is waiting for approval. Merging here is not a deploy; the `production` environment approval is. Works from a cloud session (GitHub MCP connector plus Playwright), attended or unattended. Use when asked to triage, review or clear dependency PRs or the Dependency Dashboard (#4), or when the Daily Renovate Triage routine reaches this repo.
+description: Triage the open Renovate / dependency PRs for capivara-rica from evidence, not titles. Classify each by merge posture, read the upstream notes, require `CI gate` green on the current head, merge what passes the LOW RISK rubric (squash, pinned to the reviewed head), then verify the push-to-main `CI` and `Deploy` runs and the live site. A merge here is a production deploy within about a minute, with no approval step (verified 2026-11-14). Works from a cloud session (GitHub MCP connector plus Playwright), attended or unattended. Use when asked to triage, review or clear dependency PRs or the Dependency Dashboard (#4), or when the Daily Renovate Triage routine reaches this repo.
 ---
 
 # Renovate Triage: capivara-rica
@@ -10,23 +10,27 @@ with a small Terraform stack for the zone. Background: `CLAUDE.md`
 (Infrastructure), `docs/rulesets/README.md` (what gates a merge) and the
 `description` block at the top of `renovate.json` (the policy).
 
-## The path to production: merge, then approve, then deploy
+## The path to production: merge, then deploy (no approval)
 
 ```
-PR merged to main ──▶ deploy.yml run WAITS for the owner's approval
-   (production environment) ──▶ terraform plan + apply ──▶ npm build
+PR merged to main ──▶ deploy.yml run starts at once (production environment,
+   no required reviewer) ──▶ terraform plan + apply ──▶ npm check/test/build
    ──▶ wrangler deploy ──▶ capivararica.com.br
 ```
 
-- **Merging a PR is not a deploy.** Nothing reaches Cloudflare until the owner
-  approves the `Deploy` run. Triage never approves a deployment: that is the
-  owner's click, in the GitHub UI, and there is no tool for it here.
-- **But a merge queues a deploy.** `deploy.yml` has
-  `concurrency: deploy-production`, so several merges leave one run waiting,
-  for the newest commit. Tell the owner what is waiting and what it contains.
-- **Two things apply on merge once approved**: the Terraform provider version
-  (`applies-on-merge` label) and `cloudflare/wrangler-action`. Both are manual
-  by `renovate.json`; see Phase 1.
+- **Merging a PR is a deploy.** On 2026-11-14 a merge started `Deploy` within a
+  second, the job ran 4 seconds later and finished in about a minute (run
+  43601627219, no approval requested). The owner confirmed they do not want an
+  approval step. Triage still never approves, re-runs or dispatches anything.
+- **The deploy repeats the build's checks** (`check`, `test`, `data:check`,
+  `build`, `size`) before `wrangler deploy`, so a failing step stops it, but
+  nothing about the merge can be undone from triage.
+- **Two things apply on merge**: the Terraform provider version
+  (`applies-on-merge` label) and `cloudflare/wrangler-action`. Their plan runs
+  only inside the deploy, after the merge, so both stay Ask first (Phase 1).
+- `deploy.yml` has `concurrency: deploy-production`: back-to-back merges queue
+  runs, and an older waiting run can be superseded. Merge one PR at a time and
+  verify it before the next.
 
 ## What gates a PR, and what does not
 
@@ -51,8 +55,8 @@ Not covered by any PR check:
   the localStorage copy first, because `src/lib/save.ts` writes one and
   swallows storage errors). Older save shapes are the migration test's job
   (`src/engine/migrate.test.ts`, in `check`), which runs without a browser;
-- **the Terraform plan against the live zone.** It runs in the deploy, after
-  approval;
+- **the Terraform plan against the live zone.** It runs in the deploy, right
+  after the merge;
 - **`cloudflare/wrangler-action`.** It appears only in `deploy.yml`.
 
 ## Preflight: what can this session reach?
@@ -203,26 +207,24 @@ that failed.
 
 Merge (squash; every Renovate PR here is one commit): `merge_pull_request`
 with `merge_method: "squash"` and `expectedHeadSha: <the head you reviewed>`.
-Merge one PR at a time and run Phase 4a before the next: two npm PRs merged
-together conflict in `package-lock.json`.
+Merge one PR at a time and run Phase 4 before the next: each merge deploys, and two
+npm PRs merged together conflict in `package-lock.json`.
 
-## Phase 4a: Verify a merge (minutes later)
+## Phase 4: Verify the merge and its deploy (a few minutes after each merge)
 
-A merge triggers `CI` on `main` and a `Deploy` run that waits for approval.
+Before each merge, record the live state: the `ETag` or `Last-Modified` of
+`https://capivararica.com.br/` and of `/sw.js`.
 
 1. `CI` on the merge commit must be green: `actions_list`, workflow `ci.yml`,
-   branch `main`, event `push`.
-2. The `Deploy` run shows `waiting`. Do not try to approve it. Tell the owner,
-   in one line: what the waiting deploy contains and whether it is just the
-   merged PR or several.
-
-A red `main` run after a merge means notify, with the run ID. Do not "fix
-forward" from triage.
-
-## Phase 4b: Verify a deploy (after the owner approves)
-
-Run this when the owner says a deploy went out, or when `Deploy` on `main`
-has a `success` conclusion newer than your last check.
+   branch `main`, event `push`, and the run's `head_sha` equal to the merge
+   commit.
+2. The `Deploy` run for that same `head_sha` must reach `completed` /
+   `success` (`actions_list`, workflow `deploy.yml`, event `push`). It normally
+   takes about a minute. Poll for up to 10 minutes. `queued`, `waiting` or
+   `in_progress` after that, or no run at all, means stop merging and notify the
+   merge as `unverified`. A `waiting` run would mean someone added a required
+   reviewer to the `production` environment: say so, do not approve.
+3. The live site, as follows. A deploy can succeed and ship a broken site.
 
 ```bash
 curl -sSI https://capivararica.com.br/ | grep -i 'HTTP/\|content-security-policy\|cf-cache-status'
@@ -244,6 +246,10 @@ For a deploy that included the Cloudflare provider or `wrangler-action`, also
 read the run's **Terraform plan** summary: a provider-only bump should say
 `No changes`.
 
+A red `CI` or a failed `Deploy` after a merge, or a broken live site, is the
+one urgent notification: the PR, the merge SHA, the failing step and the run
+ID. Do not fix forward and do not roll back from triage.
+
 ## Unattended (routine) mode
 
 The Daily Renovate Triage routine runs this skill with nobody watching, from
@@ -260,7 +266,7 @@ attended run:
   open more than a day after `CI gate` went green, with the reason (auto-merge
   not enabled on the PR, the ruleset disabled, a red job).
 - **Merge only *Candidate LOW RISK* PRs that pass every line of Phase 3, one at
-  a time,** with Phase 4a after each.
+  a time,** with Phase 4 after each: every merge is a production deploy.
 - **`idb-keyval` is a normal candidate.** Its save-path line is met by the
   `a11y` job's `Save and reload` step, which is inside `CI gate`. Never
   improvise a different browser driver in its place: if that step did not
@@ -268,36 +274,20 @@ attended run:
 - **A red `ceilings` step** (see Phase 0) is notified once, on the day it
   first appears, as the TypeScript ceiling being ready to lift. It holds every
   PR, including the auto-merge ones, until the owner acts.
-- **Phase 4b runs when there is something new to verify:** a `Deploy` run on
-  `main` that completed `success` in the last 24 hours and whose commits
-  include a Renovate merge. Find the commits by comparing it with the previous
-  successful run:
-
-  ```bash
-  R=justinharringa/capivara-rica
-  gh api "repos/$R/actions/workflows/deploy.yml/runs?branch=main&status=success&per_page=2" \
-    --jq '.workflow_runs[] | "\(.id) \(.head_sha) \(.updated_at)"'
-  gh api repos/$R/compare/<previous-sha>...<newest-sha> \
-    --jq '.commits[] | "\(.author.login // .commit.author.name) \(.commit.message | split("\n")[0])"'
-  ```
-
-  A Renovate merge is a commit authored by `renovate[bot]` (squash-merged, so
-  one commit per PR). The curl checks and the headless load run as written. Report the result; it
-  is notified only on failure.
-- **A failed `Deploy` run is the owner's, not triage's.** The owner approved
-  it and saw it fail. Mention it in the notification only when its commits
-  include a Renovate merge (a provider bump failing `Terraform apply`, a
-  `wrangler-action` bump failing the deploy step), naming the run, the failed
-  step and the PR. Otherwise it goes in the report. On 2026-11-09 run
-  42540865774 failed at `Terraform apply` on #17, a hand-written PR: report
-  only.
+- **Auto-merged PRs deploy too, with nobody verifying them.** Once per run, read
+  the newest `Deploy` run on `main`: if it failed, or the live site fails the
+  Phase 4 checks, notify it whoever merged the commit.
+- **A failed `Deploy` after a merge this run made is urgent.** Notify it first,
+  with the run, the failed step and the PR. A failed `Deploy` for a commit this
+  run did not merge (a hand-written PR, for example run 42540865774 on #17,
+  2026-11-09) goes in the report only.
 
 **May do:** read anything; build and run the site in the sandbox; run the
-Phase 4b checks against production; merge PRs that pass every line of Phase 3.
+Phase 4 checks against production; merge PRs that pass every line of Phase 3.
 
 **Never:**
 - approve a deployment or a `production` environment review, or re-run,
-  cancel or dispatch `Deploy`: the approval is always the owner's click
+  cancel or dispatch `Deploy`
 - push commits, push tags, re-run workflows, or comment on, close or edit PRs
 - touch Cloudflare or Terraform state directly
 - tick Dependency Dashboard boxes (`renovate.json` REBASE POLICY: never
@@ -307,20 +297,20 @@ Phase 4b checks against production; merge PRs that pass every line of Phase 3.
 
 **Notify (one line per item, inside the routine's single notification), only
 when:**
-1. **A `Deploy` run is waiting for approval because of a merge this run
-   made**: the run, and what it contains (just that PR, or several commits).
-   The owner has to click for the merge to reach players at all.
+1. **A merge this run made failed to deploy, broke the live site, or could
+   not be verified (say it is unverified)**: the PR, the failing step and the
+   run ID. This comes first.
 2. A PR needs the owner: Ask first, or held because its own
    change broke a check. Notify on the first run that sees it as needing the owner, or when its head changes (see *What counts as new*). A PR that is merely still held stays out of
    the notification.
-3. `main` CI went red after a merge (Phase 4a), with the run ID.
-4. Phase 4b failed on a deploy that carried a Renovate merge.
+3. `main` CI went red after a merge (Phase 4), with the run ID.
+4. (Covered by item 1.)
 5. The `ceilings` step turned red (once, on the first day).
-6. A `security`-labelled PR merged but its `Deploy` run has waited for approval
-   more than 7 days: the fix is not live.
+6. A `security`-labelled PR merged and its `Deploy` did not succeed: the fix is
+   not live.
 
 Everything else is silent: auto-merged PRs, merged LOW RISK PRs whose checks
-passed, routine holds, a waiting deploy this run did not cause. Message shape:
+and deploy passed, routine holds. Message shape:
 `capivara-rica: <action needed> — #<n> <title>: <one-line evidence>`.
 
 See *What counts as new* for the Monday digest and for environment gaps.
@@ -329,6 +319,6 @@ See *What counts as new* for the Monday digest and for environment gaps.
 
 | Observation | Why it's fine |
 |---|---|
-| A Cloudflare `beacon.min.js` CSP violation in the console on production | Injected by Cloudflare Web Analytics until it is disabled in the dashboard (Phase 4b). If it disappears, say so: it means the owner turned it off |
+| A Cloudflare `beacon.min.js` CSP violation in the console on production | Injected by Cloudflare Web Analytics until it is disabled in the dashboard (Phase 4). If it disappears, say so: it means the owner turned it off |
 | Renovate PRs closed as "autoclosed" (#7, #8, #13) | Renovate closes a PR whose update was superseded or regrouped; the newer PR carries it |
-| A `Deploy` run that never ran for a merge | `concurrency: deploy-production` keeps only the newest waiting run, so an older waiting run is cancelled when a newer merge queues |
+| A `Deploy` run that never ran for a merge | `concurrency: deploy-production` keeps only the newest pending run, so an older pending run is cancelled when a newer merge queues; check the newest merge's run, not each one |
