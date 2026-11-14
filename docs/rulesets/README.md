@@ -12,7 +12,7 @@ source of truth: edit it here, then re-import it. The layout is copied from
 | Require status check `CI gate` | The only required check. See below. |
 | **Not** "require branches to be up to date" | It flips Renovate's `rebaseWhen: auto` to `behind-base-branch` for every PR: every push to main rebases every open PR and re-runs CI for each. |
 | Block force-push and deletion | `main` is what `deploy.yml` ships. |
-| Bypass: repository admin, **pull requests only** | Break-glass. The owner can merge a PR while CI is broken, but still cannot push to `main` directly. |
+| Bypass: none | Nobody bypasses, the owner included: a merge with the check red, pending or missing is refused by GitHub, not by anyone's judgment. If CI is down and you must merge, temporarily set the ruleset to Disabled in Settings, merge, and re-enable it. The JSON has had no bypass since 2026-11-14; a live ruleset imported earlier still has the admin bypass until it is re-imported. |
 
 This ruleset gates the **merge**. The **deploy** is gated separately by the
 `production` GitHub Environment (deployment branch `main`, required reviewer =
