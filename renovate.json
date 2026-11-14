@@ -109,6 +109,7 @@
         "cloudflare/wrangler-action"
       ],
       "groupName": "wrangler-action (deploy)",
+      "groupSlug": "wrangler-action-deploy",
       "commitMessageTopic": "wrangler-action",
       "automerge": false,
       "addLabels": [

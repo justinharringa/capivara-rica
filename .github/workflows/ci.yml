@@ -111,6 +111,26 @@ jobs:
         with:
           node-version-file: .nvmrc
       - run: npx --yes --package renovate -- renovate-config-validator --strict renovate.json
+      - name: Group names must make safe branch names
+        # Cloudflare Workers Builds names a preview after the branch and rejects
+        # anything outside letters, digits and - _ / . + = (a "Wrangler (deploy)"
+        # group made "renovate/wrangler-(deploy)", which failed in 0 s on
+        # 2026-11-13). Renovate builds the branch from `groupSlug`, or from
+        # `groupName` when there is none, and keeps parentheses. Fail here, not
+        # on a Renovate PR a week later.
+        run: |
+          node -e '
+          const fs = require("fs");
+          const cfg = JSON.parse(fs.readFileSync("renovate.json", "utf8"));
+          let bad = 0;
+          for (const r of cfg.packageRules ?? []) {
+            if (r.groupName === undefined && r.groupSlug === undefined) continue;
+            const slug = r.groupSlug;
+            const fine = slug !== undefined ? /^[A-Za-z0-9._+=-]+$/.test(slug) : /^[A-Za-z0-9 ._+=-]*$/.test(r.groupName);
+            if (!fine) { console.error(`groupName "${r.groupName}" needs a groupSlug of letters, digits and . _ + = - only`); bad = 1; }
+          }
+          process.exit(bad);
+          '
 
   terraform-validate:
     # fmt + validate with the backend disabled, so it needs no credentials and no
