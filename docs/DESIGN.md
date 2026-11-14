@@ -16,7 +16,7 @@ operacional do que o código implementa hoje e do que falta.
 6. pt-BR primeiro, código em inglês, economia e textos em arquivos de dados por país.
 7. Open source (MIT + CC BY 4.0). Escolas e modo sala de aula ficam para a v2.
 
-## O que o código faz hoje (v0.1)
+## O que o código faz hoje (v0.1 e v0.2)
 
 - Motor determinístico em `src/engine` com RNG por fluxo (`macro`, `events`, `shocks`,
   `career`, `misc`), o que permite ao fantasma ver exatamente a mesma sorte.
@@ -75,6 +75,5 @@ operacional do que o código implementa hoje e do que falta.
 - Parâmetros `secondary` fracos em `data/br/2026-11.json` (ver roadmap v0.2).
 - Percentual mínimo da fatura e leitura por operação do teto de 100%.
 - Custos de SENAI/SENAC/ETEC/cursinho.
-- O "e aos 40?" (coda de projeção) e a lista das 3 decisões mais caras ainda não existem.
-- Números: nenhum parâmetro é mais `placeholder`/`memory` (v0.2), mas 87 são `secondary`; os mais
+- Números: nenhum parâmetro é mais `placeholder`/`memory` (v0.2), mas 86 são `secondary` (e 21 `verified`, contados em 2026-11-14); os mais
   fracos estão listados no roadmap.
