@@ -14,10 +14,10 @@ source of truth: edit it here, then re-import it. The layout is copied from
 | Block force-push and deletion | `main` is what `deploy.yml` ships. |
 | Bypass: none | Nobody bypasses, the owner included: a merge with the check red, pending or missing is refused by GitHub, not by anyone's judgment. If CI is down and you must merge, temporarily set the ruleset to Disabled in Settings, merge, and re-enable it. The JSON has had no bypass since 2026-11-14; a live ruleset imported earlier still has the admin bypass until it is re-imported. |
 
-This ruleset gates the **merge**. The **deploy** is gated separately by the
-`production` GitHub Environment (deployment branch `main`, required reviewer =
-the owner), so an auto-merged Renovate PR still needs a human click before it
-reaches Cloudflare.
+This ruleset gates the **merge**, and it is the only gate. The `production` GitHub
+Environment restricts deployments to `main` but has no required reviewer (confirmed
+2026-11-14: a merge deployed within a minute, no approval), so an auto-merged Renovate
+PR reaches Cloudflare as soon as `CI gate` passes.
 
 ### Why one gate check instead of requiring each job
 
@@ -43,9 +43,10 @@ The ruleset binds the context to the GitHub Actions app (`integration_id`
 - **A GitHub-side scheduling stall shows up as a missing gate, not a red one.**
   A run with `total_count: 0` jobs carries no information about the code:
   `gh api repos/justinharringa/capivara-rica/actions/runs/<id>/jobs --jq .total_count`.
-- **The deploy is not gated by the ruleset.** `deploy.yml` runs after merge,
-  behind the environment approval, and its Terraform plan runs against live
-  state only there.
+- **The deploy is not gated by the ruleset.** `deploy.yml` runs right after merge,
+  with no approval, and its Terraform plan runs against live state only there.
+  It repeats `check`, `test`, `data:check`, `build` and `size` before `wrangler deploy`,
+  so a failing step stops the deploy.
 
 ## Applying it
 
@@ -95,6 +96,6 @@ gh api repos/justinharringa/capivara-rica/automated-security-fixes   # expect en
 gh api -i repos/justinharringa/capivara-rica/vulnerability-alerts    # expect 204
 ```
 
-**`production` environment**: deployment branches = `main` only, required
-reviewers = the owner. That is the deploy gate; keep it even though the
-ruleset exists, because the ruleset only gates merges.
+**`production` environment**: deployment branches = `main` only, no required
+reviewer (the owner's decision, 2026-11-14). Add a reviewer there if you ever want
+a human click between a merge and a deploy.
